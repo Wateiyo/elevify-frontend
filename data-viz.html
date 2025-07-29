@@ -1,0 +1,2821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataViz Pro - Data Visualization Dashboard | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+       
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .chart-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .chart-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .chart-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .file-format-option {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .file-format-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .file-format-option.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+        }
+        
+        .file-upload-wrapper {
+            border: 2px dashed #14697D;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .file-upload-wrapper:hover {
+            background-color: #f0f0f0;
+            border-color: #0f5566;
+        }
+        
+        .file-upload-wrapper.dragover {
+            background-color: #e3f2fd;
+            border-color: #1976d2;
+        }
+        
+        .file-upload-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .dashboard-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .data-disclaimer {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .doc-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-radius: 30px 30px 0 0;
+            transition: all 0.3s ease;
+        }
+        
+        .doc-tab:hover {
+            color: #333;
+            background-color: #f0f0f0;
+        }
+        
+        .doc-tab.active {
+            background-color: #14697D;
+            color: white;
+        }
+
+        .document-tabs {
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .custom-fields {
+            display: none;
+        }
+
+        .data-info {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            height: 400px;
+            position: relative;
+        }
+
+        .data-preview-table {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        .table thead th {
+            background-color: #14697D;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #14697D;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+        .tab-content {
+    transition: opacity 0.3s ease;
+}
+
+.tab-content.active {
+    opacity: 1;
+}
+
+.tab-content:not(.active) {
+    opacity: 0;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                        
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>DataViz Pro - AI Data Visualization</h1>
+                        <p class="lead">Transform your raw data into stunning, interactive dashboards with AI-powered insights and automatic pattern detection.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img10.svg" alt="Data Visualization" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-chart-line" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Upload your data file</div>
+                            <div class="mt-2"><span class="step-number">2</span> AI analyzes patterns</div>
+                            <div class="mt-2"><span class="step-number">3</span> Choose visualizations</div>
+                            <div class="mt-2"><span class="step-number">4</span> Customize dashboard</div>
+                            <div class="mt-2"><span class="step-number">5</span> Export or share</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-magic" style="color: #FFbf23;"></i> AI Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Smart chart suggestions</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Pattern detection</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Trend analysis</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Interactive filtering</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Anomaly detection</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Auto insights generation</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-chart-pie" style="color: #A82C2C;"></i> Chart Types</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-chart-bar" style="color: #14697D;"></i> Bar & Column Charts</div>
+                            <div class="mb-2"><i class="fas fa-chart-line" style="color: #14697D;"></i> Line & Area Charts</div>
+                            <div class="mb-2"><i class="fas fa-chart-pie" style="color: #14697D;"></i> Pie & Donut Charts</div>
+                            <div class="mb-2"><i class="fas fa-project-diagram" style="color: #14697D;"></i> Scatter Plots</div>
+                            <div class="mb-2"><i class="fas fa-th" style="color: #14697D;"></i> Heatmaps</div>
+                            <div class="mb-2"><i class="fas fa-map" style="color: #14697D;"></i> Geographic Maps</div>
+                            <div class="mb-2"><i class="fas fa-tachometer-alt" style="color: #14697D;"></i> KPI Dashboards</div>
+                            <div><i class="fas fa-plus" style="color: #14697D;"></i> Custom Visualizations</div>
+                        </div>
+                    </div>
+
+                    <div class="data-disclaimer">
+                        <h6><i class="fas fa-exclamation-triangle me-2" style="color: #856404;"></i>Data Privacy Notice</h6>
+                        <p class="small mb-0">Your data is processed securely and temporarily. We don't store your files permanently. For sensitive data, consider using our on-premise solutions.</p>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Create Your Dashboard</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <!-- Document Tabs -->
+                        <div class="document-tabs mb-4">
+                            <button class="doc-tab active" data-tab="upload">Upload Data</button>
+                            <button class="doc-tab" data-tab="analyze">Analyze & Visualize</button>
+                        </div>
+
+                        <!-- Upload Data Section -->
+                        <div id="uploadSection" class="tab-content active">
+                            <form id="dataUploadForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Data Source</label>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="file-format-option" data-format="csv">
+                                                <i class="fas fa-file-csv mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>CSV File</h6>
+                                                <small class="text-muted">Comma separated values</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="file-format-option" data-format="excel">
+                                                <i class="fas fa-file-excel mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Excel File</h6>
+                                                <small class="text-muted">.xlsx, .xls formats</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="file-format-option" data-format="json">
+                                                <i class="fas fa-code mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>JSON Data</h6>
+                                                <small class="text-muted">JavaScript object notation</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedFormat" name="dataFormat" required>
+
+                                <!-- File Upload -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Upload Your Data File</label>
+                                    <div class="file-upload-wrapper" id="fileUploadWrapper">
+                                        <input type="file" class="file-upload-input" id="dataFile" name="dataFile" accept=".csv,.xlsx,.xls,.json" required>
+                                        <div class="upload-content">
+                                            <i class="fas fa-cloud-upload-alt mb-3" style="font-size: 3rem; color: #14697D;"></i>
+                                            <h5>Drag & drop your file here</h5>
+                                            <p class="text-muted">or click to browse</p>
+                                            <small class="text-muted">Supported formats: CSV, Excel (.xlsx, .xls), JSON</small>
+                                        </div>
+                                    </div>
+                                    <div id="fileInfo" class="mt-2" style="display: none;">
+                                        <div class="alert alert-success">
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            <span id="fileName"></span> - <span id="fileSize"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Data Configuration -->
+                                <div class="mb-4">
+                                    <h5>Data Configuration</h5>
+                                    <div class="data-info">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="hasHeaders" class="form-label">Data Structure</label>
+                                                <select class="form-select" id="hasHeaders" name="hasHeaders">
+                                                    <option value="true">First row contains headers</option>
+                                                    <option value="false">No headers in data</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="encoding" class="form-label">File Encoding</label>
+                                                <select class="form-select" id="encoding" name="encoding">
+                                                    <option value="utf-8">UTF-8 (Default)</option>
+                                                    <option value="latin1">Latin-1</option>
+                                                    <option value="ascii">ASCII</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-upload me-2"></i> Upload & Process Data
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Analyze & Visualize Section -->
+                        <div id="analyzeSection" class="tab-content" style="display: none;">
+                            <form id="visualizationForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Choose Visualization Type</label>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="chart-type-card card h-100" data-type="bar">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-chart-bar mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Bar Chart</h6>
+                                                    <small class="text-muted">Compare categories</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="chart-type-card card h-100" data-type="line">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-chart-line mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Line Chart</h6>
+                                                    <small class="text-muted">Show trends over time</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="chart-type-card card h-100" data-type="pie">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-chart-pie mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Pie Chart</h6>
+                                                    <small class="text-muted">Show proportions</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="chart-type-card card h-100" data-type="scatter">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-project-diagram mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Scatter Plot</h6>
+                                                    <small class="text-muted">Find correlations</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="chart-type-card card h-100" data-type="area">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-chart-area mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Area Chart</h6>
+                                                    <small class="text-muted">Volume over time</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="chart-type-card card h-100" data-type="dashboard">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-tachometer-alt mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Dashboard</h6>
+                                                    <small class="text-muted">Multiple metrics</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedChartType" name="chartType" required>
+
+                                <!-- Chart Configuration -->
+                                <div class="mb-4">
+                                    <h5>Chart Configuration</h5>
+                                    <div class="data-info">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="xAxis" class="form-label">X-Axis Column</label>
+                                                <select class="form-select" id="xAxis" name="xAxis">
+                                                    <option value="">Select column for X-axis</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="yAxis" class="form-label">Y-Axis Column</label>
+                                                <select class="form-select" id="yAxis" name="yAxis">
+                                                    <option value="">Select column for Y-axis</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="chartTitle" class="form-label">Chart Title</label>
+                                                <input type="text" class="form-control" id="chartTitle" name="chartTitle" placeholder="Enter chart title">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="colorScheme" class="form-label">Color Scheme</label>
+                                                <select class="form-select" id="colorScheme" name="colorScheme">
+                                                    <option value="default">Default Colors</option>
+                                                    <option value="blue">Blue Theme</option>
+                                                    <option value="green">Green Theme</option>
+                                                    <option value="red">Red Theme</option>
+                                                    <option value="purple">Purple Theme</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- AI Options -->
+                                <div class="mb-4">
+                                    <h5>AI Enhancement Options</h5>
+                                    <div class="data-info">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="enableTrends" checked>
+                                            <label class="form-check-label" for="enableTrends">
+                                                Enable trend analysis
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="detectAnomalies">
+                                            <label class="form-check-label" for="detectAnomalies">
+                                                Detect anomalies and outliers
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="generateInsights" checked>
+                                            <label class="form-check-label" for="generateInsights">
+                                                Generate AI insights and recommendations
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="enableInteractivity" checked>
+                                            <label class="form-check-label" for="enableInteractivity">
+                                                Make charts interactive
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-chart-line me-2"></i> Generate Visualization
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Preview Container -->
+                    <div id="dataPreviewContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Data Preview</h4>
+                        
+                        <!-- Data Summary -->
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="totalRows">-</div>
+                                    <div class="metric-label">Total Rows</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="totalColumns">-</div>
+                                    <div class="metric-label">Columns</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="dataSize">-</div>
+                                    <div class="metric-label">File Size</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="dataType">-</div>
+                                    <div class="metric-label">Data Type</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Data Table Preview -->
+                        <div class="data-preview-table">
+                            <table class="table table-striped" id="dataTable">
+                                <thead>
+                                    <tr id="tableHeaders">
+                                        <!-- Headers will be populated here -->
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    <!-- Data rows will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="proceedToVisualization">
+                                <i class="fas fa-arrow-right me-1"></i> Proceed to Visualization
+                            </button>
+                            <button class="btn btn-outline-secondary" id="uploadNewFile">
+                                <i class="fas fa-upload me-1"></i> Upload Different File
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Container -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Data Visualization</h4>
+                        
+                        <!-- Chart Container -->
+                        <div class="chart-container mb-4" id="chartContainer">
+                            <canvas id="dataChart"></canvas>
+                        </div>
+                        
+                        <!-- AI Insights -->
+                        <div class="data-info mb-4" id="aiInsights" style="display: none;">
+                            <h5><i class="fas fa-lightbulb me-2" style="color: #FFbf23;"></i>AI Insights</h5>
+                            <div id="insightsContent">
+                                <!-- AI-generated insights will appear here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="exportPNG">
+                                <i class="fas fa-image"></i>
+                                <div>Download PNG</div>
+                                <small class="text-muted">High quality image</small>
+                            </div>
+                            <div class="export-option" id="exportPDF">
+                                <i class="fas fa-file-pdf"></i>
+                                <div>Export PDF</div>
+                                <small class="text-muted">Report format</small>
+                            </div>
+                            <div class="export-option" id="exportHTML">
+                                <i class="fas fa-code"></i>
+                                <div>Interactive HTML</div>
+                                <small class="text-muted">Embeddable chart</small>
+                            </div>
+                            <div class="export-option" id="copyChartData">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Data</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editVisualization">
+                                <i class="fas fa-edit me-1"></i> Edit Visualization
+                            </button>
+                            <button class="btn btn-outline-secondary" id="createNewVisualization">
+                                <i class="fas fa-plus me-1"></i> Create New Visualization
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading Spinner -->
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                </div>
+            </div>
+        </div>
+         <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">transform</span> your data?</h2>
+                <p class="lead mb-4">Join thousands of professionals who've created stunning data visuals with Elevify's AI-powered data visualization tool.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Building
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing Enhanced DataViz Pro...');
+    
+    const TOOL_ID = 'dataviz_pro';
+    
+    // Global state management
+    window.datavizState = {
+        uploadedData: null,
+        processedData: null,
+        currentChart: null,
+        chartConfig: null,
+        isEditing: false,
+        validationErrors: [],
+        processingStep: ''
+    };
+    
+    // DOM Elements
+    let fileFormatOptions, selectedFormatInput, chartTypeCards, selectedChartTypeInput, 
+        dataUploadForm, visualizationForm, docTabs, loadingSpinner, 
+        dataPreviewContainer, resultsContainer, fileUploadWrapper, dataFile;
+    
+    // Enhanced element selection with error handling
+    function initializeElements() {
+        try {
+            fileFormatOptions = document.querySelectorAll('.file-format-option');
+            selectedFormatInput = document.getElementById('selectedFormat');
+            chartTypeCards = document.querySelectorAll('.chart-type-card');
+            selectedChartTypeInput = document.getElementById('selectedChartType');
+            dataUploadForm = document.getElementById('dataUploadForm');
+            visualizationForm = document.getElementById('visualizationForm');
+            docTabs = document.querySelectorAll('.doc-tab');
+            loadingSpinner = document.getElementById('loadingSpinner');
+            dataPreviewContainer = document.getElementById('dataPreviewContainer');
+            resultsContainer = document.getElementById('resultsContainer');
+            fileUploadWrapper = document.getElementById('fileUploadWrapper');
+            dataFile = document.getElementById('dataFile');
+            
+            console.log('Elements initialized successfully:', {
+                fileFormatOptions: fileFormatOptions?.length,
+                chartTypeCards: chartTypeCards?.length,
+                docTabs: docTabs?.length,
+                formsFound: !!(dataUploadForm && visualizationForm)
+            });
+            
+            return true;
+        } catch (error) {
+            console.error('Error initializing elements:', error);
+            return false;
+        }
+    }
+    
+    // Enhanced notification system
+    function showNotification(message, type = 'info', duration = 5000) {
+        // Remove existing notifications
+        const existingNotifications = document.querySelectorAll('.dataviz-notification');
+        existingNotifications.forEach(n => n.remove());
+        
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} dataviz-notification position-fixed`;
+        notification.style.cssText = `
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            animation: slideInRight 0.3s ease;
+        `;
+        
+        const iconMap = {
+            success: 'fas fa-check-circle',
+            danger: 'fas fa-exclamation-triangle',
+            warning: 'fas fa-exclamation-circle',
+            info: 'fas fa-info-circle'
+        };
+        
+        notification.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="${iconMap[type]} me-2"></i>
+                <span>${message}</span>
+                <button type="button" class="btn-close ms-auto" aria-label="Close"></button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, duration);
+        
+        // Manual close
+        notification.querySelector('.btn-close').addEventListener('click', () => {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        });
+    }
+    
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .form-control.is-invalid, .form-select.is-invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+        .form-control.is-valid, .form-select.is-valid {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+        .processing-step {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .processing-step.active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .processing-step.completed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Enhanced usage tracking with better UX
+    function initializeUsageTracking() {
+        let usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        
+        if (!usageData[TOOL_ID]) {
+            usageData[TOOL_ID] = {
+                count: 0,
+                lastReset: new Date().toISOString(),
+                month: new Date().getMonth(),
+                year: new Date().getFullYear()
+            };
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+        }
+        
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        
+        if (usageData[TOOL_ID].month !== currentMonth || usageData[TOOL_ID].year !== currentYear) {
+            usageData[TOOL_ID] = {
+                count: 0,
+                lastReset: new Date().toISOString(),
+                month: currentMonth,
+                year: currentYear
+            };
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+            showNotification('Usage limit reset for new month!', 'success');
+        }
+        
+        updateUsageDisplay(usageData[TOOL_ID].count);
+        
+        const nextMonth = new Date();
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        nextMonth.setDate(1);
+        const resetDateEl = document.getElementById('resetDate');
+        if (resetDateEl) {
+            resetDateEl.textContent = nextMonth.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        }
+    }
+    
+    function updateUsageDisplay(usedCount) {
+        const remaining = Math.max(0, 5 - usedCount);
+        const remainingUsesEl = document.getElementById('remainingUses');
+        if (remainingUsesEl) {
+            remainingUsesEl.textContent = remaining;
+        }
+        
+        const usageTracker = document.getElementById('usageTracker');
+        if (usageTracker) {
+            usageTracker.classList.remove('alert-info', 'alert-warning', 'alert-danger');
+            
+            if (remaining === 0) {
+                usageTracker.classList.add('alert-danger');
+                usageTracker.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i><div class="flex-grow-1"><strong>No free uses remaining this month!</strong><div class="small mt-1">Upgrade to continue using this tool</div></div><a href="/#pricing" class="btn btn-sm btn-warning ms-3">Upgrade Now</a>';
+            } else if (remaining <= 2) {
+                usageTracker.classList.add('alert-warning');
+            } else {
+                usageTracker.classList.add('alert-info');
+            }
+        }
+    }
+    
+    function checkUsageLimit() {
+        const usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        const toolUsage = usageData[TOOL_ID] || { count: 0 };
+        return toolUsage.count < 5;
+    }
+    
+    function incrementUsage() {
+        let usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        if (usageData[TOOL_ID]) {
+            usageData[TOOL_ID].count++;
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+            updateUsageDisplay(usageData[TOOL_ID].count);
+        }
+    }
+    
+    // Enhanced form validation system
+    function initializeFormValidation() {
+        // Real-time validation for upload form
+        if (dataUploadForm) {
+            const formElements = dataUploadForm.querySelectorAll('input, select');
+            formElements.forEach(element => {
+                element.addEventListener('input', () => validateUploadForm());
+                element.addEventListener('change', () => validateUploadForm());
+            });
+        }
+        
+        // Real-time validation for visualization form
+        if (visualizationForm) {
+            const formElements = visualizationForm.querySelectorAll('input, select');
+            formElements.forEach(element => {
+                element.addEventListener('input', () => validateVisualizationForm());
+                element.addEventListener('change', () => validateVisualizationForm());
+            });
+        }
+    }
+    
+    function validateUploadForm() {
+        const errors = [];
+        let isValid = true;
+        
+        // Check file format selection
+        if (!selectedFormatInput || !selectedFormatInput.value) {
+            errors.push('Please select a data format');
+            isValid = false;
+        }
+        
+        // Check file selection
+        if (!dataFile || !dataFile.files[0]) {
+            errors.push('Please select a file to upload');
+            isValid = false;
+        } else {
+            // Validate file type
+            const file = dataFile.files[0];
+            const allowedTypes = {
+                'csv': ['.csv', 'text/csv'],
+                'excel': ['.xlsx', '.xls', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+                'json': ['.json', 'application/json']
+            };
+            
+            const selectedFormat = selectedFormatInput.value;
+            if (selectedFormat && allowedTypes[selectedFormat]) {
+                const extension = '.' + file.name.split('.').pop().toLowerCase();
+                const isValidType = allowedTypes[selectedFormat].some(type => 
+                    type === extension || file.type === type
+                );
+                
+                if (!isValidType) {
+                    errors.push(`File type doesn't match selected format (${selectedFormat})`);
+                    isValid = false;
+                }
+            }
+            
+            // Check file size (10MB limit)
+            if (file.size > 10 * 1024 * 1024) {
+                errors.push('File size too large (max 10MB)');
+                isValid = false;
+            }
+        }
+        
+        // Update submit button state
+        const submitBtn = dataUploadForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = !isValid;
+            if (!isValid) {
+                submitBtn.classList.add('btn-secondary');
+                submitBtn.classList.remove('btn-primary');
+            } else {
+                submitBtn.classList.add('btn-primary');
+                submitBtn.classList.remove('btn-secondary');
+            }
+        }
+        
+        window.datavizState.validationErrors = errors;
+        return isValid;
+    }
+    
+    function validateVisualizationForm() {
+        const errors = [];
+        let isValid = true;
+        
+        // Check chart type selection
+        if (!selectedChartTypeInput || !selectedChartTypeInput.value) {
+            errors.push('Please select a chart type');
+            isValid = false;
+        }
+        
+        // Check data availability
+        if (!window.datavizState.processedData) {
+            errors.push('No data available. Please upload data first.');
+            isValid = false;
+        }
+        
+        // Check axis selections for applicable chart types
+        const chartType = selectedChartTypeInput ? selectedChartTypeInput.value : '';
+        const needsAxes = ['bar', 'line', 'scatter', 'area'].includes(chartType);
+        
+        if (needsAxes) {
+            const xAxis = document.getElementById('xAxis');
+            const yAxis = document.getElementById('yAxis');
+            
+            if (!xAxis || !xAxis.value) {
+                errors.push('Please select X-axis column');
+                isValid = false;
+            }
+            
+            if (!yAxis || !yAxis.value) {
+                errors.push('Please select Y-axis column');
+                isValid = false;
+            }
+        }
+        
+        // Update submit button state
+        const submitBtn = visualizationForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = !isValid;
+            if (!isValid) {
+                submitBtn.classList.add('btn-secondary');
+                submitBtn.classList.remove('btn-primary');
+            } else {
+                submitBtn.classList.add('btn-primary');
+                submitBtn.classList.remove('btn-secondary');
+            }
+        }
+        
+        return isValid;
+    }
+    
+    // Enhanced file handling with better feedback
+    function setupFileFormatSelection() {
+        if (!fileFormatOptions) return;
+        
+        fileFormatOptions.forEach((option, index) => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove selected class from all options
+                fileFormatOptions.forEach(o => o.classList.remove('selected'));
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                const format = this.getAttribute('data-format');
+                if (selectedFormatInput) {
+                    selectedFormatInput.value = format;
+                }
+                
+                updateFileUploadAccept(format);
+                validateUploadForm();
+                
+                // Show format-specific tips
+                showFormatTips(format);
+            });
+        });
+    }
+    
+    function showFormatTips(format) {
+        const tips = {
+            csv: 'Ensure your CSV uses commas as separators and has column headers in the first row.',
+            excel: 'We support both .xlsx and .xls formats. Data should be in the first sheet.',
+            json: 'JSON should be an array of objects with consistent property names.'
+        };
+        
+        if (tips[format]) {
+            showNotification(tips[format], 'info', 3000);
+        }
+    }
+    
+    function setupFileUpload() {
+        if (!fileUploadWrapper || !dataFile) return;
+        
+        // Enhanced file input change event
+        dataFile.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileSelected(file);
+            }
+        });
+        
+        // Enhanced drag and drop with visual feedback
+        fileUploadWrapper.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+        
+        fileUploadWrapper.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            if (!this.contains(e.relatedTarget)) {
+                this.classList.remove('dragover');
+            }
+        });
+        
+        fileUploadWrapper.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                dataFile.files = files;
+                handleFileSelected(file);
+            }
+        });
+    }
+    
+    function handleFileSelected(file) {
+        console.log('File selected:', file.name, file.type, file.size);
+        
+        // Enhanced file validation
+        const validation = validateFileSelection(file);
+        if (!validation.isValid) {
+            showNotification(validation.error, 'danger');
+            return;
+        }
+        
+        // Show file info with enhanced details
+        displayFileInfo(file);
+        
+        // Auto-detect format if not selected
+        autoDetectFormat(file);
+        
+        // Preview file content if small enough
+        if (file.size < 1024 * 1024) { // 1MB
+            previewFileContent(file);
+        }
+        
+        validateUploadForm();
+        showNotification(`File "${file.name}" selected successfully!`, 'success', 2000);
+    }
+    
+    function validateFileSelection(file) {
+        // Check file size (10MB limit)
+        if (file.size > 10 * 1024 * 1024) {
+            return { isValid: false, error: 'File size exceeds 10MB limit' };
+        }
+        
+        // Check if file is empty
+        if (file.size === 0) {
+            return { isValid: false, error: 'File appears to be empty' };
+        }
+        
+        // Check file extension
+        const allowedExtensions = ['.csv', '.xlsx', '.xls', '.json'];
+        const extension = '.' + file.name.split('.').pop().toLowerCase();
+        if (!allowedExtensions.includes(extension)) {
+            return { isValid: false, error: 'Unsupported file type. Please use CSV, Excel, or JSON files.' };
+        }
+        
+        return { isValid: true };
+    }
+    
+    function displayFileInfo(file) {
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        
+        if (fileInfo && fileName && fileSize) {
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            
+            // Add file type and last modified info
+            const fileDetails = fileInfo.querySelector('.alert');
+            if (fileDetails) {
+                fileDetails.innerHTML = `
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>${file.name}</strong>
+                        </div>
+                        <div class="text-end small">
+                            <div>${formatFileSize(file.size)}</div>
+                            <div class="text-muted">Modified: ${new Date(file.lastModified).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            fileInfo.style.display = 'block';
+        }
+    }
+    
+    function autoDetectFormat(file) {
+        if (selectedFormatInput && !selectedFormatInput.value) {
+            const extension = file.name.split('.').pop().toLowerCase();
+            let detectedFormat = '';
+            
+            if (extension === 'csv') detectedFormat = 'csv';
+            else if (['xlsx', 'xls'].includes(extension)) detectedFormat = 'excel';
+            else if (extension === 'json') detectedFormat = 'json';
+            
+            if (detectedFormat) {
+                fileFormatOptions.forEach(o => o.classList.remove('selected'));
+                const formatOption = document.querySelector(`.file-format-option[data-format="${detectedFormat}"]`);
+                if (formatOption) {
+                    formatOption.classList.add('selected');
+                    selectedFormatInput.value = detectedFormat;
+                    showNotification(`Format auto-detected: ${detectedFormat.toUpperCase()}`, 'info', 2000);
+                }
+            }
+        }
+    }
+    
+    function previewFileContent(file) {
+        if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const lines = content.split('\n').slice(0, 3); // First 3 lines
+                console.log('CSV Preview:', lines);
+                
+                // Could show a small preview tooltip here
+            };
+            reader.readAsText(file);
+        }
+    }
+    
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    function updateFileUploadAccept(format) {
+        if (!dataFile) return;
+        
+        switch(format) {
+            case 'csv':
+                dataFile.accept = '.csv,text/csv';
+                break;
+            case 'excel':
+                dataFile.accept = '.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                break;
+            case 'json':
+                dataFile.accept = '.json,application/json';
+                break;
+            default:
+                dataFile.accept = '.csv,.xlsx,.xls,.json';
+        }
+    }
+    
+    // Enhanced chart type selection with smart suggestions
+    function setupChartTypeSelection() {
+        if (!chartTypeCards) return;
+        
+        chartTypeCards.forEach((card, index) => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove selected class from all cards
+                chartTypeCards.forEach(c => c.classList.remove('selected'));
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                const chartType = this.getAttribute('data-type');
+                if (selectedChartTypeInput) {
+                    selectedChartTypeInput.value = chartType;
+                }
+                
+                // Show chart type specific options
+                showChartTypeOptions(chartType);
+                
+                // Update form validation
+                validateVisualizationForm();
+                
+                showNotification(`${this.querySelector('h6').textContent} selected`, 'success', 2000);
+            });
+            
+            // Add hover effect with description
+            card.addEventListener('mouseenter', function() {
+                const chartType = this.getAttribute('data-type');
+                showChartTypeDescription(chartType, this);
+            });
+        });
+    }
+    
+    function showChartTypeOptions(chartType) {
+        // Hide all specific options first
+        const customFields = document.querySelectorAll('.chart-specific-options');
+        customFields.forEach(field => field.style.display = 'none');
+        
+        // Show relevant options based on chart type
+        const chartTypeDescriptions = {
+            bar: 'Perfect for comparing categories or showing rankings',
+            line: 'Ideal for showing trends and changes over time',
+            pie: 'Great for showing proportions and parts of a whole',
+            scatter: 'Excellent for finding correlations between variables',
+            area: 'Shows volume and trends over time',
+            dashboard: 'Combines multiple metrics in one view'
+        };
+        
+        if (chartTypeDescriptions[chartType]) {
+            showNotification(chartTypeDescriptions[chartType], 'info', 3000);
+        }
+    }
+    
+    function showChartTypeDescription(chartType, element) {
+        const descriptions = {
+            bar: 'Compare values across categories',
+            line: 'Show trends over time periods',
+            pie: 'Display proportional relationships',
+            scatter: 'Reveal correlations between variables',
+            area: 'Emphasize magnitude of change',
+            dashboard: 'Multiple visualizations combined'
+        };
+        
+        // Could implement tooltip here
+    }
+    
+    // Enhanced processing with step-by-step feedback
+    function showProcessingSteps(steps) {
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        if (!loadingSpinner) return;
+        
+        // Create processing steps container
+        let stepsContainer = document.getElementById('processingSteps');
+        if (!stepsContainer) {
+            stepsContainer = document.createElement('div');
+            stepsContainer.id = 'processingSteps';
+            stepsContainer.className = 'mt-3';
+            loadingSpinner.parentNode.insertBefore(stepsContainer, loadingSpinner.nextSibling);
+        }
+        
+        stepsContainer.innerHTML = '';
+        
+        steps.forEach((step, index) => {
+            const stepElement = document.createElement('div');
+            stepElement.className = 'processing-step';
+            stepElement.innerHTML = `
+                <div class="me-2">
+                    <i class="fas fa-circle" style="font-size: 0.5rem; color: #ccc;"></i>
+                </div>
+                <div>${step}</div>
+            `;
+            stepsContainer.appendChild(stepElement);
+        });
+        
+        return stepsContainer;
+    }
+    
+    function updateProcessingStep(stepIndex, status = 'active') {
+        const steps = document.querySelectorAll('.processing-step');
+        if (steps[stepIndex]) {
+            const icon = steps[stepIndex].querySelector('i');
+            steps[stepIndex].classList.remove('active', 'completed');
+            
+            if (status === 'active') {
+                steps[stepIndex].classList.add('active');
+                icon.className = 'fas fa-spinner fa-spin me-2';
+                icon.style.color = '#007bff';
+            } else if (status === 'completed') {
+                steps[stepIndex].classList.add('completed');
+                icon.className = 'fas fa-check-circle me-2';
+                icon.style.color = '#28a745';
+            }
+        }
+    }
+    
+    function updateRealDataMetrics(dataInfo) {
+        const totalRows = document.getElementById('totalRows');
+        const totalColumns = document.getElementById('totalColumns');
+        const dataSize = document.getElementById('dataSize');
+        const dataTypeEl = document.getElementById('dataType');
+        
+        if (totalRows) totalRows.textContent = dataInfo.rows || 0;
+        if (totalColumns) totalColumns.textContent = dataInfo.columns?.length || 0;
+        if (dataSize) dataSize.textContent = `${((JSON.stringify(dataInfo.data).length || 0) / 1024).toFixed(1)}KB`;
+        if (dataTypeEl) dataTypeEl.textContent = (dataInfo.file_type || 'Unknown').toUpperCase();
+    }
+    
+    function populateDataTable(data) {
+        const tableHeaders = document.getElementById('tableHeaders');
+        const tableBody = document.getElementById('tableBody');
+        
+        if (tableHeaders && tableBody && data && data.length > 0) {
+            // Clear existing content
+            tableHeaders.innerHTML = '';
+            tableBody.innerHTML = '';
+            
+            // Add headers with data type indicators
+            const columns = Object.keys(data[0]);
+            columns.forEach(key => {
+                const th = document.createElement('th');
+                const dataType = detectColumnType(data, key);
+                th.innerHTML = `
+                    ${key}
+                    <small class="d-block text-light opacity-75">${dataType}</small>
+                `;
+                tableHeaders.appendChild(th);
+            });
+            
+            // Add rows with better formatting
+            data.slice(0, 10).forEach((row, index) => { // Limit to first 10 rows
+                const tr = document.createElement('tr');
+                Object.values(row).forEach(value => {
+                    const td = document.createElement('td');
+                    td.textContent = value;
+                    // Add formatting based on data type
+                    if (typeof value === 'number') {
+                        td.style.textAlign = 'right';
+                        td.style.fontFamily = 'monospace';
+                    }
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
+            });
+            
+            // Add "showing X of Y rows" indicator
+            if (data.length > 10) {
+                const infoRow = document.createElement('tr');
+                infoRow.innerHTML = `
+                    <td colspan="${columns.length}" class="text-center text-muted py-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Showing 10 of ${data.length} rows
+                    </td>
+                `;
+                tableBody.appendChild(infoRow);
+            }
+        }
+    }
+    
+    function detectColumnType(data, columnName) {
+        const values = data.map(row => row[columnName]).filter(val => val !== null && val !== undefined && val !== '');
+        
+        if (values.length === 0) return 'empty';
+        
+        // Check for ID columns first
+        if (columnName.toLowerCase().includes('id') || columnName.toLowerCase().includes('index')) {
+            return 'id';
+        }
+        
+        // Check if all values are numbers
+        const numericValues = values.filter(val => {
+            const num = parseFloat(val);
+            return !isNaN(num) && isFinite(num);
+        });
+        
+        if (numericValues.length === values.length) {
+            // Check if it's a sequential ID (1, 2, 3, 4...)
+            const sortedNums = numericValues.map(v => parseFloat(v)).sort((a, b) => a - b);
+            const isSequential = sortedNums.every((num, index) => index === 0 || num === sortedNums[index - 1] + 1);
+            
+            if (isSequential && sortedNums[0] === 1) {
+                return 'id';
+            }
+            
+            return 'number';
+        }
+        
+        // Check if all values are dates
+        const dateValues = values.filter(val => {
+            const dateStr = val.toString();
+            return !isNaN(Date.parse(dateStr)) && dateStr.match(/\d{4}|\d{2}\/\d{2}|\d{2}-\d{2}/);
+        });
+        
+        if (dateValues.length === values.length) return 'date';
+        
+        // Check if values are percentages
+        const percentageValues = values.filter(val => val.toString().includes('%'));
+        if (percentageValues.length === values.length) return 'percentage';
+        
+        return 'text';
+    }
+    
+    function showDataStatistics(data) {
+        const columns = Object.keys(data[0]);
+        const numericColumns = columns.filter(col => detectColumnType(data, col) === 'number');
+        
+        if (numericColumns.length > 0) {
+            const statsContainer = document.createElement('div');
+            statsContainer.className = 'mt-3 p-3 border rounded';
+            statsContainer.innerHTML = '<h6><i class="fas fa-chart-bar me-2"></i>Data Statistics</h6>';
+            
+            numericColumns.slice(0, 3).forEach(col => { // Show stats for first 3 numeric columns
+                const values = data.map(row => parseFloat(row[col])).filter(val => !isNaN(val));
+                const stats = calculateBasicStats(values);
+                
+                const statElement = document.createElement('div');
+                statElement.className = 'row mb-2 small';
+                statElement.innerHTML = `
+                    <div class="col-3 fw-bold">${col}:</div>
+                    <div class="col-9">
+                        Min: ${stats.min} | Max: ${stats.max} | Avg: ${stats.avg} | Total: ${stats.sum}
+                    </div>
+                `;
+                statsContainer.appendChild(statElement);
+            });
+            
+            const dataPreviewContainer = document.getElementById('dataPreviewContainer');
+            if (dataPreviewContainer) {
+                const existingStats = dataPreviewContainer.querySelector('.data-statistics');
+                if (existingStats) existingStats.remove();
+                statsContainer.className += ' data-statistics';
+                dataPreviewContainer.insertBefore(statsContainer, dataPreviewContainer.querySelector('.data-preview-table'));
+            }
+        }
+    }
+    
+    function calculateBasicStats(values) {
+        const sum = values.reduce((a, b) => a + b, 0);
+        const avg = (sum / values.length).toFixed(2);
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        
+        return { sum, avg, min, max };
+    }
+    
+    function populateColumnSelectors() {
+        const xAxis = document.getElementById('xAxis');
+        const yAxis = document.getElementById('yAxis');
+        
+        if (!window.datavizState.processedData) return;
+        
+        const columns = Object.keys(window.datavizState.processedData[0]);
+        
+        if (xAxis && yAxis) {
+            // Clear existing options
+            xAxis.innerHTML = '<option value="">Select column for X-axis</option>';
+            yAxis.innerHTML = '<option value="">Select column for Y-axis</option>';
+            
+            columns.forEach(column => {
+                const dataType = detectColumnType(window.datavizState.processedData, column);
+                
+                const xOption = document.createElement('option');
+                xOption.value = column;
+                xOption.textContent = `${column} (${dataType})`;
+                xAxis.appendChild(xOption);
+                
+                const yOption = document.createElement('option');
+                yOption.value = column;
+                yOption.textContent = `${column} (${dataType})`;
+                yAxis.appendChild(yOption);
+            });
+            
+            // Smart defaults based on data types
+            setSmartDefaults(columns);
+        }
+    }
+    
+    function setSmartDefaults(columns) {
+        const xAxis = document.getElementById('xAxis');
+        const yAxis = document.getElementById('yAxis');
+        
+        if (!window.datavizState.processedData || !xAxis || !yAxis) return;
+        
+        // Enhanced column analysis
+        const columnAnalysis = columns.map(col => {
+            const columnData = window.datavizState.processedData.map(row => row[col]).filter(val => val !== null && val !== undefined);
+            const dataType = detectColumnType(window.datavizState.processedData, col);
+            
+            return {
+                name: col,
+                type: dataType,
+                uniqueValues: new Set(columnData).size,
+                totalValues: columnData.length,
+                isNumeric: dataType === 'number',
+                isText: dataType === 'text',
+                isDate: dataType === 'date',
+                sampleValues: columnData.slice(0, 3)
+            };
+        });
+        
+        console.log('Column analysis:', columnAnalysis);
+        
+        // Smart X-axis selection (prefer categorical/text columns, avoid IDs)
+        const xAxisCandidates = columnAnalysis.filter(col => {
+            // Avoid columns that look like IDs or row numbers
+            const isId = col.name.toLowerCase().includes('id') || 
+                        col.name.toLowerCase().includes('index') ||
+                        col.name.toLowerCase().includes('row') ||
+                        (col.isNumeric && col.uniqueValues === col.totalValues); // Sequential numbers
+            
+            return !isId && (col.isText || col.isDate || (col.isNumeric && col.uniqueValues < col.totalValues * 0.8));
+        });
+        
+        // Smart Y-axis selection (prefer numeric columns)
+        const yAxisCandidates = columnAnalysis.filter(col => {
+            const isId = col.name.toLowerCase().includes('id') || 
+                        col.name.toLowerCase().includes('index') ||
+                        col.name.toLowerCase().includes('row');
+            
+            return !isId && col.isNumeric;
+        });
+        
+        // Set X-axis default
+        if (xAxisCandidates.length > 0 && !xAxis.value) {
+            const bestXAxis = xAxisCandidates[0].name;
+            xAxis.value = bestXAxis;
+            showNotification(`X-axis auto-set to "${bestXAxis}"`, 'info', 2000);
+        }
+        
+        // Set Y-axis default
+        if (yAxisCandidates.length > 0 && !yAxis.value) {
+            const bestYAxis = yAxisCandidates[0].name;
+            yAxis.value = bestYAxis;
+            showNotification(`Y-axis auto-set to "${bestYAxis}"`, 'info', 2000);
+        }
+        
+        // If no good candidates found, use first non-ID columns
+        if (!xAxis.value && columns.length > 0) {
+            const fallbackX = columns.find(col => !col.toLowerCase().includes('id') && !col.toLowerCase().includes('index')) || columns[0];
+            xAxis.value = fallbackX;
+            showNotification(`X-axis set to "${fallbackX}"`, 'info', 2000);
+        }
+        
+        if (!yAxis.value && columns.length > 1) {
+            const fallbackY = columns.find(col => col !== xAxis.value && !col.toLowerCase().includes('id')) || columns[1];
+            yAxis.value = fallbackY;
+            showNotification(`Y-axis set to "${fallbackY}"`, 'info', 2000);
+        }
+        
+        // Trigger validation update
+        validateVisualizationForm();
+    }
+    
+    // Enhanced tab switching with state management
+    function setupTabSwitching() {
+        if (!docTabs) return;
+        
+        docTabs.forEach((tab, index) => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetTab = this.getAttribute('data-tab');
+                
+                // Check if user can switch to analyze tab
+                if (targetTab === 'analyze' && !window.datavizState.processedData) {
+                    showNotification('Please upload and process data first before creating visualizations', 'warning');
+                    return;
+                }
+                
+                switchToTab(targetTab);
+                
+                // Update URL hash for bookmarking
+                window.history.replaceState(null, null, `#${targetTab}`);
+            });
+        });
+        
+        // Handle browser back/forward buttons
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash.slice(1);
+            if (['upload', 'analyze'].includes(hash)) {
+                switchToTab(hash);
+            }
+        });
+        
+        // Initialize from URL hash
+        const initialHash = window.location.hash.slice(1);
+        if (['upload', 'analyze'].includes(initialHash)) {
+            setTimeout(() => switchToTab(initialHash), 100);
+        }
+    }
+    
+    function switchToTab(targetTab) {
+        console.log('Switching to tab:', targetTab);
+        
+        // Check if user can switch to analyze tab
+        if (targetTab === 'analyze' && !window.datavizState.processedData) {
+            showNotification('Please upload and process data first before creating visualizations', 'warning');
+            return false;
+        }
+        
+        // Update active tab
+        docTabs.forEach(t => t.classList.remove('active'));
+        const activeTab = document.querySelector(`.doc-tab[data-tab="${targetTab}"]`);
+        if (activeTab) activeTab.classList.add('active');
+        
+        // Show/hide content sections with smooth transition
+        const uploadSection = document.getElementById('uploadSection');
+        const analyzeSection = document.getElementById('analyzeSection');
+        
+        if (targetTab === 'upload') {
+            if (uploadSection) {
+                uploadSection.style.display = 'block';
+                uploadSection.classList.add('active');
+            }
+            if (analyzeSection) {
+                analyzeSection.style.display = 'none';
+                analyzeSection.classList.remove('active');
+            }
+        } else if (targetTab === 'analyze') {
+            if (uploadSection) {
+                uploadSection.style.display = 'none';
+                uploadSection.classList.remove('active');
+            }
+            if (analyzeSection) {
+                analyzeSection.style.display = 'block';
+                analyzeSection.classList.add('active');
+            }
+            
+            // Ensure column selectors are populated
+            if (window.datavizState.processedData) {
+                populateColumnSelectors();
+            }
+        }
+        
+        return true;
+    }
+    
+    // Enhanced form submission handlers
+    function setupFormSubmissions() {
+        if (dataUploadForm) {
+            dataUploadForm.addEventListener('submit', handleDataUpload);
+        }
+        if (visualizationForm) {
+            visualizationForm.addEventListener('submit', handleVisualizationGeneration);
+        }
+    }
+    
+    function handleDataUpload(e) {
+        e.preventDefault();
+        
+        if (!checkUsageLimit()) {
+            showNotification('You have reached your free usage limit for this tool. Please upgrade to continue.', 'danger');
+            return;
+        }
+        
+        if (!validateUploadForm()) {
+            const errors = window.datavizState.validationErrors;
+            showNotification(errors[0] || 'Please fix the form errors before proceeding', 'danger');
+            return;
+        }
+        
+        console.log('Data upload started...');
+        
+        // Show enhanced loading with steps
+        const processingSteps = [
+            'Reading file data...',
+            'Processing data structure...',
+            'Analyzing column types...',
+            'Generating data preview...',
+            'Preparing visualization options...'
+        ];
+        
+        if (loadingSpinner) loadingSpinner.style.display = 'block';
+        if (dataPreviewContainer) dataPreviewContainer.style.display = 'none';
+        
+        const stepsContainer = showProcessingSteps(processingSteps);
+        
+        // Simulate step progress
+        let currentStep = 0;
+        updateProcessingStep(currentStep, 'active');
+        
+        // Process file locally (simulated API call)
+        setTimeout(() => {
+            processFileLocally()
+                .then(data => {
+                    // Complete all remaining steps quickly
+                    while (currentStep < processingSteps.length) {
+                        updateProcessingStep(currentStep, 'completed');
+                        currentStep++;
+                        if (currentStep < processingSteps.length) {
+                            updateProcessingStep(currentStep, 'active');
+                        }
+                    }
+                    
+                    // Store processed data
+                    window.datavizState.processedData = data.data;
+                    window.datavizState.uploadedData = data;
+                    
+                    // Update metrics with processed data
+                    updateRealDataMetrics(data);
+                    
+                    // Populate table with processed data
+                    populateDataTable(window.datavizState.processedData);
+                    
+                    // Show data statistics
+                    showDataStatistics(window.datavizState.processedData);
+                    
+                    finishDataUpload();
+                })
+                .catch(error => {
+                    console.error('Data upload error:', error);
+                    if (loadingSpinner) loadingSpinner.style.display = 'none';
+                    showNotification(`Failed to process data: ${error.message}`, 'danger');
+                    
+                    // Clean up processing steps
+                    const stepsContainer = document.getElementById('processingSteps');
+                    if (stepsContainer) stepsContainer.remove();
+                });
+        }, 1000);
+    }
+    
+    function processFileLocally() {
+        return new Promise((resolve, reject) => {
+            const file = dataFile.files[0];
+            if (!file) {
+                reject(new Error('No file selected'));
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const format = selectedFormatInput.value;
+                
+                try {
+                    let data;
+                    if (format === 'csv') {
+                        data = parseCSV(content);
+                    } else if (format === 'json') {
+                        data = JSON.parse(content);
+                    } else if (format === 'excel') {
+                        // For demo purposes, treat as CSV
+                        data = parseCSV(content);
+                    }
+                    
+                    resolve({
+                        data: data,
+                        rows: data.length,
+                        columns: Object.keys(data[0] || {}),
+                        file_type: format
+                    });
+                } catch (error) {
+                    reject(new Error(`Failed to parse ${format} file: ${error.message}`));
+                }
+            };
+            
+            reader.onerror = () => reject(new Error('Failed to read file'));
+            reader.readAsText(file);
+        });
+    }
+    
+    function parseCSV(content) {
+        const lines = content.trim().split('\n');
+        if (lines.length < 2) throw new Error('CSV must have at least a header row and one data row');
+        
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        const data = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+            if (values.length === headers.length) {
+                const row = {};
+                headers.forEach((header, index) => {
+                    let value = values[index];
+                    // Try to convert to number if possible
+                    if (!isNaN(value) && value !== '') {
+                        value = parseFloat(value);
+                    }
+                    row[header] = value;
+                });
+                data.push(row);
+            }
+        }
+        
+        return data;
+    }
+    
+    function finishDataUpload() {
+        if (loadingSpinner) loadingSpinner.style.display = 'none';
+        
+        // Populate column selectors with processed data
+        populateColumnSelectors();
+        
+        if (dataPreviewContainer) {
+            dataPreviewContainer.style.display = 'block';
+            dataPreviewContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Clean up processing steps
+        const stepsContainer = document.getElementById('processingSteps');
+        if (stepsContainer) {
+            setTimeout(() => stepsContainer.remove(), 2000);
+        }
+        
+        showNotification('Data processed successfully! You can now create visualizations.', 'success');
+        
+        // Auto-switch to analyze tab after successful upload
+        setTimeout(() => {
+            const analyzeTab = document.querySelector('.doc-tab[data-tab="analyze"]');
+            if (analyzeTab) analyzeTab.click();
+        }, 1500);
+    }
+    
+    function handleVisualizationGeneration(e) {
+        e.preventDefault();
+        
+        if (!validateVisualizationForm()) {
+            showNotification('Please complete all required fields before generating the visualization', 'danger');
+            return;
+        }
+        
+        console.log('Visualization generation started...');
+        
+        // Show enhanced loading for chart generation
+        const chartSteps = [
+            'Preparing chart data...',
+            'Configuring visualization...',
+            'Creating interactive chart...',
+            'Analyzing data patterns...',
+            'Generating insights...'
+        ];
+        
+        if (loadingSpinner) loadingSpinner.style.display = 'block';
+        if (resultsContainer) resultsContainer.style.display = 'none';
+        
+        const stepsContainer = showProcessingSteps(chartSteps);
+        
+        // Collect form data
+        const formData = new FormData(e.target);
+        const vizData = Object.fromEntries(formData.entries());
+        
+        // Add checkbox values
+        vizData.enableTrends = document.getElementById('enableTrends').checked;
+        vizData.detectAnomalies = document.getElementById('detectAnomalies').checked;
+        vizData.generateInsights = document.getElementById('generateInsights').checked;
+        vizData.enableInteractivity = document.getElementById('enableInteractivity').checked;
+        
+        window.datavizState.chartConfig = vizData;
+        
+        console.log('Generating visualization with config:', vizData);
+        
+        // Simulate step progress
+        let currentStep = 0;
+        updateProcessingStep(currentStep, 'active');
+        
+        // Simulate processing steps
+        const stepInterval = setInterval(() => {
+            updateProcessingStep(currentStep, 'completed');
+            currentStep++;
+            if (currentStep < chartSteps.length) {
+                updateProcessingStep(currentStep, 'active');
+            } else {
+                clearInterval(stepInterval);
+                
+                // Generate chart
+                generateEnhancedChart(vizData);
+                
+                // Show AI insights if enabled
+                if (vizData.generateInsights) {
+                    generateEnhancedAIInsights();
+                }
+                
+                incrementUsage();
+                finishVisualizationGeneration(vizData);
+            }
+        }, 800);
+    }
+    
+    function finishVisualizationGeneration(vizData) {
+        if (loadingSpinner) loadingSpinner.style.display = 'none';
+        
+        if (resultsContainer) {
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Clean up processing steps
+        const stepsContainer = document.getElementById('processingSteps');
+        if (stepsContainer) {
+            setTimeout(() => stepsContainer.remove(), 2000);
+        }
+        
+        showNotification('Visualization created successfully!', 'success');
+        
+        // Update state
+        window.datavizState.isEditing = false;
+    }
+    
+    // Enhanced chart generation with more options
+    function generateEnhancedChart(vizData) {
+        const canvas = document.getElementById('dataChart');
+        if (!canvas || !window.datavizState.processedData) return;
+        
+        const ctx = canvas.getContext('2d');
+        const data = window.datavizState.processedData;
+        
+        // Prepare chart data based on selected axes
+        const chartData = prepareChartData(data, vizData);
+        
+        const config = {
+            type: vizData.chartType || 'bar',
+            data: chartData,
+            options: getEnhancedChartOptions(vizData)
+        };
+        
+        // Destroy existing chart if it exists
+        if (window.currentChart) {
+            window.currentChart.destroy();
+        }
+        
+        // Create new chart
+        window.currentChart = new Chart(ctx, config);
+        window.datavizState.currentChart = window.currentChart;
+        
+        console.log('Enhanced chart generated successfully');
+    }
+    
+    function prepareChartData(data, vizData) {
+        const xColumn = vizData.xAxis || Object.keys(data[0])[0];
+        const yColumn = vizData.yAxis || Object.keys(data[0])[1];
+        
+        const labels = data.map(row => row[xColumn]);
+        const values = data.map(row => {
+            const val = row[yColumn];
+            return typeof val === 'string' && val.includes('%') ? 
+                   parseFloat(val.replace('%', '')) : 
+                   parseFloat(val) || 0;
+        });
+        
+        return {
+            labels: labels,
+            datasets: [{
+                label: vizData.chartTitle || `${yColumn} by ${xColumn}`,
+                data: values,
+                backgroundColor: getEnhancedColorScheme(vizData.colorScheme, vizData.chartType),
+                borderColor: '#14697D',
+                borderWidth: vizData.chartType === 'line' ? 3 : 1,
+                fill: vizData.chartType === 'area',
+                tension: 0.4,
+                pointBackgroundColor: '#FFbf23',
+                pointBorderColor: '#14697D',
+                pointRadius: vizData.chartType === 'line' ? 6 : 3
+            }]
+        };
+    }
+    
+    function getEnhancedChartOptions(vizData) {
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: !!vizData.chartTitle,
+                    text: vizData.chartTitle || 'Generated Chart',
+                    font: {
+                        size: 16,
+                        weight: 'bold',
+                        family: 'Quicksand'
+                    },
+                    color: '#14697D'
+                },
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        font: {
+                            family: 'Quicksand'
+                        },
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(20, 105, 125, 0.9)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: '#FFbf23',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    displayColors: true
+                }
+            },
+            scales: vizData.chartType !== 'pie' ? {
+                x: {
+                    title: {
+                        display: true,
+                        text: vizData.xAxis || 'X Axis',
+                        font: {
+                            family: 'Quicksand',
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: vizData.yAxis || 'Y Axis',
+                        font: {
+                            family: 'Quicksand',
+                            weight: 'bold'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            } : {},
+            animation: {
+                duration: 1500,
+                easing: 'easeOutQuart'
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        };
+    }
+    
+    function getEnhancedColorScheme(scheme, chartType) {
+        const schemes = {
+            default: ['#14697D', '#FFbf23', '#A82C2C', '#2ecc71', '#9b59b6', '#f39c12', '#1abc9c'],
+            blue: ['#3498db', '#2980b9', '#1abc9c', '#16a085', '#34495e', '#5dade2', '#85c1e9'],
+            green: ['#2ecc71', '#27ae60', '#1abc9c', '#16a085', '#f39c12', '#58d68d', '#82e0aa'],
+            red: ['#e74c3c', '#c0392b', '#f39c12', '#e67e22', '#d35400', '#ec7063', '#f1948a'],
+            purple: ['#9b59b6', '#8e44ad', '#3498db', '#2980b9', '#1abc9c', '#bb8fce', '#d2b4de']
+        };
+        
+        const colors = schemes[scheme] || schemes.default;
+        
+        // For pie charts, return all colors; for others, return gradient if single series
+        if (chartType === 'pie') {
+            return colors;
+        }
+        
+        return colors[0];
+    }
+    
+    // Enhanced AI insights generation
+    function generateEnhancedAIInsights() {
+        const aiInsights = document.getElementById('aiInsights');
+        const insightsContent = document.getElementById('insightsContent');
+        
+        if (!aiInsights || !insightsContent || !window.datavizState.processedData) return;
+        
+        const data = window.datavizState.processedData;
+        const config = window.datavizState.chartConfig;
+        
+        const insights = generateSmartInsights(data, config);
+        
+        let insightsHTML = '<div class="row">';
+        insights.forEach((insight, index) => {
+            insightsHTML += `
+                <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-start p-3 border rounded bg-light">
+                        <div class="me-3">
+                            <i class="${insight.icon}" style="color: ${insight.color}; font-size: 1.5rem;"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1">${insight.title}</h6>
+                            <p class="mb-0 small">${insight.text}</p>
+                            ${insight.recommendation ? `<small class="text-muted"><strong>Tip:</strong> ${insight.recommendation}</small>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        insightsHTML += '</div>';
+        
+        insightsContent.innerHTML = insightsHTML;
+        aiInsights.style.display = 'block';
+        
+        // Animate insights appearance
+        const insightCards = insightsContent.querySelectorAll('.col-md-6');
+        insightCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+    }
+    
+    function generateSmartInsights(data, config) {
+        const insights = [];
+        const yColumn = config?.yAxis;
+        
+        if (!yColumn) return [{ 
+            icon: 'fas fa-info-circle', 
+            color: '#14697D', 
+            title: 'Chart Created', 
+            text: 'Your visualization has been generated successfully.' 
+        }];
+        
+        // Analyze numeric data if available
+        const numericValues = data.map(row => {
+            const val = row[yColumn];
+            return typeof val === 'string' && val.includes('%') ? 
+                   parseFloat(val.replace('%', '')) : 
+                   parseFloat(val) || 0;
+        }).filter(val => !isNaN(val));
+        
+        if (numericValues.length > 0) {
+            // Trend analysis
+            const trend = calculateTrend(numericValues);
+            if (trend.direction !== 'stable') {
+                insights.push({
+                    icon: trend.direction === 'up' ? 'fas fa-trending-up' : 'fas fa-trending-down',
+                    color: trend.direction === 'up' ? '#28a745' : '#dc3545',
+                    title: `${trend.direction === 'up' ? 'Upward' : 'Downward'} Trend Detected`,
+                    text: `${trend.percentage}% ${trend.direction === 'up' ? 'growth' : 'decline'} over the data period`,
+                    recommendation: trend.direction === 'up' ? 'Continue current strategies' : 'Investigate causes and adjust approach'
+                });
+            }
+            
+            // Outlier detection
+            const outliers = detectOutliers(numericValues);
+            if (outliers.length > 0) {
+                insights.push({
+                    icon: 'fas fa-exclamation-triangle',
+                    color: '#ffc107',
+                    title: 'Outliers Detected',
+                    text: `${outliers.length} data points significantly deviate from the pattern`,
+                    recommendation: 'Review these values for data quality or special circumstances'
+                });
+            }
+            
+            // Statistical insights
+            const stats = calculateDetailedStats(numericValues);
+            if (stats.variance > stats.mean) {
+                insights.push({
+                    icon: 'fas fa-chart-line',
+                    color: '#17a2b8',
+                    title: 'High Variability',
+                    text: `Data shows high variability (CV: ${stats.coefficientOfVariation}%)`,
+                    recommendation: 'Consider segmentation analysis or seasonal adjustments'
+                });
+            }
+            
+            // Performance insights
+            if (yColumn.toLowerCase().includes('sales') || yColumn.toLowerCase().includes('revenue')) {
+                const bestPerformer = data[numericValues.indexOf(Math.max(...numericValues))];
+                const worstPerformer = data[numericValues.indexOf(Math.min(...numericValues))];
+                
+                insights.push({
+                    icon: 'fas fa-trophy',
+                    color: '#FFbf23',
+                    title: 'Performance Analysis',
+                    text: `Best: ${bestPerformer[config.xAxis]} (${Math.max(...numericValues)}), Worst: ${worstPerformer[config.xAxis]} (${Math.min(...numericValues)})`,
+                    recommendation: 'Analyze top performer strategies for replication'
+                });
+            }
+        }
+        
+        // Chart type specific insights
+        const chartTypeInsights = getChartTypeInsights(config.chartType, data, config);
+        insights.push(...chartTypeInsights);
+        
+        // Ensure we have at least one insight
+        if (insights.length === 0) {
+            insights.push({
+                icon: 'fas fa-lightbulb',
+                color: '#14697D',
+                title: 'Visualization Complete',
+                text: 'Your data has been successfully visualized. Use the controls above to customize further.',
+                recommendation: 'Try different chart types to explore different aspects of your data'
+            });
+        }
+        
+        return insights.slice(0, 4); // Limit to 4 insights
+    }
+    
+    function calculateTrend(values) {
+        if (values.length < 2) return { direction: 'stable', percentage: 0 };
+        
+        const first = values[0];
+        const last = values[values.length - 1];
+        const change = ((last - first) / first) * 100;
+        
+        if (Math.abs(change) < 5) return { direction: 'stable', percentage: Math.abs(change).toFixed(1) };
+        return { 
+            direction: change > 0 ? 'up' : 'down', 
+            percentage: Math.abs(change).toFixed(1)
+        };
+    }
+    
+    function detectOutliers(values) {
+        const sorted = [...values].sort((a, b) => a - b);
+        const q1 = sorted[Math.floor(sorted.length * 0.25)];
+        const q3 = sorted[Math.floor(sorted.length * 0.75)];
+        const iqr = q3 - q1;
+        const lowerBound = q1 - 1.5 * iqr;
+        const upperBound = q3 + 1.5 * iqr;
+        
+        return values.filter(val => val < lowerBound || val > upperBound);
+    }
+    
+    function calculateDetailedStats(values) {
+        const mean = values.reduce((a, b) => a + b, 0) / values.length;
+        const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+        const stdDev = Math.sqrt(variance);
+        const coefficientOfVariation = ((stdDev / mean) * 100).toFixed(1);
+        
+        return { mean, variance, stdDev, coefficientOfVariation };
+    }
+    
+    function getChartTypeInsights(chartType, data, config) {
+        const insights = [];
+        
+        switch(chartType) {
+            case 'pie':
+                insights.push({
+                    icon: 'fas fa-chart-pie',
+                    color: '#6f42c1',
+                    title: 'Proportion Analysis',
+                    text: 'Pie chart effectively shows relative proportions of each category',
+                    recommendation: 'Consider using a donut chart for cleaner appearance with many categories'
+                });
+                break;
+            case 'line':
+                insights.push({
+                    icon: 'fas fa-chart-line',
+                    color: '#28a745',
+                    title: 'Trend Visualization',
+                    text: 'Line chart ideal for showing changes over time periods',
+                    recommendation: 'Add trend lines or moving averages for clearer pattern identification'
+                });
+                break;
+            case 'bar':
+                insights.push({
+                    icon: 'fas fa-chart-bar',
+                    color: '#007bff',
+                    title: 'Category Comparison',
+                    text: 'Bar chart provides clear comparison between different categories',
+                    recommendation: 'Sort bars by value for easier identification of top performers'
+                });
+                break;
+            case 'scatter':
+                insights.push({
+                    icon: 'fas fa-project-diagram',
+                    color: '#fd7e14',
+                    title: 'Correlation Analysis',
+                    text: 'Scatter plot reveals relationships between two variables',
+                    recommendation: 'Look for clustering patterns or linear relationships'
+                });
+                break;
+        }
+        
+        return insights;
+    }
+    
+    // Enhanced export functionality
+    function setupExportOptions() {
+        const exportPNG = document.getElementById('exportPNG');
+        const exportPDF = document.getElementById('exportPDF');
+        const exportHTML = document.getElementById('exportHTML');
+        const copyChartData = document.getElementById('copyChartData');
+        
+        if (exportPNG) {
+            exportPNG.addEventListener('click', function() {
+                if (window.currentChart) {
+                    const url = window.currentChart.toBase64Image();
+                    const link = document.createElement('a');
+                    link.download = 'chart.png';
+                    link.href = url;
+                    link.click();
+                    showNotification('Chart downloaded as PNG!', 'success');
+                }
+            });
+        }
+        
+        if (exportPDF) {
+            exportPDF.addEventListener('click', function() {
+                showNotification('PDF export feature coming soon!', 'info');
+            });
+        }
+        
+        if (exportHTML) {
+            exportHTML.addEventListener('click', function() {
+                showNotification('HTML export feature coming soon!', 'info');
+            });
+        }
+        
+        if (copyChartData) {
+            copyChartData.addEventListener('click', function() {
+                if (window.datavizState.processedData) {
+                    const dataText = JSON.stringify(window.datavizState.processedData, null, 2);
+                    navigator.clipboard.writeText(dataText).then(() => {
+                        showNotification('Chart data copied to clipboard!', 'success');
+                    }).catch(() => {
+                        showNotification('Failed to copy data to clipboard', 'danger');
+                    });
+                }
+            });
+        }
+    }
+    
+    // Setup button actions - FIXED VERSION
+    function setupButtonActions() {
+        const proceedToVisualization = document.getElementById('proceedToVisualization');
+        const uploadNewFile = document.getElementById('uploadNewFile');
+        const editVisualization = document.getElementById('editVisualization');
+        const createNewVisualization = document.getElementById('createNewVisualization');
+        
+        if (proceedToVisualization) {
+            proceedToVisualization.addEventListener('click', function() {
+                console.log('Proceed to Visualization clicked');
+                
+                // Check if data is available
+                if (!window.datavizState.processedData) {
+                    showNotification('No data available for visualization. Please upload data first.', 'warning');
+                    return;
+                }
+                
+                // Auto-select first chart type if none selected
+                if (!selectedChartTypeInput || !selectedChartTypeInput.value) {
+                    const firstChartCard = document.querySelector('.chart-type-card[data-type="bar"]');
+                    if (firstChartCard) {
+                        firstChartCard.click();
+                    }
+                }
+                
+                // Generate visualization immediately with default settings
+                generateVisualizationFromData();
+                
+                // Switch to analyze tab
+                setTimeout(() => {
+                    switchToTab('analyze');
+                }, 500);
+            });
+        }
+        
+        if (uploadNewFile) {
+            uploadNewFile.addEventListener('click', function() {
+                // Reset form and go back to upload
+                if (dataUploadForm) dataUploadForm.reset();
+                window.datavizState.processedData = null;
+                window.datavizState.uploadedData = null;
+                
+                if (dataPreviewContainer) dataPreviewContainer.style.display = 'none';
+                if (resultsContainer) resultsContainer.style.display = 'none';
+                
+                const uploadTab = document.querySelector('.doc-tab[data-tab="upload"]');
+                if (uploadTab) uploadTab.click();
+                
+                showNotification('Ready to upload new file', 'info');
+            });
+        }
+        
+        if (editVisualization) {
+            editVisualization.addEventListener('click', function() {
+                const analyzeTab = document.querySelector('.doc-tab[data-tab="analyze"]');
+                if (analyzeTab) analyzeTab.click();
+                showNotification('You can now edit your visualization settings', 'info');
+            });
+        }
+        
+        if (createNewVisualization) {
+            createNewVisualization.addEventListener('click', function() {
+                // Reset visualization form but keep data
+                if (visualizationForm) {
+                    visualizationForm.reset();
+                    // Clear chart type selection
+                    chartTypeCards.forEach(card => card.classList.remove('selected'));
+                    if (selectedChartTypeInput) selectedChartTypeInput.value = '';
+                }
+                
+                if (resultsContainer) resultsContainer.style.display = 'none';
+                
+                const analyzeTab = document.querySelector('.doc-tab[data-tab="analyze"]');
+                if (analyzeTab) analyzeTab.click();
+                
+                showNotification('Ready to create new visualization with existing data', 'info');
+            });
+        }
+    }
+    
+    // NEW FUNCTION: Generate visualization directly from uploaded data
+    function generateVisualizationFromData() {
+        if (!window.datavizState.processedData) {
+            showNotification('No data available for visualization', 'danger');
+            return;
+        }
+        
+        console.log('Generating visualization from uploaded data...');
+        
+        // Show loading
+        if (loadingSpinner) loadingSpinner.style.display = 'block';
+        if (resultsContainer) resultsContainer.style.display = 'none';
+        
+        const chartSteps = [
+            'Analyzing data structure...',
+            'Selecting optimal chart type...',
+            'Creating visualization...',
+            'Generating insights...'
+        ];
+        
+        const stepsContainer = showProcessingSteps(chartSteps);
+        
+        // Simulate processing steps
+        let currentStep = 0;
+        updateProcessingStep(currentStep, 'active');
+        
+        const stepInterval = setInterval(() => {
+            updateProcessingStep(currentStep, 'completed');
+            currentStep++;
+            if (currentStep < chartSteps.length) {
+                updateProcessingStep(currentStep, 'active');
+            } else {
+                clearInterval(stepInterval);
+                
+                // Create default visualization configuration
+                const defaultConfig = createDefaultVisualizationConfig();
+                
+                // Generate chart with default config
+                generateEnhancedChart(defaultConfig);
+                
+                // Generate AI insights
+                generateEnhancedAIInsights();
+                
+                // Update usage
+                incrementUsage();
+                
+                // Finish
+                finishVisualizationGeneration(defaultConfig);
+            }
+        }, 800);
+    }
+    
+    // NEW FUNCTION: Create default visualization configuration
+    function createDefaultVisualizationConfig() {
+        const data = window.datavizState.processedData;
+        const columns = Object.keys(data[0]);
+        
+        // Analyze columns to determine best chart type and axes
+        const columnAnalysis = columns.map(col => {
+            const columnData = data.map(row => row[col]).filter(val => val !== null && val !== undefined);
+            const dataType = detectColumnType(data, col);
+            
+            return {
+                name: col,
+                type: dataType,
+                uniqueValues: new Set(columnData).size,
+                isNumeric: dataType === 'number',
+                isText: dataType === 'text',
+                isDate: dataType === 'date'
+            };
+        });
+        
+        // Find best X and Y axes
+        const textColumns = columnAnalysis.filter(col => col.isText || col.isDate);
+        const numericColumns = columnAnalysis.filter(col => col.isNumeric && !col.name.toLowerCase().includes('id'));
+        
+        const xAxis = textColumns.length > 0 ? textColumns[0].name : columns[0];
+        const yAxis = numericColumns.length > 0 ? numericColumns[0].name : columns[1] || columns[0];
+        
+        // Determine best chart type
+        let chartType = 'bar';
+        if (textColumns.some(col => col.isDate)) {
+            chartType = 'line';
+        } else if (numericColumns.length >= 2) {
+            chartType = 'scatter';
+        }
+        
+        // Create configuration
+        const config = {
+            chartType: chartType,
+            xAxis: xAxis,
+            yAxis: yAxis,
+            chartTitle: `${yAxis} by ${xAxis}`,
+            colorScheme: 'default',
+            enableTrends: true,
+            detectAnomalies: true,
+            generateInsights: true,
+            enableInteractivity: true
+        };
+        
+        // Store configuration
+        window.datavizState.chartConfig = config;
+        
+        // Update form elements to reflect the auto-generated config
+        setTimeout(() => {
+            if (selectedChartTypeInput) selectedChartTypeInput.value = config.chartType;
+            
+            // Select the appropriate chart type card
+            chartTypeCards.forEach(card => card.classList.remove('selected'));
+            const selectedCard = document.querySelector(`.chart-type-card[data-type="${config.chartType}"]`);
+            if (selectedCard) selectedCard.classList.add('selected');
+            
+            // Update axis selectors
+            const xAxisSelect = document.getElementById('xAxis');
+            const yAxisSelect = document.getElementById('yAxis');
+            if (xAxisSelect) xAxisSelect.value = config.xAxis;
+            if (yAxisSelect) yAxisSelect.value = config.yAxis;
+            
+            // Update other form fields
+            const chartTitleInput = document.getElementById('chartTitle');
+            if (chartTitleInput) chartTitleInput.value = config.chartTitle;
+            
+            const colorSchemeSelect = document.getElementById('colorScheme');
+            if (colorSchemeSelect) colorSchemeSelect.value = config.colorScheme;
+            
+            // Update checkboxes
+            const enableTrendsCheck = document.getElementById('enableTrends');
+            if (enableTrendsCheck) enableTrendsCheck.checked = config.enableTrends;
+            
+            const detectAnomaliesCheck = document.getElementById('detectAnomalies');
+            if (detectAnomaliesCheck) detectAnomaliesCheck.checked = config.detectAnomalies;
+            
+            const generateInsightsCheck = document.getElementById('generateInsights');
+            if (generateInsightsCheck) generateInsightsCheck.checked = config.generateInsights;
+            
+            const enableInteractivityCheck = document.getElementById('enableInteractivity');
+            if (enableInteractivityCheck) enableInteractivityCheck.checked = config.enableInteractivity;
+        }, 100);
+        
+        return config;
+    }
+    
+    // Main setup function that combines all event listeners
+    function setupAllEventListeners() {
+        setupFileFormatSelection();
+        setupFileUpload();
+        setupChartTypeSelection();
+        setupTabSwitching();
+        setupFormSubmissions();
+        setupExportOptions();
+        setupButtonActions();
+    }
+    
+    // Initialize with delay for element availability
+    setTimeout(function() {
+        if (initializeElements()) {
+            console.log('Setting up Enhanced DataViz Pro functionality...');
+            initializeUsageTracking();
+            setupAllEventListeners();
+            initializeFormValidation();
+            
+            // Add welcome message
+            showNotification('DataViz Pro loaded successfully! Upload your data to get started.', 'success', 3000);
+        } else {
+            console.error('Failed to initialize elements, retrying...');
+            setTimeout(() => {
+                if (initializeElements()) {
+                    setupAllEventListeners();
+                    initializeFormValidation();
+                }
+            }, 1000);
+        }
+    }, 500);
+    
+    // Add global error handling
+    window.addEventListener('error', function(e) {
+        console.error('Global error:', e.error);
+        showNotification('An unexpected error occurred. Please refresh the page and try again.', 'danger');
+    });
+    
+    // Add beforeunload warning if user has unsaved work
+    window.addEventListener('beforeunload', function(e) {
+        if (window.datavizState.processedData && !window.datavizState.isEditing) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+    
+    // Expose some functions globally for debugging
+    window.datavizDebug = {
+        state: window.datavizState,
+        showNotification: showNotification,
+        validateUploadForm: validateUploadForm,
+        validateVisualizationForm: validateVisualizationForm,
+        generateChart: generateEnhancedChart,
+        generateFromData: generateVisualizationFromData,
+        resetApp: function() {
+            localStorage.removeItem('elevify_usage');
+            location.reload();
+        }
+    };
+    
+    console.log('DataViz Pro initialization complete!');
+});
+   
+    </script>
+</body>
+</html>

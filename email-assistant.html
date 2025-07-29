@@ -1,0 +1,2329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Assistant | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .email-type-card h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .email-type-card small {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .email-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .email-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .email-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        p, li, span, div, label, .form-control, .form-select {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .btn {
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+        }
+        
+        .email-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .subject-line-option {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .subject-line-option:hover {
+            border-color: #14697D;
+            box-shadow: 0 2px 10px rgba(20, 105, 125, 0.15);
+        }
+        
+        .subject-line-option.selected {
+            border-color: #FFbf23;
+            background-color: #fffbf0;
+        }
+        
+        .copy-btn {
+            background-color: #14697D;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background-color: #0f5566;
+            color: white;
+        }
+        
+        .processing-message {
+            display: none;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .ab-testing-suggestions {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                        
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>Email Assistant</h1>
+                        <p class="lead">Instantly generate polished messages for outreach, follow-ups, and replies in your preferred tone with AI-powered email writing.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img8.svg" alt="Email Assistant" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-envelope" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose email type</div>
+                            <div class="mt-2"><span class="step-number">2</span> Enter your details</div>
+                            <div class="mt-2"><span class="step-number">3</span> Set tone & audience</div>
+                            <div class="mt-2"><span class="step-number">4</span> AI crafts your email</div>
+                            <div class="mt-2"><span class="step-number">5</span> Copy and send!</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-magic" style="color: #FFbf23;"></i> Email Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Multiple subject line options</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Tone customization</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Template library</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> A/B testing suggestions</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Professional formatting</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Call-to-action optimization</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-paper-plane" style="color: #A82C2C;"></i> Email Types</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-handshake" style="color: #14697D;"></i> Cold Outreach</div>
+                            <div class="mb-2"><i class="fas fa-reply" style="color: #14697D;"></i> Follow-up Messages</div>
+                            <div class="mb-2"><i class="fas fa-bullhorn" style="color: #14697D;"></i> Marketing Campaigns</div>
+                            <div class="mb-2"><i class="fas fa-user-plus" style="color: #14697D;"></i> Welcome Emails</div>
+                            <div class="mb-2"><i class="fas fa-calendar" style="color: #14697D;"></i> Event Invitations</div>
+                            <div class="mb-2"><i class="fas fa-newspaper" style="color: #14697D;"></i> Newsletters</div>
+                            <div class="mb-2"><i class="fas fa-percent" style="color: #14697D;"></i> Promotional Offers</div>
+                            <div><i class="fas fa-question-circle" style="color: #14697D;"></i> Support & Inquiries</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Create Your Email</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <form id="emailAssistantForm">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Email Type</label>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="email-type-card card h-100" data-type="cold_outreach">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-handshake mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Cold Outreach</h6>
+                                                <small class="text-muted">First contact emails</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="email-type-card card h-100" data-type="follow_up">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-reply mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Follow-up</h6>
+                                                <small class="text-muted">Continue conversations</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="email-type-card card h-100" data-type="marketing">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-bullhorn mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Marketing</h6>
+                                                <small class="text-muted">Promotional emails</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="email-type-card card h-100" data-type="welcome">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-user-plus mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Welcome</h6>
+                                                <small class="text-muted">New subscriber greetings</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="email-type-card card h-100" data-type="newsletter">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-newspaper mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Newsletter</h6>
+                                                <small class="text-muted">Regular updates</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="email-type-card card h-100" data-type="event">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-calendar mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Event</h6>
+                                                <small class="text-muted">Invitations & announcements</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="selectedEmailType" name="emailType" required>
+
+                            <!-- Basic Information -->
+                            <div class="mb-4">
+                                <h5>Email Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="senderName" class="form-label">Your Name</label>
+                                        <input type="text" class="form-control" id="senderName" name="senderName" placeholder="e.g., John Smith" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="recipientName" class="form-label">Recipient Name (Optional)</label>
+                                        <input type="text" class="form-control" id="recipientName" name="recipientName" placeholder="e.g., Sarah Johnson">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="companyName" class="form-label">Company/Organization</label>
+                                        <input type="text" class="form-control" id="companyName" name="companyName" placeholder="e.g., ABC Corp">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="emailTone" class="form-label">Email Tone</label>
+                                        <select class="form-select" id="emailTone" name="emailTone" required>
+                                            <option value="">Select tone</option>
+                                            <option value="professional">Professional</option>
+                                            <option value="friendly">Friendly</option>
+                                            <option value="casual">Casual</option>
+                                            <option value="formal">Formal</option>
+                                            <option value="enthusiastic">Enthusiastic</option>
+                                            <option value="persuasive">Persuasive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Content -->
+                            <div class="mb-4">
+                                <h5>Content Information</h5>
+                                <div class="mb-3">
+                                    <label for="emailPurpose" class="form-label">Purpose/Goal of Email</label>
+                                    <textarea class="form-control" id="emailPurpose" name="emailPurpose" rows="2" placeholder="e.g., Introduce our new product line and schedule a demo call" required></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="targetAudience" class="form-label">Target Audience</label>
+                                        <input type="text" class="form-control" id="targetAudience" name="targetAudience" placeholder="e.g., Small business owners, Marketing managers">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="callToAction" class="form-label">Desired Action</label>
+                                        <input type="text" class="form-control" id="callToAction" name="callToAction" placeholder="e.g., Schedule a call, Visit our website">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="keyPoints" class="form-label">Key Points to Include</label>
+                                    <textarea class="form-control" id="keyPoints" name="keyPoints" rows="3" placeholder="Enter the main points you want to highlight (separate with line breaks)"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Additional Options -->
+                            <div class="mb-4">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeSubjectLines" checked>
+                                    <label class="form-check-label" for="includeSubjectLines">
+                                        Generate multiple subject line options
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeABTesting">
+                                    <label class="form-check-label" for="includeABTesting">
+                                        Include A/B testing suggestions
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="includeSignature">
+                                    <label class="form-check-label" for="includeSignature">
+                                        Add professional email signature
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-paper-plane me-2"></i> Generate Email
+                            </button>
+                        </form>
+                        
+                        <!-- Processing Message -->
+                        <div class="processing-message" id="processingMessage">
+                            <div class="loading-spinner d-inline-block me-2"></div>
+                            <h5 class="mb-0">Crafting your perfect email...</h5>
+                            <p class="text-muted mt-2 mb-0">This may take up to 30 seconds while our AI works its magic.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Email Content</h4>
+                        
+                        <!-- Subject Lines Section -->
+                        <div class="mb-4" id="subjectLinesSection">
+                            <h5><i class="fas fa-heading me-2"></i>Subject Line Options</h5>
+                            <div id="subjectLinesContainer">
+                                <!-- Subject lines will be added dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Email Preview -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-envelope-open me-2"></i>Email Content</h5>
+                            <div class="email-preview" id="emailPreview">
+                                <!-- Email content will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- A/B Testing Suggestions -->
+                        <div class="mb-4" id="abTestingSection" style="display: none;">
+                            <h5><i class="fas fa-chart-line me-2"></i>A/B Testing Suggestions</h5>
+                            <div class="ab-testing-suggestions" id="abTestingContent">
+                                <!-- A/B testing suggestions will be added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="copyEmail">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Email</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                            <div class="export-option" id="downloadEmail">
+                                <i class="fas fa-download"></i>
+                                <div>Download</div>
+                                <small class="text-muted">As HTML file</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editEmailBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Email
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newEmailBtn">
+                                <i class="fas fa-plus me-1"></i> Create New Email
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">elevate</span> your email communication?</h2>
+                <p class="lead mb-4">Join thousands of professionals who save time and get better responses with Elevify's AI email tools.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Section 1: Initialization and DOM Setup
+document.addEventListener('DOMContentLoaded', function() {
+    const TOOL_ID = 'email_assistant';
+    
+    // Global variables for DOM elements
+    let emailTypeCards, selectedEmailTypeInput, emailAssistantForm, 
+        processingMessage, resultsContainer, emailPreview, loadingSpinner;
+    
+    // Initialize with proper error handling
+    function initializeApp() {
+        try {
+            // Query DOM elements with fallback handling
+            emailTypeCards = document.querySelectorAll('.email-type-card');
+            selectedEmailTypeInput = document.getElementById('selectedEmailType');
+            emailAssistantForm = document.getElementById('emailAssistantForm');
+            processingMessage = document.getElementById('processingMessage');
+            resultsContainer = document.getElementById('resultsContainer');
+            emailPreview = document.getElementById('emailPreview');
+            loadingSpinner = document.querySelector('.loading-spinner');
+            
+            // Verify critical elements exist
+            if (!emailAssistantForm) {
+                console.error('Critical element missing: emailAssistantForm');
+                return false;
+            }
+            
+            if (!selectedEmailTypeInput) {
+                console.error('Critical element missing: selectedEmailTypeInput');
+                return false;
+            }
+            
+            // Initialize all functionality
+            initializeUsageTracking();
+            setupEmailTypeSelection();
+            setupFormSubmission();
+            setupExportOptions();
+            setupEditButtons();
+            setupScrollEffects();
+            
+            console.log('Email Assistant Tool initialized successfully');
+            return true;
+            
+        } catch (error) {
+            console.error('Error initializing Email Assistant:', error);
+            return false;
+        }
+    }
+    
+    // Add scroll effect to header
+    function setupScrollEffects() {
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (header) {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            }
+        });
+    }
+    
+    // Initialize after DOM is fully loaded
+    setTimeout(initializeApp, 100);
+    
+    // Make functions available globally for other sections
+    window.EmailAssistant = {
+        TOOL_ID,
+        elements: {
+            get emailTypeCards() { return emailTypeCards; },
+            get selectedEmailTypeInput() { return selectedEmailTypeInput; },
+            get emailAssistantForm() { return emailAssistantForm; },
+            get processingMessage() { return processingMessage; },
+            get resultsContainer() { return resultsContainer; },
+            get emailPreview() { return emailPreview; },
+            get loadingSpinner() { return loadingSpinner; }
+        }
+    };
+});
+// Section 2: Usage Tracking System
+function initializeUsageTracking() {
+    const TOOL_ID = window.EmailAssistant.TOOL_ID;
+    
+    try {
+        // Get existing usage data or create new
+        let usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        
+        // Initialize tool usage if not exists
+        if (!usageData[TOOL_ID]) {
+            usageData[TOOL_ID] = {
+                count: 0,
+                lastReset: new Date().toISOString(),
+                month: new Date().getMonth(),
+                year: new Date().getFullYear()
+            };
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+        }
+        
+        // Check if we need to reset for new month
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        
+        if (usageData[TOOL_ID].month !== currentMonth || usageData[TOOL_ID].year !== currentYear) {
+            usageData[TOOL_ID] = {
+                count: 0,
+                lastReset: new Date().toISOString(),
+                month: currentMonth,
+                year: currentYear
+            };
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+        }
+        
+        // Update display
+        updateUsageDisplay(usageData[TOOL_ID].count);
+        
+        // Set reset date display
+        const nextMonth = new Date();
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        nextMonth.setDate(1);
+        const resetDateEl = document.getElementById('resetDate');
+        if (resetDateEl) {
+            resetDateEl.textContent = nextMonth.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        }
+        
+    } catch (error) {
+        console.error('Error initializing usage tracking:', error);
+        // Fallback to default display
+        updateUsageDisplay(0);
+    }
+}
+
+function updateUsageDisplay(usedCount) {
+    const remaining = Math.max(0, 5 - usedCount);
+    const remainingUsesEl = document.getElementById('remainingUses');
+    const usageTracker = document.getElementById('usageTracker');
+    
+    if (remainingUsesEl) {
+        remainingUsesEl.textContent = remaining;
+    }
+    
+    if (usageTracker) {
+        // Reset classes
+        usageTracker.classList.remove('alert-info', 'alert-warning', 'alert-danger');
+        
+        if (remaining === 0) {
+            usageTracker.classList.add('alert-danger');
+            usageTracker.innerHTML = `
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <div class="flex-grow-1">
+                    <strong>No free uses remaining this month!</strong>
+                    <div class="small mt-1">Upgrade to continue using this tool</div>
+                </div>
+                <a href="/#pricing" class="btn btn-sm btn-warning ms-3">Upgrade Now</a>
+            `;
+        } else if (remaining <= 2) {
+            usageTracker.classList.add('alert-warning');
+            usageTracker.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <div class="flex-grow-1">
+                    <strong>Free Uses Remaining:</strong> <span id="remainingUses">${remaining}</span> / 5 this month
+                    <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                </div>
+                <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+            `;
+        } else {
+            usageTracker.classList.add('alert-info');
+            usageTracker.innerHTML = `
+                <i class="fas fa-info-circle me-2"></i>
+                <div class="flex-grow-1">
+                    <strong>Free Uses Remaining:</strong> <span id="remainingUses">${remaining}</span> / 5 this month
+                    <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                </div>
+                <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+            `;
+        }
+    }
+}
+
+function checkUsageLimit() {
+    const TOOL_ID = window.EmailAssistant.TOOL_ID;
+    
+    try {
+        const usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        const toolUsage = usageData[TOOL_ID] || { count: 0 };
+        return toolUsage.count < 5;
+    } catch (error) {
+        console.error('Error checking usage limit:', error);
+        return true; // Allow usage if there's an error
+    }
+}
+
+function incrementUsage() {
+    const TOOL_ID = window.EmailAssistant.TOOL_ID;
+    
+    try {
+        let usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        if (usageData[TOOL_ID]) {
+            usageData[TOOL_ID].count++;
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+            updateUsageDisplay(usageData[TOOL_ID].count);
+        }
+    } catch (error) {
+        console.error('Error incrementing usage:', error);
+    }
+}
+
+// Make functions available globally
+window.EmailAssistant.usage = {
+    check: checkUsageLimit,
+    increment: incrementUsage,
+    update: updateUsageDisplay
+};
+// Section 3: Email Type Selection Handler
+function setupEmailTypeSelection() {
+    const emailTypeCards = window.EmailAssistant.elements.emailTypeCards;
+    const selectedEmailTypeInput = window.EmailAssistant.elements.selectedEmailTypeInput;
+    
+    if (!emailTypeCards || emailTypeCards.length === 0) {
+        console.error('Email type cards not found');
+        return;
+    }
+    
+    if (!selectedEmailTypeInput) {
+        console.error('Selected email type input not found');
+        return;
+    }
+    
+    // Add click handlers to all email type cards
+    emailTypeCards.forEach((card, index) => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            handleEmailTypeSelection(this);
+        });
+        
+        // Add keyboard accessibility
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-pressed', 'false');
+        
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleEmailTypeSelection(this);
+            }
+        });
+    });
+}
+
+function handleEmailTypeSelection(selectedCard) {
+    const emailTypeCards = window.EmailAssistant.elements.emailTypeCards;
+    const selectedEmailTypeInput = window.EmailAssistant.elements.selectedEmailTypeInput;
+    
+    try {
+        // Remove selected class from all cards
+        emailTypeCards.forEach(card => {
+            card.classList.remove('selected');
+            card.setAttribute('aria-pressed', 'false');
+        });
+        
+        // Add selected class to clicked card
+        selectedCard.classList.add('selected');
+        selectedCard.setAttribute('aria-pressed', 'true');
+        
+        // Get the email type from data attribute
+        const emailType = selectedCard.getAttribute('data-type');
+        
+        if (emailType && selectedEmailTypeInput) {
+            selectedEmailTypeInput.value = emailType;
+            
+            // Update form placeholders based on email type
+            updateFormPlaceholders(emailType);
+            
+            // Add visual feedback
+            selectedCard.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest' 
+            });
+            
+            console.log('Email type selected:', emailType);
+        } else {
+            console.error('Email type not found on card or input element missing');
+        }
+        
+    } catch (error) {
+        console.error('Error handling email type selection:', error);
+    }
+}
+
+function updateFormPlaceholders(emailType) {
+    const placeholders = getPlaceholdersByType(emailType);
+    
+    // Update form field placeholders based on email type
+    const fields = {
+        emailPurpose: document.getElementById('emailPurpose'),
+        targetAudience: document.getElementById('targetAudience'),
+        callToAction: document.getElementById('callToAction'),
+        keyPoints: document.getElementById('keyPoints'),
+        recipientName: document.getElementById('recipientName')
+    };
+    
+    Object.keys(fields).forEach(fieldName => {
+        const field = fields[fieldName];
+        if (field && placeholders[fieldName]) {
+            field.placeholder = placeholders[fieldName];
+        }
+    });
+}
+
+function getPlaceholdersByType(emailType) {
+    const placeholders = {
+        cold_outreach: {
+            emailPurpose: "e.g., Introduce our new AI platform and explore potential partnership opportunities",
+            targetAudience: "e.g., CEOs of tech startups, Marketing directors",
+            callToAction: "e.g., Schedule a 15-minute discovery call, Request a demo",
+            keyPoints: "• We've helped 500+ companies increase efficiency\n• Our solution integrates with existing workflows\n• Free trial available",
+            recipientName: "e.g., Sarah Johnson, Alex Chen"
+        },
+        follow_up: {
+            emailPurpose: "e.g., Follow up on our previous conversation about the marketing campaign proposal",
+            targetAudience: "e.g., Marketing team, Previous meeting attendees",
+            callToAction: "e.g., Confirm next meeting time, Review the attached proposal",
+            keyPoints: "• Recap of our last discussion\n• Next steps we discussed\n• Timeline for implementation",
+            recipientName: "e.g., Sarah (from our Tuesday meeting)"
+        },
+        marketing: {
+            emailPurpose: "e.g., Promote our summer sale with 30% off all premium features",
+            targetAudience: "e.g., Existing customers, Newsletter subscribers",
+            callToAction: "e.g., Shop now with code SUMMER30, Browse sale items",
+            keyPoints: "• Limited time 30% discount\n• Includes all premium features\n• Free shipping on orders over $50",
+            recipientName: "e.g., Valued Customer, [First Name]"
+        },
+        welcome: {
+            emailPurpose: "e.g., Welcome new subscribers and guide them through getting started",
+            targetAudience: "e.g., New sign-ups, First-time users",
+            callToAction: "e.g., Complete your profile, Start your free trial",
+            keyPoints: "• Welcome to our community\n• Here's what you can expect\n• Resources to get started",
+            recipientName: "e.g., New member, [First Name]"
+        },
+        newsletter: {
+            emailPurpose: "e.g., Share this week's industry insights and company updates",
+            targetAudience: "e.g., Newsletter subscribers, Industry professionals",
+            callToAction: "e.g., Read the full article, Share with your network",
+            keyPoints: "• Top 3 industry trends this week\n• Company milestone achievement\n• Upcoming webinar announcement",
+            recipientName: "e.g., Newsletter subscriber, Industry friend"
+        },
+        event: {
+            emailPurpose: "e.g., Invite attendees to our upcoming product launch webinar",
+            targetAudience: "e.g., Current customers, Industry professionals, Partners",
+            callToAction: "e.g., Register for the webinar, Save your spot",
+            keyPoints: "• Exclusive product preview\n• Live Q&A session\n• Special attendee offers",
+            recipientName: "e.g., Valued partner, [First Name]"
+        }
+    };
+    
+    return placeholders[emailType] || placeholders.cold_outreach;
+}
+
+// Make functions available globally
+window.EmailAssistant.emailTypes = {
+    setup: setupEmailTypeSelection,
+    handleSelection: handleEmailTypeSelection,
+    updatePlaceholders: updateFormPlaceholders
+};
+// Section 4: Form Submission and API Integration
+function setupFormSubmission() {
+    const emailAssistantForm = window.EmailAssistant.elements.emailAssistantForm;
+    
+    if (!emailAssistantForm) {
+        console.error('Email assistant form not found');
+        return;
+    }
+    
+    emailAssistantForm.addEventListener('submit', handleEmailGeneration);
+    
+    // Add input validation helpers
+    setupFormValidation();
+}
+
+function setupFormValidation() {
+    const form = window.EmailAssistant.elements.emailAssistantForm;
+    if (!form) return;
+    
+    // Real-time validation for required fields
+    const requiredFields = form.querySelectorAll('[required]');
+    requiredFields.forEach(field => {
+        field.addEventListener('blur', validateField);
+        field.addEventListener('input', clearFieldError);
+    });
+}
+
+function validateField(e) {
+    const field = e.target;
+    const value = field.value.trim();
+    
+    // Remove existing error styling
+    field.classList.remove('is-invalid');
+    
+    // Check if field is empty
+    if (!value && field.hasAttribute('required')) {
+        field.classList.add('is-invalid');
+        return false;
+    }
+    
+    // Specific validation rules
+    if (field.id === 'emailPurpose' && value.length < 10) {
+        field.classList.add('is-invalid');
+        return false;
+    }
+    
+    field.classList.add('is-valid');
+    return true;
+}
+
+function clearFieldError(e) {
+    const field = e.target;
+    field.classList.remove('is-invalid');
+}
+
+async function handleEmailGeneration(e) {
+    e.preventDefault();
+    
+    try {
+        // Check usage limit first
+        if (!window.EmailAssistant.usage.check()) {
+            showUsageLimitAlert();
+            return;
+        }
+        
+        // Validate form
+        if (!validateEmailForm()) {
+            return;
+        }
+        
+        // Show processing state
+        showProcessingState();
+        
+        // Collect and prepare form data
+        const formData = collectFormData(e.target);
+        const requestData = prepareRequestData(formData);
+        
+        // Make API call
+        const result = await callEmailAPI(requestData);
+        
+        // Handle successful response
+        if (result.success) {
+            window.EmailAssistant.usage.increment();
+            displayEmailResults(result.result, formData);
+            showResultsSection();
+        } else {
+            throw new Error(result.message || 'Failed to generate email');
+        }
+        
+    } catch (error) {
+        console.error('Email generation error:', error);
+        showErrorState(error.message);
+    } finally {
+        hideProcessingState();
+    }
+}
+
+function validateEmailForm() {
+    const selectedEmailTypeInput = window.EmailAssistant.elements.selectedEmailTypeInput;
+    
+    // Check if email type is selected
+    if (!selectedEmailTypeInput || !selectedEmailTypeInput.value) {
+        alert('Please select an email type first.');
+        scrollToEmailTypes();
+        return false;
+    }
+    
+    // Validate required fields
+    const form = window.EmailAssistant.elements.emailAssistantForm;
+    const requiredFields = form.querySelectorAll('[required]');
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        if (!validateField({ target: field })) {
+            isValid = false;
+        }
+    });
+    
+    if (!isValid) {
+        alert('Please fill in all required fields correctly.');
+        // Focus on first invalid field
+        const firstInvalid = form.querySelector('.is-invalid');
+        if (firstInvalid) {
+            firstInvalid.focus();
+            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+    
+    return isValid;
+}
+
+function collectFormData(form) {
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Add checkbox values
+    data.includeSubjectLines = document.getElementById('includeSubjectLines').checked;
+    data.includeABTesting = document.getElementById('includeABTesting').checked;
+    data.includeSignature = document.getElementById('includeSignature').checked;
+    
+    return data;
+}
+
+function prepareRequestData(formData) {
+    return {
+        action: 'generate',
+        toolId: window.EmailAssistant.TOOL_ID,
+        emailType: formData.emailType,
+        senderName: formData.senderName,
+        recipientName: formData.recipientName || '',
+        companyName: formData.companyName,
+        emailTone: formData.emailTone,
+        emailPurpose: formData.emailPurpose,
+        targetAudience: formData.targetAudience || '',
+        callToAction: formData.callToAction || '',
+        keyPoints: formData.keyPoints || '',
+        options: {
+            includeSubjectLines: formData.includeSubjectLines,
+            includeABTesting: formData.includeABTesting,
+            includeSignature: formData.includeSignature
+        }
+    };
+}
+
+async function callEmailAPI(requestData) {
+    const response = await fetch('/api/email-assistant', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+    });
+    
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API Error: ${response.status} - ${errorText}`);
+    }
+    
+    return await response.json();
+}
+
+function showProcessingState() {
+    const processingMessage = window.EmailAssistant.elements.processingMessage;
+    const resultsContainer = window.EmailAssistant.elements.resultsContainer;
+    const loadingSpinner = window.EmailAssistant.elements.loadingSpinner;
+    
+    if (processingMessage) {
+        processingMessage.style.display = 'block';
+        processingMessage.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'none';
+    }
+    
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
+    }
+    
+    // Disable form submission
+    const submitBtn = document.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Generating...';
+    }
+}
+
+function hideProcessingState() {
+    const processingMessage = window.EmailAssistant.elements.processingMessage;
+    const loadingSpinner = window.EmailAssistant.elements.loadingSpinner;
+    
+    if (processingMessage) {
+        processingMessage.style.display = 'none';
+    }
+    
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'none';
+    }
+    
+    // Re-enable form submission
+    const submitBtn = document.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Generate Email';
+    }
+}
+
+function showErrorState(errorMessage) {
+    const errorAlert = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Error:</strong> ${errorMessage}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    const form = window.EmailAssistant.elements.emailAssistantForm;
+    if (form) {
+        form.insertAdjacentHTML('beforebegin', errorAlert);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            const alert = document.querySelector('.alert-danger');
+            if (alert) alert.remove();
+        }, 5000);
+    }
+}
+
+function showUsageLimitAlert() {
+    alert('You have reached your free usage limit for this tool. Please upgrade to continue.');
+    const upgradeBtn = document.querySelector('[href="/#pricing"]');
+    if (upgradeBtn) {
+        upgradeBtn.scrollIntoView({ behavior: 'smooth' });
+        upgradeBtn.focus();
+    }
+}
+
+function scrollToEmailTypes() {
+    const emailTypeCards = window.EmailAssistant.elements.emailTypeCards;
+    if (emailTypeCards && emailTypeCards.length > 0) {
+        emailTypeCards[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+function showResultsSection() {
+    const resultsContainer = window.EmailAssistant.elements.resultsContainer;
+    if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Make functions available globally
+window.EmailAssistant.form = {
+    setup: setupFormSubmission,
+    validate: validateEmailForm,
+    submit: handleEmailGeneration
+};
+// Section 5: Content Generation and Display
+function displayEmailResults(apiResult, formData) {
+    try {
+        // Display subject lines if requested
+        if (formData.includeSubjectLines) {
+            displaySubjectLines(formData.emailType, formData.emailPurpose);
+        } else {
+            hideSubjectLinesSection();
+        }
+        
+        // Display main email content
+        displayEmailContent(apiResult);
+        
+        // Display A/B testing suggestions if requested
+        if (formData.includeABTesting) {
+            displayABTestingSuggestions(formData.emailType);
+        } else {
+            hideABTestingSection();
+        }
+        
+        console.log('Email results displayed successfully');
+        
+    } catch (error) {
+        console.error('Error displaying email results:', error);
+        showErrorState('Failed to display generated content');
+    }
+}
+
+function displaySubjectLines(emailType, purpose) {
+    const subjectLinesSection = document.getElementById('subjectLinesSection');
+    const subjectLinesContainer = document.getElementById('subjectLinesContainer');
+    
+    if (!subjectLinesSection || !subjectLinesContainer) {
+        console.error('Subject lines elements not found');
+        return;
+    }
+    
+    subjectLinesSection.style.display = 'block';
+    
+    // Generate context-aware subject lines
+    const subjectLines = generateSubjectLines(emailType, purpose);
+    
+    subjectLinesContainer.innerHTML = '';
+    subjectLines.forEach((subject, index) => {
+        const subjectDiv = document.createElement('div');
+        subjectDiv.className = 'subject-line-option d-flex justify-content-between align-items-center';
+        subjectDiv.innerHTML = `
+            <span class="flex-grow-1">${escapeHtml(subject)}</span>
+            <button class="copy-btn ms-2" onclick="copyToClipboard('${escapeHtml(subject).replace(/'/g, "\\'")}', this)">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+        `;
+        
+        // Add click to select functionality
+        subjectDiv.addEventListener('click', function(e) {
+            if (e.target.closest('.copy-btn')) return;
+            
+            // Remove selection from other subject lines
+            document.querySelectorAll('.subject-line-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Select this one
+            this.classList.add('selected');
+        });
+        
+        subjectLinesContainer.appendChild(subjectDiv);
+    });
+}
+
+function hideSubjectLinesSection() {
+    const subjectLinesSection = document.getElementById('subjectLinesSection');
+    if (subjectLinesSection) {
+        subjectLinesSection.style.display = 'none';
+    }
+}
+
+function displayEmailContent(content) {
+    const emailPreview = window.EmailAssistant.elements.emailPreview;
+    
+    if (!emailPreview) {
+        console.error('Email preview element not found');
+        return;
+    }
+    
+    if (!content) {
+        emailPreview.innerHTML = '<p class="text-muted">No content generated. Please try again.</p>';
+        return;
+    }
+    
+    // Format and display the email content
+    const formattedContent = formatEmailContent(content);
+    emailPreview.innerHTML = formattedContent;
+    
+    // Add copy button to email content
+    addCopyButtonToEmailContent();
+}
+
+function formatEmailContent(content) {
+    if (!content || typeof content !== 'string') {
+        return '<p class="text-muted">Invalid content received</p>';
+    }
+    
+    // Escape HTML to prevent XSS
+    let formattedContent = escapeHtml(content);
+    
+    // Convert double line breaks to paragraph breaks
+    formattedContent = formattedContent.replace(/\n\n/g, '</p><p>');
+    
+    // Convert single line breaks to br tags
+    formattedContent = formattedContent.replace(/\n/g, '<br>');
+    
+    // Wrap in paragraphs if not already wrapped
+    if (!formattedContent.startsWith('<p>')) {
+        formattedContent = '<p>' + formattedContent + '</p>';
+    }
+    
+    // Clean up empty paragraphs
+    formattedContent = formattedContent.replace(/<p><\/p>/g, '');
+    formattedContent = formattedContent.replace(/<p><br><\/p>/g, '');
+    formattedContent = formattedContent.replace(/<p>\s*<\/p>/g, '');
+    
+    // Add email styling for better readability
+    formattedContent = `
+        <div class="email-content">
+            ${formattedContent}
+        </div>
+    `;
+    
+    return formattedContent;
+}
+
+function addCopyButtonToEmailContent() {
+    const emailPreview = window.EmailAssistant.elements.emailPreview;
+    if (!emailPreview) return;
+    
+    // Remove existing copy button if present
+    const existingBtn = emailPreview.querySelector('.email-copy-btn');
+    if (existingBtn) existingBtn.remove();
+    
+    // Add new copy button
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'btn btn-sm btn-outline-primary email-copy-btn mt-2';
+    copyBtn.innerHTML = '<i class="fas fa-copy me-1"></i> Copy Email Content';
+    copyBtn.onclick = () => copyEmailContent();
+    
+    emailPreview.appendChild(copyBtn);
+}
+
+function generateSubjectLines(emailType, purpose) {
+    const baseSubjects = getBaseSubjectLines(emailType);
+    
+    // Try to customize based on purpose if provided
+    if (purpose && purpose.length > 10) {
+        const customSubjects = generateCustomSubjectLines(emailType, purpose);
+        return [...customSubjects, ...baseSubjects.slice(0, 2)];
+    }
+    
+    return baseSubjects;
+}
+
+function getBaseSubjectLines(emailType) {
+    const subjectTemplates = {
+        cold_outreach: [
+            "Quick question about your [area of expertise]",
+            "Thoughts on improving your [relevant process]?",
+            "[Mutual connection] suggested I reach out",
+            "5-minute favor?",
+            "Noticed your work at [Company] - impressive!",
+            "Could I get your advice on something?"
+        ],
+        follow_up: [
+            "Following up on our conversation",
+            "Next steps from our discussion",
+            "Quick follow-up - [specific topic]",
+            "Circling back on [topic]",
+            "Moving forward with [project/topic]",
+            "Action items from our meeting"
+        ],
+        marketing: [
+            "Exclusive offer just for you",
+            "Don't miss out: [offer] ends soon",
+            "New: Something you'll love",
+            "Your [benefit] is waiting",
+            "Special announcement inside",
+            "Limited time: [offer] available"
+        ],
+        welcome: [
+            "Welcome to [Company] - here's what's next",
+            "You're in! Let's get started",
+            "Welcome aboard - your journey begins now",
+            "Thanks for joining us!",
+            "Your [Company] account is ready",
+            "Welcome to the family!"
+        ],
+        newsletter: [
+            "This week in [industry/topic]",
+            "[Number] insights you can't miss",
+            "Your weekly dose of [topic]",
+            "What's new this week",
+            "Updates and insights from [Company]",
+            "Weekly roundup: [date]"
+        ],
+        event: [
+            "You're invited: [Event name]",
+            "Save the date: [Event] on [Date]",
+            "Join us for [Event name]",
+            "Exclusive invitation inside",
+            "Don't miss: [Event] registration is open",
+            "Special event announcement"
+        ]
+    };
+    
+    return subjectTemplates[emailType] || subjectTemplates.cold_outreach;
+}
+
+function generateCustomSubjectLines(emailType, purpose) {
+    // Extract key words from purpose for customization
+    const keywords = extractKeywords(purpose);
+    const customSubjects = [];
+    
+    if (emailType === 'cold_outreach') {
+        customSubjects.push(
+            `Question about ${keywords[0] || 'your work'}`,
+            `Interested in ${keywords[0] || 'collaboration'}?`
+        );
+    } else if (emailType === 'marketing') {
+        customSubjects.push(
+            `New: ${keywords[0] || 'product'} now available`,
+            `Exclusive ${keywords[0] || 'offer'} for you`
+        );
+    } else if (emailType === 'follow_up') {
+        customSubjects.push(
+            `Re: ${keywords[0] || 'our discussion'}`,
+            `Next steps on ${keywords[0] || 'project'}`
+        );
+    }
+    
+    return customSubjects.slice(0, 3);
+}
+
+function extractKeywords(text) {
+    if (!text) return [];
+    
+    // Simple keyword extraction
+    const words = text.toLowerCase()
+        .replace(/[^\w\s]/g, ' ')
+        .split(/\s+/)
+        .filter(word => word.length > 3)
+        .filter(word => !['that', 'with', 'from', 'they', 'have', 'this', 'will', 'your', 'more', 'been', 'were', 'said', 'each', 'which', 'their', 'time', 'into'].includes(word));
+    
+    return words.slice(0, 3);
+}
+
+function displayABTestingSuggestions(emailType) {
+    const abTestingSection = document.getElementById('abTestingSection');
+    const abTestingContent = document.getElementById('abTestingContent');
+    
+    if (!abTestingSection || !abTestingContent) {
+        console.error('A/B testing elements not found');
+        return;
+    }
+    
+    abTestingSection.style.display = 'block';
+    abTestingContent.innerHTML = generateABTestingSuggestions(emailType);
+}
+
+function hideABTestingSection() {
+    const abTestingSection = document.getElementById('abTestingSection');
+    if (abTestingSection) {
+        abTestingSection.style.display = 'none';
+    }
+}
+
+function generateABTestingSuggestions(emailType) {
+    const suggestions = {
+        cold_outreach: {
+            elements: ['Subject line personalization', 'Email length (short vs detailed)', 'Social proof inclusion'],
+            recommendations: 'Start with subject line variations - personalized vs generic approaches perform very differently.'
+        },
+        follow_up: {
+            elements: ['Follow-up timing', 'Reference to previous conversation', 'Call-to-action urgency'],
+            recommendations: 'Test follow-up intervals - 3 days vs 1 week can significantly impact response rates.'
+        },
+        marketing: {
+            elements: ['Discount percentage', 'Urgency language', 'Product imagery'],
+            recommendations: 'Test different discount levels and urgency phrases to optimize conversion rates.'
+        },
+        welcome: {
+            elements: ['Onboarding steps', 'Resource recommendations', 'Welcome gift offers'],
+            recommendations: 'Test immediate value delivery vs gradual introduction to features.'
+        },
+        newsletter: {
+            elements: ['Content length', 'Call-to-action placement', 'Featured story position'],
+            recommendations: 'Test content depth - summary vs detailed articles affect engagement differently.'
+        },
+        event: {
+            elements: ['Event benefits', 'Registration urgency', 'Speaker highlights'],
+            recommendations: 'Test benefit-focused vs speaker-focused subject lines for event invitations.'
+        }
+    };
+    
+    const typeData = suggestions[emailType] || suggestions.cold_outreach;
+    
+    return `
+        <h6 class="mb-3"><i class="fas fa-flask me-2" style="color: #14697D;"></i>Test These Elements:</h6>
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-unstyled">
+                    ${typeData.elements.slice(0, 2).map(element => 
+                        `<li class="mb-2"><i class="fas fa-check-circle me-2" style="color: #14697D;"></i>${element}</li>`
+                    ).join('')}
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: #14697D;"></i>${typeData.elements[2] || 'Send time optimization'}</li>
+                    <li class="mb-2"><i class="fas fa-check-circle me-2" style="color: #14697D;"></i>Call-to-action wording</li>
+                </ul>
+            </div>
+        </div>
+        <div class="mt-3 p-3 bg-light rounded">
+            <strong><i class="fas fa-lightbulb me-2" style="color: #FFbf23;"></i>Pro Tip:</strong> ${typeData.recommendations}
+        </div>
+    `;
+}
+
+function copyEmailContent() {
+    const emailPreview = window.EmailAssistant.elements.emailPreview;
+    if (!emailPreview) return;
+    
+    // Get text content without HTML
+    const emailContent = emailPreview.querySelector('.email-content');
+    const content = emailContent ? emailContent.textContent : emailPreview.textContent;
+    
+    copyToClipboard(content, document.querySelector('.email-copy-btn'));
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Make functions available globally
+window.EmailAssistant.content = {
+    display: displayEmailResults,
+    formatEmail: formatEmailContent,
+    generateSubjects: generateSubjectLines,
+    copyEmail: copyEmailContent
+};
+// Section 6: Export and Copy Functionality
+function setupExportOptions() {
+    const copyEmail = document.getElementById('copyEmail');
+    const downloadEmail = document.getElementById('downloadEmail');
+    
+    if (copyEmail) {
+        copyEmail.addEventListener('click', copyEmailToClipboard);
+    }
+    
+    if (downloadEmail) {
+        downloadEmail.addEventListener('click', downloadEmailFile);
+    }
+    
+    console.log('Export options initialized');
+}
+
+function copyEmailToClipboard() {
+    const emailPreview = window.EmailAssistant.elements.emailPreview;
+    
+    if (!emailPreview) {
+        console.error('Email preview not found');
+        return;
+    }
+    
+    try {
+        // Get the text content, preserving line breaks
+        const content = getEmailTextContent();
+        
+        if (!content || content.trim().length === 0) {
+            alert('No email content to copy');
+            return;
+        }
+        
+        // Copy to clipboard
+        navigator.clipboard.writeText(content)
+            .then(() => {
+                showCopySuccess('copyEmail');
+            })
+            .catch(err => {
+                console.error('Failed to copy to clipboard:', err);
+                // Fallback for older browsers
+                fallbackCopyTextToClipboard(content);
+            });
+            
+    } catch (error) {
+        console.error('Error copying email:', error);
+        alert('Failed to copy email content');
+    }
+}
+
+function getEmailTextContent() {
+    const emailPreview = window.EmailAssistant.elements.emailPreview;
+    if (!emailPreview) return '';
+    
+    // Get selected subject line if any
+    const selectedSubject = document.querySelector('.subject-line-option.selected span');
+    const subjectText = selectedSubject ? `Subject: ${selectedSubject.textContent}\n\n` : '';
+    
+    // Get email body content
+    const emailContent = emailPreview.querySelector('.email-content') || emailPreview;
+    
+    // Convert HTML to text while preserving formatting
+    let textContent = emailContent.innerHTML
+        .replace(/<br>/gi, '\n')
+        .replace(/<\/p>/gi, '\n\n')
+        .replace(/<p>/gi, '')
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#x27;/g, "'");
+    
+    // Clean up extra whitespace
+    textContent = textContent
+        .replace(/\n\s*\n\s*\n/g, '\n\n')
+        .replace(/^\s+|\s+$/g, '');
+    
+    return subjectText + textContent;
+}
+
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showCopySuccess('copyEmail');
+        } else {
+            throw new Error('Copy command failed');
+        }
+    } catch (err) {
+        console.error('Fallback copy failed:', err);
+        alert('Failed to copy email content. Please select and copy manually.');
+    } finally {
+        document.body.removeChild(textArea);
+    }
+}
+
+function downloadEmailFile() {
+    const emailPreview = window.EmailAssistant.elements.emailPreview;
+    
+    if (!emailPreview) {
+        console.error('Email preview not found');
+        return;
+    }
+    
+    try {
+        // Get form data for filename
+        const senderName = document.getElementById('senderName')?.value || 'Email';
+        const emailType = document.getElementById('selectedEmailType')?.value || 'email';
+        const timestamp = new Date().toISOString().slice(0, 10);
+        
+        // Get email content
+        const emailContent = emailPreview.innerHTML;
+        const selectedSubject = document.querySelector('.subject-line-option.selected span');
+        const subjectText = selectedSubject ? selectedSubject.textContent : 'Generated Email';
+        
+        // Create HTML content
+        const htmlContent = createEmailHTML(subjectText, emailContent, senderName, emailType);
+        
+        // Create and download file
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${emailType}-${timestamp}.html`;
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+        
+        // Show success feedback
+        showDownloadSuccess();
+        
+    } catch (error) {
+        console.error('Error downloading email:', error);
+        alert('Failed to download email file');
+    }
+}
+
+function createEmailHTML(subject, content, senderName, emailType) {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${escapeHtml(subject)}</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6; 
+            margin: 0;
+            padding: 2rem; 
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .email-header { 
+            background: linear-gradient(135deg, #14697D 0%, #0f5566 100%);
+            color: white;
+            padding: 2rem; 
+            text-align: center;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .email-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+        }
+        .email-body {
+            padding: 2rem;
+        }
+        .subject-line {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-left: 4px solid #14697D;
+            margin-bottom: 1.5rem;
+            border-radius: 0 5px 5px 0;
+        }
+        .subject-line strong {
+            color: #14697D;
+        }
+        .email-content {
+            margin-bottom: 2rem;
+        }
+        .email-content p {
+            margin: 1em 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 1rem 2rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .generated-info {
+            font-style: italic;
+            color: #999;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>${escapeHtml(subject)}</h1>
+            <p>Generated by Elevify Email Assistant</p>
+        </div>
+        
+        <div class="email-body">
+            <div class="subject-line">
+                <strong>Subject:</strong> ${escapeHtml(subject)}
+            </div>
+            
+            <div class="email-content">
+                ${content}
+            </div>
+            
+            <div class="generated-info">
+                Generated on: ${new Date().toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}<br>
+                Email Type: ${escapeHtml(emailType.replace('_', ' ').toUpperCase())}<br>
+                Created by: ${escapeHtml(senderName)}
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This email was generated using Elevify's AI Email Assistant</p>
+            <p>Visit <strong>elevify.com</strong> to create your own professional emails</p>
+        </div>
+    </div>
+</body>
+</html>`;
+}
+
+function showCopySuccess(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    const originalContent = element.innerHTML;
+    element.innerHTML = `
+        <i class="fas fa-check" style="color: #28a745;"></i>
+        <div style="color: #28a745;">Copied!</div>
+        <small class="text-muted">Success</small>
+    `;
+    element.style.backgroundColor = '#d4edda';
+    element.style.borderColor = '#c3e6cb';
+    
+    setTimeout(() => {
+        element.innerHTML = originalContent;
+        element.style.backgroundColor = '';
+        element.style.borderColor = '';
+    }, 2000);
+}
+
+function showDownloadSuccess() {
+    const downloadBtn = document.getElementById('downloadEmail');
+    if (!downloadBtn) return;
+    
+    const originalContent = downloadBtn.innerHTML;
+    downloadBtn.innerHTML = `
+        <i class="fas fa-check" style="color: #28a745;"></i>
+        <div style="color: #28a745;">Downloaded!</div>
+        <small class="text-muted">Success</small>
+    `;
+    downloadBtn.style.backgroundColor = '#d4edda';
+    downloadBtn.style.borderColor = '#c3e6cb';
+    
+    setTimeout(() => {
+        downloadBtn.innerHTML = originalContent;
+        downloadBtn.style.backgroundColor = '';
+        downloadBtn.style.borderColor = '';
+    }, 2000);
+}
+
+// Global function for copying subject lines and other content
+window.copyToClipboard = function(text, buttonElement) {
+    if (!text) {
+        console.error('No text provided to copy');
+        return;
+    }
+    
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            if (buttonElement) {
+                showButtonCopySuccess(buttonElement);
+            }
+        })
+        .catch(err => {
+            console.error('Failed to copy:', err);
+            // Fallback for older browsers
+            fallbackCopyTextToClipboard(text);
+            if (buttonElement) {
+                showButtonCopySuccess(buttonElement);
+            }
+        });
+};
+
+function showButtonCopySuccess(button) {
+    const originalContent = button.innerHTML;
+    const originalClasses = button.className;
+    
+    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    button.className = button.className.replace('btn-outline-primary', 'btn-success');
+    button.disabled = true;
+    
+    setTimeout(() => {
+        button.innerHTML = originalContent;
+        button.className = originalClasses;
+        button.disabled = false;
+    }, 2000);
+}
+
+// Utility function for HTML escaping (reused from previous section)
+function escapeHtml(text) {
+    if (typeof text !== 'string') return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Make functions available globally
+window.EmailAssistant.export = {
+    setup: setupExportOptions,
+    copyEmail: copyEmailToClipboard,
+    downloadEmail: downloadEmailFile,
+    copyText: window.copyToClipboard
+};
+// Section 7: Edit Controls and Final Integration
+function setupEditButtons() {
+    const editEmailBtn = document.getElementById('editEmailBtn');
+    const newEmailBtn = document.getElementById('newEmailBtn');
+    
+    if (editEmailBtn) {
+        editEmailBtn.addEventListener('click', handleEditEmail);
+    }
+    
+    if (newEmailBtn) {
+        newEmailBtn.addEventListener('click', handleNewEmail);
+    }
+    
+    // Setup keyboard shortcuts
+    setupKeyboardShortcuts();
+    
+    console.log('Edit controls initialized');
+}
+
+function handleEditEmail() {
+    try {
+        const resultsContainer = window.EmailAssistant.elements.resultsContainer;
+        const emailPreview = window.EmailAssistant.elements.emailPreview;
+        
+        if (!resultsContainer || !emailPreview) {
+            console.error('Required elements not found for editing');
+            return;
+        }
+        
+        // Hide results and show form
+        resultsContainer.style.display = 'none';
+        
+        // Scroll back to form
+        const form = window.EmailAssistant.elements.emailAssistantForm;
+        if (form) {
+            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Focus on the first editable field
+        const firstEditableField = document.getElementById('emailPurpose');
+        if (firstEditableField) {
+            setTimeout(() => {
+                firstEditableField.focus();
+                firstEditableField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 500);
+        }
+        
+        // Add edit mode indicator
+        addEditModeIndicator();
+        
+    } catch (error) {
+        console.error('Error handling edit email:', error);
+    }
+}
+
+function handleNewEmail() {
+    try {
+        const resultsContainer = window.EmailAssistant.elements.resultsContainer;
+        const emailAssistantForm = window.EmailAssistant.elements.emailAssistantForm;
+        const emailTypeCards = window.EmailAssistant.elements.emailTypeCards;
+        const selectedEmailTypeInput = window.EmailAssistant.elements.selectedEmailTypeInput;
+        
+        // Hide results
+        if (resultsContainer) {
+            resultsContainer.style.display = 'none';
+        }
+        
+        // Reset form
+        if (emailAssistantForm) {
+            emailAssistantForm.reset();
+        }
+        
+        // Clear email type selection
+        if (emailTypeCards) {
+            emailTypeCards.forEach(card => {
+                card.classList.remove('selected');
+                card.setAttribute('aria-pressed', 'false');
+            });
+        }
+        
+        if (selectedEmailTypeInput) {
+            selectedEmailTypeInput.value = '';
+        }
+        
+        // Clear any error states
+        clearFormErrors();
+        
+        // Remove edit mode indicator
+        removeEditModeIndicator();
+        
+        // Scroll to top of form
+        window.scrollTo({ 
+            top: 0, 
+            behavior: 'smooth' 
+        });
+        
+        // Focus on first field after scroll
+        setTimeout(() => {
+            const firstField = document.getElementById('senderName');
+            if (firstField) {
+                firstField.focus();
+            }
+        }, 500);
+        
+        console.log('New email form initialized');
+        
+    } catch (error) {
+        console.error('Error handling new email:', error);
+    }
+}
+
+function addEditModeIndicator() {
+    // Remove existing indicator
+    removeEditModeIndicator();
+    
+    const form = window.EmailAssistant.elements.emailAssistantForm;
+    if (!form) return;
+    
+    const indicator = document.createElement('div');
+    indicator.id = 'editModeIndicator';
+    indicator.className = 'alert alert-info d-flex align-items-center mb-3';
+    indicator.innerHTML = `
+        <i class="fas fa-edit me-2"></i>
+        <div class="flex-grow-1">
+            <strong>Edit Mode:</strong> Make your changes and click "Generate Email" to update your content.
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="window.EmailAssistant.controls.cancelEdit()">
+            Cancel
+        </button>
+    `;
+    
+    form.parentNode.insertBefore(indicator, form);
+}
+
+function removeEditModeIndicator() {
+    const indicator = document.getElementById('editModeIndicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+function cancelEdit() {
+    const resultsContainer = window.EmailAssistant.elements.resultsContainer;
+    
+    // Show results again
+    if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Remove edit indicator
+    removeEditModeIndicator();
+}
+
+function clearFormErrors() {
+    const form = window.EmailAssistant.elements.emailAssistantForm;
+    if (!form) return;
+    
+    // Remove validation classes
+    const fields = form.querySelectorAll('.is-invalid, .is-valid');
+    fields.forEach(field => {
+        field.classList.remove('is-invalid', 'is-valid');
+    });
+    
+    // Remove any error alerts
+    const errorAlerts = document.querySelectorAll('.alert-danger');
+    errorAlerts.forEach(alert => {
+        if (alert.querySelector('.fas.fa-exclamation-triangle')) {
+            alert.remove();
+        }
+    });
+}
+
+function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', function(e) {
+        // Only handle shortcuts when not typing in input fields
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            return;
+        }
+        
+        // Ctrl/Cmd + Enter to submit form
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            const submitBtn = document.querySelector('button[type="submit"]');
+            if (submitBtn && !submitBtn.disabled) {
+                submitBtn.click();
+            }
+        }
+        
+        // Ctrl/Cmd + C to copy email (when results are visible)
+        if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+            const resultsContainer = window.EmailAssistant.elements.resultsContainer;
+            if (resultsContainer && resultsContainer.style.display !== 'none') {
+                e.preventDefault();
+                window.EmailAssistant.export.copyEmail();
+            }
+        }
+        
+        // Escape to cancel edit mode
+        if (e.key === 'Escape') {
+            const editIndicator = document.getElementById('editModeIndicator');
+            if (editIndicator) {
+                cancelEdit();
+            }
+        }
+    });
+}
+
+// Form auto-save functionality
+function setupAutoSave() {
+    const form = window.EmailAssistant.elements.emailAssistantForm;
+    if (!form) return;
+    
+    const formFields = form.querySelectorAll('input, textarea, select');
+    
+    formFields.forEach(field => {
+        field.addEventListener('input', debounce(saveFormData, 1000));
+        field.addEventListener('change', saveFormData);
+    });
+    
+    // Load saved data on page load
+    loadFormData();
+}
+
+function saveFormData() {
+    const form = window.EmailAssistant.elements.emailAssistantForm;
+    if (!form) return;
+    
+    try {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        
+        // Add checkbox states
+        data.includeSubjectLines = document.getElementById('includeSubjectLines').checked;
+        data.includeABTesting = document.getElementById('includeABTesting').checked;
+        data.includeSignature = document.getElementById('includeSignature').checked;
+        
+        localStorage.setItem('elevify_email_draft', JSON.stringify(data));
+        
+    } catch (error) {
+        console.error('Error saving form data:', error);
+    }
+}
+
+function loadFormData() {
+    try {
+        const savedData = localStorage.getItem('elevify_email_draft');
+        if (!savedData) return;
+        
+        const data = JSON.parse(savedData);
+        const form = window.EmailAssistant.elements.emailAssistantForm;
+        if (!form) return;
+        
+        // Restore form fields
+        Object.keys(data).forEach(key => {
+            const field = form.querySelector(`[name="${key}"]`);
+            if (field) {
+                if (field.type === 'checkbox') {
+                    field.checked = data[key];
+                } else {
+                    field.value = data[key];
+                }
+            }
+        });
+        
+        // Restore email type selection
+        if (data.emailType) {
+            const emailTypeCard = document.querySelector(`[data-type="${data.emailType}"]`);
+            if (emailTypeCard) {
+                window.EmailAssistant.emailTypes.handleSelection(emailTypeCard);
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error loading form data:', error);
+    }
+}
+
+function clearFormData() {
+    localStorage.removeItem('elevify_email_draft');
+}
+
+// Utility function for debouncing
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Enhanced error handling
+function setupGlobalErrorHandling() {
+    window.addEventListener('error', function(e) {
+        console.error('Global error caught:', e.error);
+        
+        // Show user-friendly error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-warning alert-dismissible fade show position-fixed';
+        errorDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 350px;';
+        errorDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Something went wrong!</strong> Please refresh the page and try again.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(errorDiv);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.remove();
+            }
+        }, 5000);
+    });
+}
+
+// Initialize everything when the module loads
+function initializeFinalFeatures() {
+    setupAutoSave();
+    setupGlobalErrorHandling();
+    
+    console.log('Email Assistant fully initialized with all features');
+}
+
+// Run final initialization
+setTimeout(initializeFinalFeatures, 1000);
+
+// Make functions available globally
+window.EmailAssistant.controls = {
+    setup: setupEditButtons,
+    editEmail: handleEditEmail,
+    newEmail: handleNewEmail,
+    cancelEdit: cancelEdit,
+    saveForm: saveFormData,
+    loadForm: loadFormData,
+    clearForm: clearFormData
+};
+
+// Export the complete EmailAssistant object for external use
+window.EmailAssistant.init = function() {
+    console.log('Email Assistant manually initialized');
+    return window.EmailAssistant;
+};
+
+console.log('Email Assistant Tool fully loaded and ready!');
+    </script>
+</body>
+</html>

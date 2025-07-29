@@ -1,0 +1,1866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Optimizer - Content & Website SEO Analysis | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .analysis-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .analysis-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .analysis-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .keyword-difficulty {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .keyword-difficulty:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .keyword-difficulty.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+        }
+        
+        .analysis-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Quicksand', sans-serif;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .seo-disclaimer {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .seo-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-radius: 30px 30px 0 0;
+            transition: all 0.3s ease;
+        }
+        
+        .seo-tab:hover {
+            color: #333;
+            background-color: #f0f0f0;
+        }
+        
+        .seo-tab.active {
+            background-color: #14697D;
+            color: white;
+        }
+
+        .analysis-tabs {
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .custom-fields {
+            display: none;
+        }
+
+        .metric-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+        }
+
+        .score-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .score-excellent { background-color: #28a745; }
+        .score-good { background-color: #17a2b8; }
+        .score-average { background-color: #ffc107; color: #000; }
+        .score-poor { background-color: #dc3545; }
+
+        .keyword-tag {
+            display: inline-block;
+            background-color: #e9ecef;
+            color: #495057;
+            padding: 0.25rem 0.5rem;
+            margin: 0.25rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        .keyword-tag.primary {
+            background-color: #14697D;
+            color: white;
+        }
+
+        .progress-mini {
+            height: 8px;
+            border-radius: 10px;
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                       
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>SEO Optimizer - AI-Powered SEO Analysis</h1>
+                        <p class="lead">Boost your search rankings with comprehensive SEO analysis, keyword optimization, and content recommendations powered by AI.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img7.svg" alt="SEO Analysis" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-search" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose analysis type</div>
+                            <div class="mt-2"><span class="step-number">2</span> Enter URL or content</div>
+                            <div class="mt-2"><span class="step-number">3</span> AI analyzes SEO factors</div>
+                            <div class="mt-2"><span class="step-number">4</span> Review recommendations</div>
+                            <div class="mt-2"><span class="step-number">5</span> Implement improvements</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-chart-line" style="color: #FFbf23;"></i> SEO Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Keyword density analysis</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Meta tag optimization</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Content readability score</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Site speed insights</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Mobile-friendly check</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Competitor analysis</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-bullseye" style="color: #A82C2C;"></i> Analysis Types</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-globe" style="color: #14697D;"></i> Website Analysis</div>
+                            <div class="mb-2"><i class="fas fa-file-alt" style="color: #14697D;"></i> Content Optimization</div>
+                            <div class="mb-2"><i class="fas fa-key" style="color: #14697D;"></i> Keyword Research</div>
+                            <div class="mb-2"><i class="fas fa-tags" style="color: #14697D;"></i> Meta Tag Analysis</div>
+                            <div class="mb-2"><i class="fas fa-mobile-alt" style="color: #14697D;"></i> Mobile SEO Check</div>
+                            <div class="mb-2"><i class="fas fa-tachometer-alt" style="color: #14697D;"></i> Page Speed Analysis</div>
+                            <div class="mb-2"><i class="fas fa-users" style="color: #14697D;"></i> Competitor Research</div>
+                            <div><i class="fas fa-link" style="color: #14697D;"></i> Backlink Analysis</div>
+                        </div>
+                    </div>
+
+                    <div class="seo-disclaimer">
+                        <h6><i class="fas fa-exclamation-triangle me-2" style="color: #856404;"></i>SEO Disclaimer</h6>
+                        <p class="small mb-0">SEO results may vary and are not guaranteed. Rankings depend on multiple factors including competition, algorithm changes, and implementation quality. Use recommendations as guidance.</p>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">SEO Analysis & Optimization</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <!-- Analysis Tabs -->
+                        <div class="analysis-tabs mb-4">
+                            <button class="seo-tab active" data-tab="website">Website Analysis</button>
+                            <button class="seo-tab" data-tab="content">Content Optimization</button>
+                            <button class="seo-tab" data-tab="keywords">Keyword Research</button>
+                        </div>
+
+                        <!-- Website Analysis Section -->
+                        <div id="websiteSection" class="tab-content active">
+                            <form id="websiteAnalysisForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Analysis Type</label>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="analysis-type-card card h-100 selected" data-type="full_audit">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-chart-pie mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Full SEO Audit</h6>
+                                                    <small class="text-muted">Complete analysis</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="analysis-type-card card h-100" data-type="technical">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-cog mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Technical SEO</h6>
+                                                    <small class="text-muted">Performance & crawling</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="analysis-type-card card h-100" data-type="competitive">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-users mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Competitor Analysis</h6>
+                                                    <small class="text-muted">Compare with rivals</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedAnalysisType" name="analysisType" value="full_audit" required>
+
+                                <!-- Website Information -->
+                                <div class="mb-4">
+                                    <h5>Website Information</h5>
+                                    <div class="row">
+                                        <div class="col-md-8 mb-3">
+                                            <label for="websiteUrl" class="form-label">Website URL</label>
+                                            <input type="url" class="form-control" id="websiteUrl" name="websiteUrl" placeholder="https://example.com" required>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="targetCountry" class="form-label">Target Country</label>
+                                            <select class="form-select" id="targetCountry" name="targetCountry">
+                                                <option value="global">Global</option>
+                                                <option value="us">United States</option>
+                                                <option value="uk">United Kingdom</option>
+                                                <option value="ca">Canada</option>
+                                                <option value="au">Australia</option>
+                                                <option value="ke">Kenya</option>
+                                                <option value="ng">Nigeria</option>
+                                                <option value="za">South Africa</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Primary Keywords -->
+                                <div class="mb-4">
+                                    <h5>Primary Keywords</h5>
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <label for="primaryKeywords" class="form-label">Main Keywords (comma-separated)</label>
+                                            <textarea class="form-control" id="primaryKeywords" name="primaryKeywords" rows="3" placeholder="e.g., digital marketing, SEO services, content marketing"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="businessType" class="form-label">Business Type</label>
+                                            <select class="form-select" id="businessType" name="businessType">
+                                                <option value="">Select business type</option>
+                                                <option value="ecommerce">E-commerce</option>
+                                                <option value="service">Service Business</option>
+                                                <option value="blog">Blog/Content Site</option>
+                                                <option value="portfolio">Portfolio/Agency</option>
+                                                <option value="nonprofit">Non-profit</option>
+                                                <option value="local">Local Business</option>
+                                                <option value="saas">SaaS/Software</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="competitors" class="form-label">Competitor URLs (Optional)</label>
+                                            <input type="text" class="form-control" id="competitors" name="competitors" placeholder="competitor1.com, competitor2.com">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-search me-2"></i> Analyze Website SEO
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Content Optimization Section -->
+                        <div id="contentSection" class="tab-content" style="display: none;">
+                            <form id="contentOptimizationForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Content to Optimize</label>
+                                    <div class="mb-3">
+                                        <label for="contentTitle" class="form-label">Title/Headline</label>
+                                        <input type="text" class="form-control" id="contentTitle" name="contentTitle" placeholder="Enter your content title or headline">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="contentText" class="form-label">Content Text</label>
+                                        <textarea class="form-control" id="contentText" name="contentText" rows="10" placeholder="Paste your content here for SEO optimization analysis..."></textarea>
+                                        <div class="form-text">Minimum 100 words recommended for accurate analysis</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h5>Optimization Settings</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="targetKeyword" class="form-label">Target Keyword</label>
+                                            <input type="text" class="form-control" id="targetKeyword" name="targetKeyword" placeholder="e.g., digital marketing">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="contentType" class="form-label">Content Type</label>
+                                            <select class="form-select" id="contentType" name="contentType">
+                                                <option value="blog">Blog Post</option>
+                                                <option value="product">Product Page</option>
+                                                <option value="service">Service Page</option>
+                                                <option value="homepage">Homepage</option>
+                                                <option value="landing">Landing Page</option>
+                                                <option value="about">About Page</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="metaDescription" class="form-label">Meta Description (Optional)</label>
+                                            <textarea class="form-control" id="metaDescription" name="metaDescription" rows="2" placeholder="Enter existing meta description to analyze..."></textarea>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="targetAudience" class="form-label">Target Audience</label>
+                                            <select class="form-select" id="targetAudience" name="targetAudience">
+                                                <option value="general">General Audience</option>
+                                                <option value="business">Business Professionals</option>
+                                                <option value="technical">Technical Users</option>
+                                                <option value="consumers">Consumers</option>
+                                                <option value="students">Students/Educators</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-magic me-2"></i> Optimize Content for SEO
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Keyword Research Section -->
+                        <div id="keywordsSection" class="tab-content" style="display: none;">
+                            <form id="keywordResearchForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Keyword Research Parameters</label>
+                                    <div class="row">
+                                        <div class="col-md-8 mb-3">
+                                            <label for="seedKeyword" class="form-label">Seed Keyword</label>
+                                            <input type="text" class="form-control" id="seedKeyword" name="seedKeyword" placeholder="e.g., digital marketing" required>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="keywordLocation" class="form-label">Location</label>
+                                            <select class="form-select" id="keywordLocation" name="keywordLocation">
+                                                <option value="global">Global</option>
+                                                <option value="us">United States</option>
+                                                <option value="uk">United Kingdom</option>
+                                                <option value="ca">Canada</option>
+                                                <option value="au">Australia</option>
+                                                <option value="ke">Kenya</option>
+                                                <option value="ng">Nigeria</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Keyword Difficulty Preference</label>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <div class="keyword-difficulty selected" data-difficulty="easy">
+                                                <i class="fas fa-leaf mb-2" style="color: #28a745;"></i>
+                                                <div>Easy</div>
+                                                <small class="text-muted">Low competition</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="keyword-difficulty" data-difficulty="medium">
+                                                <i class="fas fa-balance-scale mb-2" style="color: #ffc107;"></i>
+                                                <div>Medium</div>
+                                                <small class="text-muted">Moderate competition</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="keyword-difficulty" data-difficulty="hard">
+                                                <i class="fas fa-mountain mb-2" style="color: #dc3545;"></i>
+                                                <div>Hard</div>
+                                                <small class="text-muted">High competition</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="keyword-difficulty" data-difficulty="all">
+                                                <i class="fas fa-globe mb-2" style="color: #17a2b8;"></i>
+                                                <div>All Levels</div>
+                                                <small class="text-muted">Mixed difficulty</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedDifficulty" name="difficulty" value="easy">
+
+                                <div class="mb-4">
+                                    <h5>Research Options</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="keywordCount" class="form-label">Number of Keywords</label>
+                                            <select class="form-select" id="keywordCount" name="keywordCount">
+                                                <option value="10">10 Keywords</option>
+                                                <option value="25" selected>25 Keywords</option>
+                                                <option value="50">50 Keywords</option>
+                                                <option value="100">100 Keywords</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="industryFocus" class="form-label">Industry Focus</label>
+                                            <select class="form-select" id="industryFocus" name="industryFocus">
+                                                <option value="">All Industries</option>
+                                                <option value="technology">Technology</option>
+                                                <option value="healthcare">Healthcare</option>
+                                                <option value="finance">Finance</option>
+                                                <option value="education">Education</option>
+                                                <option value="retail">Retail/E-commerce</option>
+                                                <option value="travel">Travel</option>
+                                                <option value="food">Food & Beverage</option>
+                                                <option value="real_estate">Real Estate</option>
+                                                <option value="fitness">Fitness & Health</option>
+                                                <option value="automotive">Automotive</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="includeQuestions" checked>
+                                                <label class="form-check-label" for="includeQuestions">
+                                                    Include question-based keywords
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="includeLongTail" checked>
+                                                <label class="form-check-label" for="includeLongTail">
+                                                    Include long-tail keywords
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="includeLocal">
+                                                <label class="form-check-label" for="includeLocal">
+                                                    Include local search keywords
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-key me-2"></i> Research Keywords
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Container -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">SEO Analysis Results</h4>
+                        
+                        <!-- Analysis Preview -->
+                        <div class="analysis-preview mb-4" id="analysisPreview">
+                            <!-- Generated analysis will appear here -->
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="exportPDF">
+                                <i class="fas fa-file-pdf"></i>
+                                <div>Download PDF</div>
+                                <small class="text-muted">Detailed report</small>
+                            </div>
+                            <div class="export-option" id="exportExcel">
+                                <i class="fas fa-file-excel"></i>
+                                <div>Export Excel</div>
+                                <small class="text-muted">Data spreadsheet</small>
+                            </div>
+                            <div class="export-option" id="copyResults">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Results</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editAnalysisBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Analysis
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newAnalysisBtn">
+                                <i class="fas fa-plus me-1"></i> New Analysis
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading Spinner -->
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                </div>
+            </div>
+        </div>
+         <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">skyrocket</span> your search rankings?</h2>
+                <p class="lead mb-4">Join thousands of professionals who gather better insights with Elevify's AI tools.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+// ============================================================================
+// SECTION 1: CONFIGURATION AND INITIALIZATION
+// ============================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing SEO Optimizer...'); });
+    
+    // Configuration
+    const API_BASE_URL = 'https://your-render-backend-url.onrender.com'; // Replace with your actual Render URL
+    const TOOL_ID = 'seo_optimizer';
+    
+    // DOM Elements - Global scope for access across functions
+    let analysisTypeCards, selectedAnalysisTypeInput, seoTabs, loadingSpinner, 
+        resultsContainer, analysisPreview, keywordDifficultyOptions, selectedDifficultyInput,
+        websiteAnalysisForm, contentOptimizationForm, keywordResearchForm;
+    
+    // Initialize after a short delay to ensure all elements are ready
+    setTimeout(function() {
+        console.log('Setting up SEO Optimizer functionality...');
+        
+        // Query DOM elements to ensure they exist
+        analysisTypeCards = document.querySelectorAll('.analysis-type-card');
+        selectedAnalysisTypeInput = document.getElementById('selectedAnalysisType');
+        seoTabs = document.querySelectorAll('.seo-tab');
+        loadingSpinner = document.getElementById('loadingSpinner');
+        resultsContainer = document.getElementById('resultsContainer');
+        analysisPreview = document.getElementById('analysisPreview');
+        keywordDifficultyOptions = document.querySelectorAll('.keyword-difficulty');
+        selectedDifficultyInput = document.getElementById('selectedDifficulty');
+        websiteAnalysisForm = document.getElementById('websiteAnalysisForm');
+        contentOptimizationForm = document.getElementById('contentOptimizationForm');
+        keywordResearchForm = document.getElementById('keywordResearchForm');
+        
+        console.log('Elements found:', {
+            analysisTypeCards: analysisTypeCards?.length,
+            keywordDifficultyOptions: keywordDifficultyOptions?.length,
+            seoTabs: seoTabs?.length,
+            selectedAnalysisTypeInput: !!selectedAnalysisTypeInput
+        });
+        
+        // Initialize all functionality
+        initializeUsageTracking();
+        setupAnalysisTypeSelection();
+        setupKeywordDifficultySelection();
+        setupTabSwitching();
+        setupFormSubmissions();
+        setupExportOptions();
+        setupEditButtons();
+    }, 500);
+    // ============================================================================
+    // SECTION 2: API COMMUNICATION FUNCTIONS
+    // ============================================================================
+    
+    // Generic API request function
+    async function makeAPIRequest(endpoint, data) {
+        try {
+            console.log(`Making request to: ${API_BASE_URL}${endpoint}`);
+            console.log('Request data:', data);
+            
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API Error Response:', errorText);
+                throw new Error(`API request failed: ${response.status} - ${errorText}`);
+            }
+            
+            const result = await response.json();
+            console.log('API Response:', result);
+            return result;
+            
+        } catch (error) {
+            console.error('API Request Error:', error);
+            throw new Error(`Failed to connect to API: ${error.message}`);
+        }
+    }
+    
+    // Content Optimization API Call
+    async function optimizeContent(contentData) {
+        const payload = {
+            content: contentData.contentText,
+            title: contentData.contentTitle || '',
+            target_keyword: contentData.targetKeyword || '',
+            content_type: contentData.contentType || 'blog',
+            meta_description: contentData.metaDescription || '',
+            target_audience: contentData.targetAudience || 'general'
+        };
+        
+        return await makeAPIRequest('/api/optimize-content', payload);
+    }
+    
+    // Website Analysis API Call
+    async function analyzeWebsite(websiteData) {
+        const payload = {
+            url: websiteData.websiteUrl,
+            analysis_type: websiteData.analysisType || 'full_audit',
+            target_keywords: websiteData.primaryKeywords ? 
+                websiteData.primaryKeywords.split(',').map(k => k.trim()).filter(k => k.length > 0) : [],
+            target_country: websiteData.targetCountry || 'global',
+            business_type: websiteData.businessType || '',
+            competitors: websiteData.competitors ? 
+                websiteData.competitors.split(',').map(c => c.trim()).filter(c => c.length > 0) : []
+        };
+        
+        return await makeAPIRequest('/api/analyze-website', payload);
+    }
+    
+    // Keyword Research API Call
+    async function researchKeywords(keywordData) {
+        const payload = {
+            seed_keyword: keywordData.seedKeyword,
+            location: keywordData.keywordLocation || 'global',
+            difficulty: keywordData.difficulty || 'easy',
+            count: parseInt(keywordData.keywordCount) || 25,
+            industry: keywordData.industryFocus || '',
+            include_questions: document.getElementById('includeQuestions')?.checked || false,
+            include_long_tail: document.getElementById('includeLongTail')?.checked || false,
+            include_local: document.getElementById('includeLocal')?.checked || false
+        };
+        
+        return await makeAPIRequest('/api/research-keywords', payload);
+    }
+    // ============================================================================
+    // SECTION 3: USAGE TRACKING FUNCTIONS
+    // ============================================================================
+    
+    function initializeUsageTracking() {
+        let usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        
+        if (!usageData[TOOL_ID]) {
+            usageData[TOOL_ID] = {
+                count: 0,
+                lastReset: new Date().toISOString(),
+                month: new Date().getMonth(),
+                year: new Date().getFullYear()
+            };
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+        }
+        
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        
+        // Reset usage if new month
+        if (usageData[TOOL_ID].month !== currentMonth || usageData[TOOL_ID].year !== currentYear) {
+            usageData[TOOL_ID] = {
+                count: 0,
+                lastReset: new Date().toISOString(),
+                month: currentMonth,
+                year: currentYear
+            };
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+        }
+        
+        updateUsageDisplay(usageData[TOOL_ID].count);
+        
+        // Set reset date display
+        const nextMonth = new Date();
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        nextMonth.setDate(1);
+        const resetDateEl = document.getElementById('resetDate');
+        if (resetDateEl) {
+            resetDateEl.textContent = nextMonth.toLocaleDateString('en-US', { 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+    }
+    
+    function updateUsageDisplay(usedCount) {
+        const remaining = Math.max(0, 5 - usedCount);
+        const remainingUsesEl = document.getElementById('remainingUses');
+        if (remainingUsesEl) {
+            remainingUsesEl.textContent = remaining;
+        }
+        
+        const usageTracker = document.getElementById('usageTracker');
+        if (usageTracker) {
+            usageTracker.classList.remove('alert-info', 'alert-warning', 'alert-danger');
+            
+            if (remaining === 0) {
+                usageTracker.classList.add('alert-danger');
+                usageTracker.innerHTML = `
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <div class="flex-grow-1">
+                        <strong>No free uses remaining this month!</strong>
+                        <div class="small mt-1">Upgrade to continue using this tool</div>
+                    </div>
+                    <a href="/#pricing" class="btn btn-sm btn-warning ms-3">Upgrade Now</a>
+                `;
+            } else if (remaining <= 2) {
+                usageTracker.classList.add('alert-warning');
+            } else {
+                usageTracker.classList.add('alert-info');
+            }
+        }
+    }
+    
+    function checkUsageLimit() {
+        const usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        const toolUsage = usageData[TOOL_ID] || { count: 0 };
+        return toolUsage.count < 5;
+    }
+    
+    function incrementUsage() {
+        let usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        if (usageData[TOOL_ID]) {
+            usageData[TOOL_ID].count++;
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+            updateUsageDisplay(usageData[TOOL_ID].count);
+        }
+    }
+    // ============================================================================
+    // SECTION 4: UI SETUP AND EVENT HANDLERS
+    // ============================================================================
+    
+    function setupAnalysisTypeSelection() {
+        if (!analysisTypeCards) return;
+        
+        analysisTypeCards.forEach((card) => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Analysis type card clicked:', this);
+                
+                // Remove selected class from all cards
+                analysisTypeCards.forEach(c => c.classList.remove('selected'));
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                const analysisType = this.getAttribute('data-type');
+                if (selectedAnalysisTypeInput) {
+                    selectedAnalysisTypeInput.value = analysisType;
+                }
+                
+                console.log('Selected analysis type:', analysisType);
+            });
+        });
+    }
+    
+    function setupKeywordDifficultySelection() {
+        if (!keywordDifficultyOptions) return;
+        
+        keywordDifficultyOptions.forEach((option) => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Difficulty option clicked:', this);
+                
+                // Remove selected class from all options
+                keywordDifficultyOptions.forEach(o => o.classList.remove('selected'));
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                const difficulty = this.getAttribute('data-difficulty');
+                if (selectedDifficultyInput) {
+                    selectedDifficultyInput.value = difficulty;
+                }
+                
+                console.log('Selected difficulty:', difficulty);
+            });
+        });
+    }
+    
+    function setupTabSwitching() {
+        if (!seoTabs) return;
+        
+        seoTabs.forEach((tab) => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetTab = this.getAttribute('data-tab');
+                
+                console.log('Switching to tab:', targetTab);
+                
+                // Update active tab
+                seoTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show/hide content sections
+                const websiteSection = document.getElementById('websiteSection');
+                const contentSection = document.getElementById('contentSection');
+                const keywordsSection = document.getElementById('keywordsSection');
+                
+                // Hide all sections
+                if (websiteSection) websiteSection.style.display = 'none';
+                if (contentSection) contentSection.style.display = 'none';
+                if (keywordsSection) keywordsSection.style.display = 'none';
+                
+                // Show target section
+                if (targetTab === 'website' && websiteSection) {
+                    websiteSection.style.display = 'block';
+                } else if (targetTab === 'content' && contentSection) {
+                    contentSection.style.display = 'block';
+                } else if (targetTab === 'keywords' && keywordsSection) {
+                    keywordsSection.style.display = 'block';
+                }
+            });
+        });
+    }
+    
+    function setupFormSubmissions() {
+        if (websiteAnalysisForm) {
+            websiteAnalysisForm.addEventListener('submit', handleWebsiteAnalysis);
+        }
+        if (contentOptimizationForm) {
+            contentOptimizationForm.addEventListener('submit', handleContentOptimization);
+        }
+        if (keywordResearchForm) {
+            keywordResearchForm.addEventListener('submit', handleKeywordResearch);
+        }
+    }
+    
+    function setupExportOptions() {
+        const exportPDF = document.getElementById('exportPDF');
+        const exportExcel = document.getElementById('exportExcel');
+        const copyResults = document.getElementById('copyResults');
+        
+        if (exportPDF) exportPDF.addEventListener('click', exportToPDF);
+        if (exportExcel) exportExcel.addEventListener('click', exportToExcel);
+        if (copyResults) copyResults.addEventListener('click', copyToClipboard);
+    }
+    
+    function setupEditButtons() {
+        const editAnalysisBtn = document.getElementById('editAnalysisBtn');
+        const newAnalysisBtn = document.getElementById('newAnalysisBtn');
+        
+        if (editAnalysisBtn) {
+            editAnalysisBtn.addEventListener('click', function() {
+                if (resultsContainer) resultsContainer.style.display = 'none';
+            });
+        }
+        
+        if (newAnalysisBtn) {
+            newAnalysisBtn.addEventListener('click', function() {
+                if (resultsContainer) resultsContainer.style.display = 'none';
+                
+                // Reset all forms
+                if (websiteAnalysisForm) websiteAnalysisForm.reset();
+                if (contentOptimizationForm) contentOptimizationForm.reset();
+                if (keywordResearchForm) keywordResearchForm.reset();
+                
+                // Reset selections
+                if (analysisTypeCards) {
+                    analysisTypeCards.forEach(c => c.classList.remove('selected'));
+                    analysisTypeCards[0]?.classList.add('selected');
+                }
+                if (keywordDifficultyOptions) {
+                    keywordDifficultyOptions.forEach(o => o.classList.remove('selected'));
+                    keywordDifficultyOptions[0]?.classList.add('selected');
+                }
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    }
+    // ============================================================================
+    // SECTION 5: FORM HANDLERS WITH API INTEGRATION
+    // ============================================================================
+    
+    // Website Analysis Form Handler
+    async function handleWebsiteAnalysis(e) {
+        e.preventDefault();
+        
+        console.log('Website analysis started...');
+        
+        if (!checkUsageLimit()) {
+            showError('You have reached your free usage limit for this tool. Please upgrade to continue.');
+            return;
+        }
+        
+        const websiteUrl = document.getElementById('websiteUrl').value;
+        if (!websiteUrl) {
+            showError('Please enter a website URL.');
+            return;
+        }
+        
+        // Validate URL format
+        try {
+            new URL(websiteUrl);
+        } catch {
+            showError('Please enter a valid URL (e.g., https://example.com).');
+            return;
+        }
+        
+        showLoading();
+        
+        try {
+            const formData = new FormData(e.target);
+            const websiteData = Object.fromEntries(formData.entries());
+            
+            console.log('Website analysis data:', websiteData);
+            
+            const result = await analyzeWebsite(websiteData);
+            
+            incrementUsage();
+            showResults(formatWebsiteAnalysis(result, websiteData));
+            
+        } catch (error) {
+            console.error('Website analysis error:', error);
+            showError(`Analysis failed: ${error.message}`);
+        } finally {
+            hideLoading();
+        }
+    }
+    
+    // Content Optimization Form Handler
+    async function handleContentOptimization(e) {
+        e.preventDefault();
+        
+        console.log('Content optimization started...');
+        
+        if (!checkUsageLimit()) {
+            showError('You have reached your free usage limit for this tool. Please upgrade to continue.');
+            return;
+        }
+        
+        const contentText = document.getElementById('contentText').value;
+        if (!contentText.trim()) {
+            showError('Please enter content to optimize.');
+            return;
+        }
+        
+        if (contentText.trim().split(' ').length < 10) {
+            showError('Please enter at least 10 words for meaningful optimization.');
+            return;
+        }
+        
+        showLoading();
+        
+        try {
+            const formData = new FormData(e.target);
+            const contentData = Object.fromEntries(formData.entries());
+            
+            console.log('Content optimization data:', contentData);
+            
+            const result = await optimizeContent(contentData);
+            
+            incrementUsage();
+            showResults(formatContentOptimization(result, contentData));
+            
+        } catch (error) {
+            console.error('Content optimization error:', error);
+            showError(`Optimization failed: ${error.message}`);
+        } finally {
+            hideLoading();
+        }
+    }
+    
+    // Keyword Research Form Handler
+    async function handleKeywordResearch(e) {
+        e.preventDefault();
+        
+        console.log('Keyword research started...');
+        
+        if (!checkUsageLimit()) {
+            showError('You have reached your free usage limit for this tool. Please upgrade to continue.');
+            return;
+        }
+        
+        const seedKeyword = document.getElementById('seedKeyword').value;
+        if (!seedKeyword.trim()) {
+            showError('Please enter a seed keyword.');
+            return;
+        }
+        
+        if (seedKeyword.trim().length < 2) {
+            showError('Please enter a keyword with at least 2 characters.');
+            return;
+        }
+        
+        showLoading();
+        
+        try {
+            const formData = new FormData(e.target);
+            const keywordData = Object.fromEntries(formData.entries());
+            
+            console.log('Keyword research data:', keywordData);
+            
+            const result = await researchKeywords(keywordData);
+            
+            incrementUsage();
+            showResults(formatKeywordResearch(result, keywordData));
+            
+        } catch (error) {
+            console.error('Keyword research error:', error);
+            showError(`Research failed: ${error.message}`);
+        } finally {
+            hideLoading();
+        }
+    }
+    
+    // UI Helper Functions
+    function showLoading() {
+        if (loadingSpinner) loadingSpinner.style.display = 'block';
+        if (resultsContainer) resultsContainer.style.display = 'none';
+    }
+    
+    function hideLoading() {
+        if (loadingSpinner) loadingSpinner.style.display = 'none';
+    }
+    
+    function showError(message) {
+        alert(message); // You can replace this with a more elegant error display
+        console.error('Error:', message);
+    }
+    
+    function showResults(formattedResults) {
+        if (analysisPreview) {
+            analysisPreview.innerHTML = formattedResults;
+        }
+        
+        if (resultsContainer) {
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+    // ============================================================================
+    // SECTION 6: RESULT FORMATTING FUNCTIONS
+    // ============================================================================
+    
+    // Format Website Analysis Results
+    function formatWebsiteAnalysis(result, originalData) {
+        console.log('Formatting website analysis result:', result);
+        
+        let html = `
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Analysis Complete!</strong> SEO audit for ${originalData.websiteUrl}
+            </div>
+        `;
+        
+        // Overall Score
+        if (result.overall_score !== undefined) {
+            html += `
+                <div class="metric-card">
+                    <h5><i class="fas fa-chart-pie me-2"></i>Overall SEO Score</h5>
+                    <div class="d-flex align-items-center">
+                        <div class="score-badge ${getScoreClass(result.overall_score)}">${result.overall_score}/100</div>
+                        <div class="progress flex-grow-1 ms-3">
+                            <div class="progress-bar" style="width: ${result.overall_score}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Technical Scores and Issues
+        html += `<div class="row mb-4">`;
+        
+        // Scores column
+        if (result.scores) {
+            html += `
+                <div class="col-md-6">
+                    <h5><i class="fas fa-cogs me-2"></i>Technical Scores</h5>
+            `;
+            
+            Object.entries(result.scores).forEach(([key, value]) => {
+                html += `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-capitalize">${key.replace('_', ' ')}</span>
+                        <span class="score-badge ${getScoreClass(value)}">${value}</span>
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+        }
+        
+        // Issues column
+        if (result.issues && result.issues.length > 0) {
+            html += `
+                <div class="col-md-6">
+                    <h5><i class="fas fa-exclamation-triangle me-2"></i>Issues Found</h5>
+            `;
+            
+            result.issues.forEach(issue => {
+                const iconClass = issue.severity === 'critical' ? 'fas fa-times-circle text-danger' : 
+                                 issue.severity === 'warning' ? 'fas fa-exclamation-triangle text-warning' : 
+                                 'fas fa-info-circle text-info';
+                html += `
+                    <div class="d-flex align-items-start mb-2">
+                        <i class="${iconClass} me-2 mt-1"></i>
+                        <span class="small">${issue.description || issue.message}</span>
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+        }
+        
+        html += `</div>`;
+        
+        // Recommendations
+        if (result.recommendations && result.recommendations.length > 0) {
+            html += `
+                <div class="metric-card">
+                    <h5><i class="fas fa-lightbulb me-2"></i>Key Recommendations</h5>
+                    <ul class="list-unstyled">
+            `;
+            
+            result.recommendations.forEach(rec => {
+                html += `<li class="mb-2"><i class="fas fa-arrow-right me-2 text-primary"></i>${rec}</li>`;
+            });
+            
+            html += `
+                    </ul>
+                </div>
+            `;
+        }
+        
+        return html;
+    }
+    
+    // Format Content Optimization Results
+    function formatContentOptimization(result, originalData) {
+        console.log('Formatting content optimization result:', result);
+        
+        let html = `
+            <div class="alert alert-success">
+                <i class="fas fa-magic me-2"></i>
+                <strong>Content Optimized!</strong> Analysis complete
+            </div>
+        `;
+        
+        // Content Metrics
+        html += `
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="metric-card">
+                        <h6>Content Metrics</h6>
+        `;
+        
+        if (result.word_count) html += `<div class="mb-2">Word Count: <strong>${result.word_count}</strong></div>`;
+        if (result.readability_score) html += `<div class="mb-2">Readability Score: <span class="score-badge ${getScoreClass(result.readability_score)}">${result.readability_score}</span></div>`;
+        if (result.keyword_density) html += `<div>Keyword Density: <strong>${result.keyword_density}%</strong></div>`;
+        
+        html += `
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="metric-card">
+                        <h6>Optimization Suggestions</h6>
+                        <ul class="list-unstyled small">
+        `;
+        
+        if (result.suggestions && result.suggestions.length > 0) {
+            result.suggestions.forEach(s => {
+                html += `<li class="mb-1"><i class="fas fa-check me-2 text-success"></i>${s}</li>`;
+            });
+        }
+        
+        html += `
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Optimized Content
+        html += `<div class="metric-card"><h5><i class="fas fa-edit me-2"></i>Optimized Content</h5>`;
+        
+        if (result.optimized_title) {
+            html += `
+                <div class="mb-3">
+                    <strong>Optimized Title:</strong>
+                    <div class="p-2 bg-light rounded mt-1">${result.optimized_title}</div>
+                </div>
+            `;
+        }
+        
+        if (result.optimized_meta_description) {
+            html += `
+                <div class="mb-3">
+                    <strong>Optimized Meta Description:</strong>
+                    <div class="p-2 bg-light rounded mt-1">${result.optimized_meta_description}</div>
+                </div>
+            `;
+        }
+        
+        if (result.keywords && result.keywords.length > 0) {
+            html += `
+                <div class="mb-3">
+                    <strong>Recommended Keywords:</strong>
+                    <div class="mt-2">
+                        ${result.keywords.map(kw => `<span class="keyword-tag">${kw}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        html += `</div>`;
+        
+        return html;
+    }
+    
+    // Format Keyword Research Results
+    function formatKeywordResearch(result, originalData) {
+        console.log('Formatting keyword research result:', result);
+        
+        let html = `
+            <div class="alert alert-success">
+                <i class="fas fa-key me-2"></i>
+                <strong>Keyword Research Complete!</strong> Found keywords for "${originalData.seedKeyword}"
+            </div>
+        `;
+        
+        // Top Keywords Table
+        if (result.keywords && result.keywords.length > 0) {
+            html += `
+                <div class="metric-card mb-4">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Top Keywords</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Keyword</th>
+                                    <th>Volume</th>
+                                    <th>Difficulty</th>
+                                    <th>Competition</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            result.keywords.slice(0, 10).forEach(kw => {
+                html += `
+                    <tr>
+                        <td><span class="keyword-tag primary">${kw.keyword}</span></td>
+                        <td>${kw.search_volume ? kw.search_volume.toLocaleString() : 'N/A'}</td>
+                        <td><span class="score-badge ${getDifficultyClass(kw.difficulty || 50)}">${kw.difficulty || 'N/A'}</span></td>
+                        <td>${kw.competition || 'Medium'}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Keyword Categories
+        if (result.long_tail_keywords || result.question_keywords) {
+            html += `<div class="row">`;
+            
+            if (result.long_tail_keywords && result.long_tail_keywords.length > 0) {
+                html += `
+                    <div class="col-md-6">
+                        <div class="metric-card">
+                            <h6><i class="fas fa-list me-2"></i>Long-tail Keywords</h6>
+                            <div class="mt-2">
+                                ${result.long_tail_keywords.slice(0, 8).map(kw => `<span class="keyword-tag">${kw.keyword || kw}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (result.question_keywords && result.question_keywords.length > 0) {
+                html += `
+                    <div class="col-md-6">
+                        <div class="metric-card">
+                            <h6><i class="fas fa-question-circle me-2"></i>Question Keywords</h6>
+                            <div class="mt-2">
+                                ${result.question_keywords.slice(0, 8).map(kw => `<span class="keyword-tag">${kw.keyword || kw}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += `</div>`;
+        }
+        
+        return html;
+    }
+    
+    // Helper Functions for Scoring
+    function getScoreClass(score) {
+        if (score >= 80) return 'score-excellent';
+        if (score >= 60) return 'score-good';
+        if (score >= 40) return 'score-average';
+        return 'score-poor';
+    }
+    
+    function getDifficultyClass(difficulty) {
+        if (difficulty >= 70) return 'score-poor';
+        if (difficulty >= 50) return 'score-average';
+        if (difficulty >= 30) return 'score-good';
+        return 'score-excellent';
+    }
+    // ============================================================================
+    // SECTION 7: EXPORT FUNCTIONS AND ADDITIONAL EVENT LISTENERS
+    // ============================================================================
+    
+    // Export to PDF Function
+    function exportToPDF() {
+        if (!analysisPreview) return;
+        
+        const content = analysisPreview.innerHTML;
+        const timestamp = new Date().toISOString().slice(0, 10);
+        
+        // Create a clean HTML document for export
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>SEO Analysis Report - ${timestamp}</title>
+                <style>
+                    body { 
+                        font-family: Arial, sans-serif; 
+                        line-height: 1.6; 
+                        margin: 1in; 
+                        color: #333; 
+                    }
+                    .metric-card { 
+                        border: 1px solid #ddd; 
+                        padding: 1rem; 
+                        margin: 1rem 0; 
+                        border-radius: 5px; 
+                        background-color: #f9f9f9;
+                    }
+                    .score-badge { 
+                        background: #007bff; 
+                        color: white; 
+                        padding: 0.25rem 0.5rem; 
+                        border-radius: 3px; 
+                        font-size: 0.9rem;
+                    }
+                    .score-excellent { background-color: #28a745 !important; }
+                    .score-good { background-color: #17a2b8 !important; }
+                    .score-average { background-color: #ffc107 !important; color: #000 !important; }
+                    .score-poor { background-color: #dc3545 !important; }
+                    .alert { 
+                        padding: 1rem; 
+                        margin: 1rem 0; 
+                        border-radius: 5px; 
+                        background-color: #d4edda; 
+                        border: 1px solid #c3e6cb; 
+                    }
+                    table { 
+                        width: 100%; 
+                        border-collapse: collapse; 
+                        margin: 1rem 0;
+                    }
+                    th, td { 
+                        border: 1px solid #ddd; 
+                        padding: 0.5rem; 
+                        text-align: left; 
+                    }
+                    th { 
+                        background-color: #f8f9fa; 
+                        font-weight: bold;
+                    }
+                    .keyword-tag {
+                        display: inline-block;
+                        background-color: #e9ecef;
+                        color: #495057;
+                        padding: 0.25rem 0.5rem;
+                        margin: 0.25rem;
+                        border-radius: 15px;
+                        font-size: 0.85rem;
+                    }
+                    .keyword-tag.primary {
+                        background-color: #007bff;
+                        color: white;
+                    }
+                    h1, h2, h3, h4, h5, h6 { color: #2c3e50; }
+                    .text-success { color: #28a745 !important; }
+                    .text-danger { color: #dc3545 !important; }
+                    .text-warning { color: #ffc107 !important; }
+                    .text-info { color: #17a2b8 !important; }
+                    .text-primary { color: #007bff !important; }
+                </style>
+            </head>
+            <body>
+                <h1>SEO Analysis Report</h1>
+                <p><strong>Generated on:</strong> ${new Date().toLocaleString()}</p>
+                <hr>
+                ${content}
+                <hr>
+                <p><small>Report generated by Elevify SEO Optimizer</small></p>
+            </body>
+            </html>
+        `;
+        
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `seo-analysis-report-${timestamp}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        console.log('Report exported as HTML file');
+    }
+    
+    // Export to Excel Function
+    function exportToExcel() {
+        if (!analysisPreview) return;
+        
+        // Extract data from the current analysis
+        const content = analysisPreview.textContent;
+        const timestamp = new Date().toISOString().slice(0, 10);
+        
+        // Create CSV content
+        let csvContent = "SEO Analysis Report\n";
+        csvContent += `Generated on: ${new Date().toLocaleString()}\n\n`;
+        
+        // Extract key data points
+        const lines = content.split('\n').filter(line => line.trim().length > 0);
+        lines.forEach(line => {
+            if (line.trim()) {
+                csvContent += `"${line.trim().replace(/"/g, '""')}"\n`;
+            }
+        });
+        
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `seo-analysis-data-${timestamp}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        console.log('Data exported as CSV file');
+    }
+    
+    // Copy to Clipboard Function
+    function copyToClipboard() {
+        if (!analysisPreview) {
+            showError('No analysis results to copy.');
+            return;
+        }
+        
+        const content = analysisPreview.textContent;
+        
+        if (navigator.clipboard && window.isSecureContext) {
+            // Use the modern clipboard API
+            navigator.clipboard.writeText(content)
+                .then(() => {
+                    showSuccessMessage('Analysis results copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    fallbackCopyToClipboard(content);
+                });
+        } else {
+            // Fallback for older browsers
+            fallbackCopyToClipboard(content);
+        }
+    }
+    
+    // Fallback copy function for older browsers
+    function fallbackCopyToClipboard(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            showSuccessMessage('Analysis results copied to clipboard!');
+        } catch (err) {
+            console.error('Fallback copy failed: ', err);
+            showError('Failed to copy results to clipboard.');
+        }
+        
+        document.body.removeChild(textArea);
+    }
+    
+    // Success message function
+    function showSuccessMessage(message) {
+        // Create a temporary success alert
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.style.maxWidth = '300px';
+        alertDiv.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.parentNode.removeChild(alertDiv);
+            }
+        }, 3000);
+    }
+    
+    // Additional Event Listeners
+    
+    // Add scroll effect to header
+    window.addEventListener('scroll', function() {
+        const header = document.querySelector('header');
+        if (header) {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+    });
+    
+    // Handle form input validation
+    function setupInputValidation() {
+        const websiteUrlInput = document.getElementById('websiteUrl');
+        const contentTextInput = document.getElementById('contentText');
+        const seedKeywordInput = document.getElementById('seedKeyword');
+        
+        if (websiteUrlInput) {
+            websiteUrlInput.addEventListener('blur', function() {
+                if (this.value && !isValidUrl(this.value)) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        }
+        
+        if (contentTextInput) {
+            contentTextInput.addEventListener('input', function() {
+                const wordCount = this.value.trim().split(/\s+/).length;
+                const label = document.querySelector('label[for="contentText"]');
+                if (label) {
+                    const originalText = label.textContent.split('(')[0].trim();
+                    label.textContent = `${originalText} (${wordCount} words)`;
+                }
+            });
+        }
+        
+        if (seedKeywordInput) {
+            seedKeywordInput.addEventListener('input', function() {
+                if (this.value.length < 2 && this.value.length > 0) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        }
+    }
+    
+    // URL validation helper
+    function isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+    
+    // Initialize input validation
+    setupInputValidation();
+    
+    console.log('SEO Optimizer fully initialized and ready!');
+    
+ // End of DOMContentLoaded event listener
+
+// ============================================================================
+// END OF SEO OPTIMIZER JAVASCRIPT
+// ============================================================================
+    </script>
+</body>
+</html>

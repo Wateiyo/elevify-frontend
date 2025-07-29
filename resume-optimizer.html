@@ -1,0 +1,4126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeForge - AI Resume Builder & Optimizer | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .template-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .template-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .template-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .industry-option {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .industry-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .industry-option.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+        }
+        
+        .resume-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.8;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .ai-disclaimer {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .doc-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-radius: 30px 30px 0 0;
+            transition: all 0.3s ease;
+        }
+        
+        .doc-tab:hover {
+            color: #333;
+            background-color: #f0f0f0;
+        }
+        
+        .doc-tab.active {
+            background-color: #14697D;
+            color: white;
+        }
+
+        .document-tabs {
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .experience-entry, .education-entry, .skill-entry {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+            position: relative;
+        }
+
+        .remove-entry {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .add-entry-btn {
+            border: 2px dashed #14697D;
+            background: transparent;
+            color: #14697D;
+            padding: 1rem;
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .add-entry-btn:hover {
+            background-color: #f9f9f9;
+            border-style: solid;
+        }
+
+        .skill-level {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .skill-level input[type="range"] {
+            flex: 1;
+        }
+
+        .skill-level-display {
+            font-weight: bold;
+            color: #14697D;
+            min-width: 80px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+        /* Modal content styling */
+#upgradeModal .modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+#upgradeModal .modal-header {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1.5rem 2rem 1rem;
+}
+
+#upgradeModal .modal-title {
+    font-family: 'Antic Slab', serif;
+    color: #14697D;
+    font-weight: 400;
+    font-size: 1.5rem;
+}
+
+#upgradeModal .modal-body {
+    padding: 2rem;
+}
+
+#upgradeModal .modal-body p {
+    font-family: 'Quicksand', sans-serif;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* ===== PRICING TIER CARDS ===== */
+
+/* Base card styling */
+.pricing-tier-card {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+    background: #f8f9fa;
+    position: relative;
+    overflow: visible;
+    border-radius: 15px;
+}
+
+/* Card body styling */
+.pricing-tier-card .card-body {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+/* Icon styling */
+.pricing-tier-card i {
+    color: #14697D;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Card title styling */
+.pricing-tier-card h6 {
+    font-family: 'Antic Slab', serif;
+    font-weight: 400;
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+/* Card description */
+.pricing-tier-card small {
+    font-family: 'Quicksand', sans-serif;
+    color: #666;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Price display styling */
+.price-display {
+    font-family: 'Sora', sans-serif;
+    margin-bottom: 1.5rem;
+}
+
+.price-display span {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #14697D;
+}
+
+.price-display small {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: normal;
+}
+
+/* Features list styling */
+.features-list {
+    min-height: 80px;
+    width: 100%;
+    text-align: left;
+    margin-top: auto;
+}
+
+.features-list div {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.features-list small {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.features-list i {
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    width: 12px;
+}
+
+/* Badge styling */
+.pricing-tier-card .badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    z-index: 5;
+}
+
+/* ===== HOVER EFFECTS ===== */
+.pricing-tier-card:hover {
+    border-color: #14697D;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(20, 105, 125, 0.2);
+    background-color: #ffffff;
+}
+
+.pricing-tier-card:hover i {
+    color: #0f5566;
+}
+
+/* ===== SELECTED STATE (YELLOW HIGHLIGHT) ===== */
+.pricing-tier-card.selected {
+    border-color: #FFbf23 !important;
+    background-color: #fffbf0 !important;
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    z-index: 10;
+}
+
+.pricing-tier-card.selected h6 {
+    color: #14697D;
+}
+
+.pricing-tier-card.selected i {
+    color: #FFbf23;
+    transform: scale(1.1);
+}
+
+.pricing-tier-card.selected .price-display span {
+    color: #FFbf23;
+}
+
+/* ===== GET SELECTED PLAN BUTTON ===== */
+#getSelectedPlan {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    border: none;
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
+#getSelectedPlan:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#getSelectedPlan:enabled {
+    background-color: #14697D;
+    border-color: #14697D;
+    color: white;
+}
+
+#getSelectedPlan:enabled:hover {
+    background-color: #0f5566;
+    border-color: #0f5566;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(20, 105, 125, 0.3);
+}
+
+#getSelectedPlan:enabled:active {
+    transform: translateY(0);
+}
+
+/* Button icon */
+#getSelectedPlan i {
+    margin-right: 0.5rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet and below */
+@media (max-width: 992px) {
+    .pricing-tier-card .card-body {
+        padding: 1.5rem 1rem;
+    }
+    
+    .pricing-tier-card i {
+        font-size: 2rem;
+    }
+    
+    .price-display span {
+        font-size: 1.8rem;
+    }
+    
+    .features-list {
+        min-height: 70px;
+    }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+    #upgradeModal .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .pricing-tier-card {
+        margin-bottom: 1rem;
+    }
+    
+    .pricing-tier-card.selected {
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 8px 25px rgba(255, 191, 35, 0.3);
+    }
+    
+    .pricing-tier-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    #getSelectedPlan {
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 576px) {
+    #upgradeModal .modal-body {
+        padding: 1rem;
+    }
+    
+    .price-display span {
+        font-size: 1.6rem !important;
+    }
+    
+    .features-list {
+        text-align: center !important;
+        min-height: 60px;
+    }
+    
+    .pricing-tier-card h6 {
+        font-size: 1.1rem;
+    }
+    
+    .pricing-tier-card i {
+        font-size: 1.8rem;
+    }
+    
+    .pricing-tier-card .badge {
+        font-size: 0.6rem;
+        padding: 0.3rem 0.5rem;
+    }
+}
+
+/* ===== ANIMATION ENHANCEMENTS ===== */
+
+/* Smooth transitions for all interactive elements */
+.pricing-tier-card,
+.pricing-tier-card i,
+.pricing-tier-card h6,
+.pricing-tier-card .price-display span,
+#getSelectedPlan {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Subtle pulse animation for selected state */
+.pricing-tier-card.selected {
+    animation: selectedPulse 0.6s ease-out;
+}
+
+@keyframes selectedPulse {
+    0% {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    }
+    50% {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 0 15px 40px rgba(255, 191, 35, 0.5);
+    }
+    100% {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    }
+}
+
+/* Modal entrance animation */
+#upgradeModal.fade .modal-dialog {
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+#upgradeModal.fade:not(.show) .modal-dialog {
+    transform: translate(0, -25px) scale(0.95);
+    opacity: 0;
+}
+
+#upgradeModal.fade.show .modal-dialog {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+        
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>ResumeForge - AI Resume Builder & Optimizer</h1>
+                        <p class="lead">Create professional, ATS-optimized resumes tailored to your industry with AI-powered content generation and formatting.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img5.svg" alt="Resume Builder" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-file-alt" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose resume template</div>
+                            <div class="mt-2"><span class="step-number">2</span> Fill in your details</div>
+                            <div class="mt-2"><span class="step-number">3</span> AI optimizes content</div>
+                            <div class="mt-2"><span class="step-number">4</span> Review & customize</div>
+                            <div class="mt-2"><span class="step-number">5</span> Download or optimize</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-star" style="color: #FFbf23;"></i> AI Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> ATS optimization</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Industry-specific content</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Keyword enhancement</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Professional formatting</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Impact statement generation</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Multiple templates</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-briefcase" style="color: #A82C2C;"></i> Industries Supported</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-laptop-code" style="color: #14697D;"></i> Technology & IT</div>
+                            <div class="mb-2"><i class="fas fa-chart-line" style="color: #14697D;"></i> Business & Finance</div>
+                            <div class="mb-2"><i class="fas fa-heartbeat" style="color: #14697D;"></i> Healthcare & Medical</div>
+                            <div class="mb-2"><i class="fas fa-graduation-cap" style="color: #14697D;"></i> Education & Training</div>
+                            <div class="mb-2"><i class="fas fa-palette" style="color: #14697D;"></i> Creative & Design</div>
+                            <div class="mb-2"><i class="fas fa-cogs" style="color: #14697D;"></i> Engineering</div>
+                            <div class="mb-2"><i class="fas fa-gavel" style="color: #14697D;"></i> Legal & Consulting</div>
+                            <div><i class="fas fa-plus" style="color: #14697D;"></i> All Industries</div>
+                        </div>
+                    </div>
+
+                    <div class="ai-disclaimer">
+                        <h6><i class="fas fa-robot me-2" style="color: #856404;"></i>AI Enhancement</h6>
+                        <p class="small mb-0">Our AI analyzes industry standards and job requirements to optimize your resume content for maximum impact and ATS compatibility.</p>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Build Your Professional Resume</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <!-- Document Tabs -->
+                        <div class="document-tabs mb-4">
+                            <button class="doc-tab active" data-tab="build">Build Resume</button>
+                            <button class="doc-tab" data-tab="optimize">Optimize Existing</button>
+                        </div>
+
+                        <!-- Build Resume Section -->
+                        <div id="buildSection" class="tab-content active">
+                            <form id="resumeBuilderForm">
+                                <!-- Template Selection -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Choose Resume Template</label>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="template-card card h-100" data-template="modern">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-file-alt mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Modern</h6>
+                                                    <small class="text-muted">Clean & professional</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="template-card card h-100" data-template="creative">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-paint-brush mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Creative</h6>
+                                                    <small class="text-muted">Design & arts focused</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="template-card card h-100" data-template="executive">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-crown mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Executive</h6>
+                                                    <small class="text-muted">Senior level positions</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="template-card card h-100" data-template="minimal">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-list mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Minimal</h6>
+                                                    <small class="text-muted">Simple & elegant</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="template-card card h-100" data-template="technical">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-code mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Technical</h6>
+                                                    <small class="text-muted">IT & engineering</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="template-card card h-100" data-template="academic">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-graduation-cap mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Academic</h6>
+                                                    <small class="text-muted">Research & education</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedTemplate" name="template" required>
+
+                                <!-- Industry Selection -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Target Industry</label>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <div class="industry-option" data-industry="technology">
+                                                <i class="fas fa-laptop-code mb-2" style="color: #14697D;"></i>
+                                                <div>Technology</div>
+                                                <small class="text-muted">IT & Software</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="industry-option" data-industry="business">
+                                                <i class="fas fa-chart-line mb-2" style="color: #14697D;"></i>
+                                                <div>Business</div>
+                                                <small class="text-muted">Finance & Sales</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="industry-option" data-industry="healthcare">
+                                                <i class="fas fa-heartbeat mb-2" style="color: #14697D;"></i>
+                                                <div>Healthcare</div>
+                                                <small class="text-muted">Medical & Nursing</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="industry-option" data-industry="education">
+                                                <i class="fas fa-graduation-cap mb-2" style="color: #14697D;"></i>
+                                                <div>Education</div>
+                                                <small class="text-muted">Teaching & Training</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="industry-option" data-industry="creative">
+                                                <i class="fas fa-palette mb-2" style="color: #14697D;"></i>
+                                                <div>Creative</div>
+                                                <small class="text-muted">Design & Arts</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="industry-option" data-industry="engineering">
+                                                <i class="fas fa-cogs mb-2" style="color: #14697D;"></i>
+                                                <div>Engineering</div>
+                                                <small class="text-muted">Manufacturing</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="industry-option" data-industry="legal">
+                                                <i class="fas fa-gavel mb-2" style="color: #14697D;"></i>
+                                                <div>Legal</div>
+                                                <small class="text-muted">Law & Consulting</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="industry-option" data-industry="other">
+                                                <i class="fas fa-ellipsis-h mb-2" style="color: #14697D;"></i>
+                                                <div>Other</div>
+                                                <small class="text-muted">All industries</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedIndustry" name="industry" required>
+
+                                <!-- Personal Information -->
+                                <div class="mb-4">
+                                    <h5>Personal Information</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="fullName" class="form-label">Full Name</label>
+                                            <input type="text" class="form-control" id="fullName" name="fullName" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="jobTitle" class="form-label">Professional Title</label>
+                                            <input type="text" class="form-control" id="jobTitle" name="jobTitle" placeholder="e.g., Software Engineer, Marketing Manager">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="phone" class="form-label">Phone</label>
+                                            <input type="tel" class="form-control" id="phone" name="phone">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="location" class="form-label">Location</label>
+                                            <input type="text" class="form-control" id="location" name="location" placeholder="City, State/Country">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="linkedin" class="form-label">LinkedIn URL (Optional)</label>
+                                            <input type="url" class="form-control" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="summary" class="form-label">Professional Summary</label>
+                                        <textarea class="form-control" id="summary" name="summary" rows="3" placeholder="Brief overview of your professional background and key achievements..."></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Work Experience -->
+                                <div class="mb-4">
+                                    <h5>Work Experience</h5>
+                                    <div id="experienceContainer">
+                                        <div class="experience-entry">
+                                            <button type="button" class="remove-entry" onclick="removeEntry(this)">×</button>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Job Title</label>
+                                                    <input type="text" class="form-control" name="experienceTitle[]" placeholder="e.g., Senior Software Engineer">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Company</label>
+                                                    <input type="text" class="form-control" name="experienceCompany[]" placeholder="Company Name">
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Start Date</label>
+                                                    <input type="month" class="form-control" name="experienceStart[]">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">End Date</label>
+                                                    <input type="month" class="form-control" name="experienceEnd[]" placeholder="Leave blank if current">
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Key Achievements & Responsibilities</label>
+                                                <textarea class="form-control" name="experienceDescription[]" rows="3" placeholder="• Led a team of 5 developers to deliver project 2 weeks ahead of schedule&#10;• Increased system performance by 40% through code optimization&#10;• Implemented new features that improved user engagement by 25%"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="add-entry-btn" onclick="addExperienceEntry()">
+                                        <i class="fas fa-plus me-2"></i> Add Another Experience
+                                    </button>
+                                </div>
+
+                                <!-- Education -->
+                                <div class="mb-4">
+                                    <h5>Education</h5>
+                                    <div id="educationContainer">
+                                        <div class="education-entry">
+                                            <button type="button" class="remove-entry" onclick="removeEntry(this)">×</button>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Degree</label>
+                                                    <input type="text" class="form-control" name="educationDegree[]" placeholder="e.g., Bachelor of Computer Science">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Institution</label>
+                                                    <input type="text" class="form-control" name="educationSchool[]" placeholder="University/College Name">
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Graduation Year</label>
+                                                    <input type="number" class="form-control" name="educationYear[]" min="1950" max="2030">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">GPA (Optional)</label>
+                                                    <input type="text" class="form-control" name="educationGPA[]" placeholder="3.8/4.0">
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Relevant Coursework/Achievements (Optional)</label>
+                                                <textarea class="form-control" name="educationDetails[]" rows="2" placeholder="Relevant courses, honors, projects, etc."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="add-entry-btn" onclick="addEducationEntry()">
+                                        <i class="fas fa-plus me-2"></i> Add Another Education
+                                    </button>
+                                </div>
+
+                                <!-- Skills -->
+                                <div class="mb-4">
+                                    <h5>Skills</h5>
+                                    <div id="skillsContainer">
+                                        <div class="skill-entry">
+                                            <button type="button" class="remove-entry" onclick="removeEntry(this)">×</button>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Skill Name</label>
+                                                    <input type="text" class="form-control" name="skillName[]" placeholder="e.g., JavaScript, Project Management">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Skill Category</label>
+                                                    <select class="form-select" name="skillCategory[]">
+                                                        <option value="">Select category</option>
+                                                        <option value="technical">Technical Skills</option>
+                                                        <option value="soft">Soft Skills</option>
+                                                        <option value="language">Languages</option>
+                                                        <option value="tools">Tools & Software</option>
+                                                        <option value="certifications">Certifications</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="skill-level">
+                                                <label class="form-label">Proficiency Level:</label>
+                                                <input type="range" class="form-range" name="skillLevel[]" min="1" max="5" value="3" onchange="updateSkillLevel(this)">
+                                                <span class="skill-level-display">Intermediate</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="add-entry-btn" onclick="addSkillEntry()">
+                                        <i class="fas fa-plus me-2"></i> Add Another Skill
+                                    </button>
+                                </div>
+
+                                <!-- Additional Sections -->
+                                <div class="mb-4">
+                                    <h5>Additional Information (Optional)</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="certifications" class="form-label">Certifications</label>
+                                            <textarea class="form-control" id="certifications" name="certifications" rows="3" placeholder="List your relevant certifications..."></textarea>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="projects" class="form-label">Notable Projects</label>
+                                            <textarea class="form-control" id="projects" name="projects" rows="3" placeholder="Key projects and their impact..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="awards" class="form-label">Awards & Achievements</label>
+                                            <textarea class="form-control" id="awards" name="awards" rows="2" placeholder="Professional awards, recognition..."></textarea>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="interests" class="form-label">Interests & Hobbies</label>
+                                            <textarea class="form-control" id="interests" name="interests" rows="2" placeholder="Professional interests, volunteer work..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-magic me-2"></i> Generate AI-Optimized Resume
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Optimize Resume Section -->
+                        <div id="optimizeSection" class="tab-content">
+                            <form id="optimizeForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Upload Your Current Resume</label>
+                                    
+                                    <!-- File Upload Option -->
+                                    <div class="mb-3">
+                                        <label for="resumeFile" class="form-label">Upload Resume File</label>
+                                        <input type="file" class="form-control" id="resumeFile" accept=".txt,.doc,.docx,.pdf">
+                                        <div class="form-text">Supported formats: TXT, DOC, DOCX, PDF</div>
+                                    </div>
+                                    
+                                    <!-- Text Input Option -->
+                                    <div class="mb-3">
+                                        <label for="resumeText" class="form-label">Or Paste Resume Text</label>
+                                        <textarea class="form-control" id="resumeText" rows="10" placeholder="Paste your current resume text here for optimization..."></textarea>
+                                        <div class="form-text">You can either upload a file above or paste text directly here</div>
+                                    </div>
+                                </div>
+
+                                <!-- Target Job Information -->
+                                <div class="mb-4">
+                                    <h5>Target Job Information</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="targetJobTitle" class="form-label">Target Job Title</label>
+                                            <input type="text" class="form-control" id="targetJobTitle" name="targetJobTitle" placeholder="e.g., Senior Data Scientist">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="targetIndustry" class="form-label">Target Industry</label>
+                                            <select class="form-select" id="targetIndustry" name="targetIndustry">
+                                                <option value="">Select industry</option>
+                                                <option value="technology">Technology & IT</option>
+                                                <option value="business">Business & Finance</option>
+                                                <option value="healthcare">Healthcare & Medical</option>
+                                                <option value="education">Education & Training</option>
+                                                <option value="creative">Creative & Design</option>
+                                                <option value="engineering">Engineering</option>
+                                                <option value="legal">Legal & Consulting</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="jobDescription" class="form-label">Job Description (Optional)</label>
+                                        <textarea class="form-control" id="jobDescription" name="jobDescription" rows="4" placeholder="Paste the job description here to optimize your resume for specific requirements..."></textarea>
+                                        <div class="form-text">Providing the job description helps our AI tailor your resume to match specific requirements</div>
+                                    </div>
+                                </div>
+
+                                <!-- Optimization Options -->
+                                <div class="mb-4">
+                                    <h5>Optimization Preferences</h5>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="atsOptimization" checked>
+                                                <label class="form-check-label" for="atsOptimization">
+                                                    ATS (Applicant Tracking System) optimization
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="keywordEnhancement" checked>
+                                                <label class="form-check-label" for="keywordEnhancement">
+                                                    Industry keyword enhancement
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="impactStatements">
+                                                <label class="form-check-label" for="impactStatements">
+                                                    Convert to impact-driven statements
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="formatImprovement" checked>
+                                                <label class="form-check-label" for="formatImprovement">
+                                                    Professional formatting improvements
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="lengthOptimization">
+                                                <label class="form-check-label" for="lengthOptimization">
+                                                    Optimize resume length (1-2 pages)
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" id="skillsAlignment">
+                                                <label class="form-check-label" for="skillsAlignment">
+                                                    Align skills with job requirements
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-rocket me-2"></i> Optimize Resume with AI
+                                </button>
+                            </form>
+                            
+                            <!-- Optimization Results -->
+                            <div id="optimizationResults" class="mt-4" style="display: none;">
+                                <h5 class="mb-3">Optimization Results</h5>
+                                
+                                <!-- Optimization Score -->
+                                <div id="optimizationScore" class="alert alert-info" style="display: none;">
+                                    <i class="fas fa-chart-line me-2"></i>
+                                    <strong>ATS Compatibility Score:</strong> <span id="atsScore"></span>%
+                                    <div class="progress mt-2" style="height: 10px;">
+                                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="resume-preview mb-4" id="optimizationPreview">
+                                    <!-- Optimized resume will appear here -->
+                                </div>
+                                
+                                <div class="export-options">
+                                    <div class="export-option" id="downloadOptimized">
+                                        <i class="fas fa-download"></i>
+                                        <div>Download</div>
+                                        <small class="text-muted">Save optimized resume</small>
+                                    </div>
+                                    <div class="export-option" id="copyOptimized">
+                                        <i class="fas fa-copy"></i>
+                                        <div>Copy Text</div>
+                                        <small class="text-muted">To clipboard</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Container -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Professional Resume</h4>
+                        
+                        <!-- Resume Preview -->
+                        <div class="resume-preview mb-4" id="resumePreview">
+                            <!-- Generated resume will appear here -->
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="exportPDF">
+                                <i class="fas fa-file-pdf"></i>
+                                <div>Download PDF</div>
+                                <small class="text-muted">.pdf format</small>
+                            </div>
+                            <div class="export-option" id="exportWord">
+                                <i class="fas fa-file-word"></i>
+                                <div>Download Word</div>
+                                <small class="text-muted">.docx format</small>
+                            </div>
+                            <div class="export-option" id="copyResume">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Text</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editResumeBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Resume
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newResumeBtn">
+                                <i class="fas fa-plus me-1"></i> Create New Resume
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading Spinner -->
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                </div>
+            </div>
+        </div>
+         <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">land</span> interviews?</h2>
+                <p class="lead mb-4">Join thousands of professionals who gather better insights with Elevify's AI tools.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Upgrade Modal -->
+<div class="modal fade" id="upgradeModal" tabindex="-1" aria-labelledby="upgradeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content" style="border-radius: 20px; border: none;">
+            <div class="modal-header" style="border-bottom: 1px solid #e0e0e0;">
+                <h5 class="modal-title" id="upgradeModalLabel" style="font-family: 'Antic Slab', serif; color: #14697D;">
+                    <i class="fas fa-crown me-2" style="color: #FFbf23;"></i>Upgrade for Unlimited Access
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-center mb-4" style="font-family: 'Quicksand', sans-serif; color: #666;">
+                    Choose the plan that works best for you and unlock unlimited access.
+                </p>
+                
+                <!-- Pricing Cards Container -->
+                <div class="row g-3 mb-4">
+                    <!-- Pay As You Go -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="payasyougo" data-url="https://elevify.net?wanted=https://elevify.net/writesuite">
+                            <div class="card-body text-center p-3">
+                                <i class="fas fa-gift mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>Pay As You Go </h6>
+                                <small class="text-muted mb-3 d-block">24 Hour Access for WriterSuite</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$1</span>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>24-hour unlimited access to WriteSuite</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>All writing tools included (Write, Edit, Proofread, Summarize, Rewrite)</small></div>
+                                    <div class="mb-1"><i class="fas fa-times text-muted me-2"></i><small>No monthly commitment - pay only when you need it</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 24 Hour Pass -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="24hourpass" data-url="https://elevify.gumroad.com/l/hngcmx?wanted=https://elevify.net/writesuite">
+                            <div class="card-body text-center p-3 position-relative">
+                                <span class="badge position-absolute" style="top: 10px; right: 10px; background-color: #FFbf23; color: #000; font-size: 0.7rem;">Popular</span>
+                                <i class="fas fa-clock mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>24-Hour Pass</h6>
+                                <small class="text-muted mb-3 d-block">All tools unlimited for 24 hours</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$2</span>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Unlimited access to ALL Elevify tools for 24 hours</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>No daily limits - generate as much as you need</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Batch processing - work on multiple projects</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pro Tier -->
+                    <div class="col-12 col-md-12 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="pro" data-url="https://elevify.gumroad.com/l/flbal?wanted=https://elevify.net/writesuite">
+                            <div class="card-body text-center p-3 position-relative">
+                                <span class="badge position-absolute" style="top: 10px; right: 10px; background-color: #14697D; color: white; font-size: 0.7rem;">Best Value</span>
+                                <i class="fas fa-crown mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>Pro Monthly</h6>
+                                <small class="text-muted mb-3 d-block">Full unlimited access</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$15</span>
+                                    <small class="text-muted">/month</small>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Unlimited monthly usage across all tools</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Brand consistency tools - maintain your voice across all content</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Bulk operations - process multiple documents at once</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hidden input to track selection -->
+                <input type="hidden" id="selectedPricingTier" name="pricingTier" required>
+                
+                <!-- Get Button -->
+                <button type="button" class="btn btn-primary btn-lg w-100" id="getSelectedPlan" disabled>
+                    <i class="fas fa-shopping-cart me-2"></i>Get Selected Plan
+                </button>
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">Secure payment powered by Gumroad</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+  // ============================================================================
+// SECTION 1: CORE INITIALIZATION & CONFIGURATION (FIXED FOR RENDER)
+// ============================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Only initialize if we're on the resume optimizer page
+    if (!document.getElementById('resumeBuilderForm') && !document.getElementById('optimizeForm')) {
+        console.log('Resume Optimizer: Not on resume optimizer page, skipping initialization');
+        return;
+    }
+    
+    console.log('Resume Optimizer initializing...');
+    
+    // FIXED: API Configuration with Render URL support
+    const CONFIG = {
+        API_BASE_URL: (() => {
+            const hostname = window.location.hostname;
+            
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                return 'http://localhost:5000';
+            } else {
+                return 'https://elevify.onrender.com';  // Your Render backend
+            }
+        })()
+    };
+    
+    console.log('API Base URL configured:', CONFIG.API_BASE_URL);
+    
+    // Tool configuration - matches your backend expectations
+    const TOOL_ID = 'resume_optimizer';
+    const API_ENDPOINT = '/api/resume-optimizer';
+    
+    // Resume generation configuration
+    const RESUME_CONFIG = {
+        maxRetries: 3,
+        timeoutDuration: 30000,
+        validationEnabled: true,
+        enhancementEnabled: true,
+        atsOptimization: true,
+        modernFormat: true
+    };
+    
+    // Industry-specific configurations with modern ATS keywords - matches your backend
+    const INDUSTRY_CONFIGS = {
+        technology: {
+            keySkills: ['JavaScript', 'Python', 'React', 'Node.js', 'AWS', 'Docker', 'Git', 'Agile', 'API Development', 'Database Management'],
+            preferredSections: ['Technical Skills', 'Projects', 'Certifications', 'Professional Experience'],
+            actionWords: ['Developed', 'Implemented', 'Architected', 'Optimized', 'Deployed', 'Engineered', 'Automated', 'Integrated'],
+            atsKeywords: ['software development', 'programming', 'cloud computing', 'devops', 'full-stack', 'microservices', 'ci/cd']
+        },
+        business: {
+            keySkills: ['Project Management', 'Strategic Planning', 'Financial Analysis', 'Leadership', 'Data Analysis', 'Process Improvement'],
+            preferredSections: ['Leadership Experience', 'Key Achievements', 'Professional Development', 'Core Competencies'],
+            actionWords: ['Led', 'Managed', 'Increased', 'Improved', 'Delivered', 'Streamlined', 'Coordinated', 'Negotiated'],
+            atsKeywords: ['business development', 'strategy', 'revenue growth', 'cost reduction', 'team management', 'stakeholder management']
+        },
+        healthcare: {
+            keySkills: ['Patient Care', 'Clinical Assessment', 'Medical Records', 'HIPAA Compliance', 'Electronic Health Records', 'Clinical Documentation'],
+            preferredSections: ['Clinical Experience', 'Certifications', 'Licenses', 'Professional Development'],
+            actionWords: ['Provided', 'Administered', 'Monitored', 'Assessed', 'Coordinated', 'Implemented', 'Maintained'],
+            atsKeywords: ['patient care', 'clinical experience', 'healthcare compliance', 'medical procedures', 'patient safety']
+        },
+        education: {
+            keySkills: ['Curriculum Development', 'Student Assessment', 'Classroom Management', 'Educational Technology', 'Differentiated Instruction'],
+            preferredSections: ['Teaching Experience', 'Educational Philosophy', 'Certifications', 'Professional Development'],
+            actionWords: ['Taught', 'Developed', 'Assessed', 'Mentored', 'Facilitated', 'Implemented', 'Designed'],
+            atsKeywords: ['curriculum development', 'student engagement', 'educational assessment', 'classroom management', 'learning outcomes']
+        },
+        creative: {
+            keySkills: ['Creative Design', 'Brand Development', 'Adobe Creative Suite', 'Project Management', 'Client Relations', 'Visual Communication'],
+            preferredSections: ['Portfolio', 'Creative Projects', 'Software Proficiency', 'Client Work'],
+            actionWords: ['Designed', 'Created', 'Conceptualized', 'Collaborated', 'Delivered', 'Branded', 'Visualized'],
+            atsKeywords: ['creative design', 'brand identity', 'visual communication', 'design thinking', 'user experience']
+        },
+        engineering: {
+            keySkills: ['Technical Design', 'Project Management', 'Quality Assurance', 'CAD Software', 'Problem Solving', 'System Analysis'],
+            preferredSections: ['Technical Projects', 'Engineering Experience', 'Certifications', 'Technical Skills'],
+            actionWords: ['Engineered', 'Designed', 'Analyzed', 'Optimized', 'Tested', 'Calculated', 'Researched'],
+            atsKeywords: ['engineering design', 'technical analysis', 'project engineering', 'quality assurance', 'process improvement']
+        },
+        legal: {
+            keySkills: ['Legal Research', 'Contract Review', 'Case Management', 'Client Counseling', 'Litigation Support', 'Legal Writing'],
+            preferredSections: ['Legal Experience', 'Bar Admissions', 'Notable Cases', 'Professional Development'],
+            actionWords: ['Represented', 'Negotiated', 'Researched', 'Drafted', 'Advised', 'Litigated', 'Analyzed'],
+            atsKeywords: ['legal research', 'contract negotiation', 'litigation', 'regulatory compliance', 'legal analysis']
+        },
+        other: {
+            keySkills: ['Communication', 'Problem Solving', 'Team Collaboration', 'Customer Service', 'Time Management', 'Adaptability'],
+            preferredSections: ['Professional Experience', 'Key Achievements', 'Core Competencies', 'Professional Development'],
+            actionWords: ['Achieved', 'Improved', 'Collaborated', 'Delivered', 'Managed', 'Facilitated', 'Supported'],
+            atsKeywords: ['professional development', 'team collaboration', 'customer service', 'process improvement', 'communication']
+        }
+    };
+    
+    // Global state management - stores all resume data
+    window.ResumeOptimizer = {
+        config: RESUME_CONFIG,
+        industryConfigs: INDUSTRY_CONFIGS,
+        currentSession: null,
+        generatedResume: null,
+        optimizedResume: null,
+        validationResults: null,
+        currentFormData: null,
+        apiEndpoint: API_ENDPOINT,
+        toolId: TOOL_ID,
+        apiBaseUrl: CONFIG.API_BASE_URL  // FIXED: Added API base URL to global state
+    };
+    
+    console.log('Resume Optimizer configuration loaded:', window.ResumeOptimizer);
+    
+    // Initialize the tool after configuration is set
+    initializeResumeOptimizer();
+});
+
+function initializeResumeOptimizer() {
+    console.log('Initializing Resume Optimizer functionality...');
+    
+    // Initialize usage tracking first
+    initializeUsageTracking();
+    
+    // Setup all event listeners and UI interactions
+    setupTemplateSelection();
+    setupIndustrySelection();
+    setupTabSwitching();
+    setupFormHandlers();
+    setupFileUpload();
+    setupDynamicEntries();
+    setupSkillManagement();
+    setupExportOptions();
+    setupValidationSystem();
+    setupAutoSave();
+    setupSmartSuggestions();
+    
+    console.log('Resume Optimizer initialization complete');
+}
+
+// Global functions for external access - make functions available to HTML
+window.addExperienceEntry = addExperienceEntry;
+window.addEducationEntry = addEducationEntry;
+window.addSkillEntry = addSkillEntry;
+window.removeEntry = removeEntry;
+window.updateSkillLevel = updateSkillLevel;
+window.toggleCurrentJob = toggleCurrentJob;
+window.addSuggestedSkill = addSuggestedSkill;
+// ============================================================================
+// SECTION 2: USAGE TRACKING & ACCESS CONTROL (FIXED FOR RENDER)
+// ============================================================================
+
+function initializeUsageTracking() {
+    console.log('Initializing usage tracking for Resume Optimizer...');
+    
+    const TOOL_ID = 'resume_optimizer';
+    
+    // Get or create usage data
+    let usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+    
+    if (!usageData[TOOL_ID]) {
+        usageData[TOOL_ID] = {
+            count: 0,
+            lastReset: new Date().toISOString(),
+            month: new Date().getMonth(),
+            year: new Date().getFullYear()
+        };
+        localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+    }
+    
+    // Check for monthly reset
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    
+    if (usageData[TOOL_ID].month !== currentMonth || usageData[TOOL_ID].year !== currentYear) {
+        usageData[TOOL_ID] = {
+            count: 0,
+            lastReset: new Date().toISOString(),
+            month: currentMonth,
+            year: currentYear
+        };
+        localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+    }
+    
+    // Update display
+    updateUsageDisplay(usageData[TOOL_ID].count);
+    
+    // Set next reset date
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    nextMonth.setDate(1);
+    const resetDateEl = document.getElementById('resetDate');
+    if (resetDateEl) {
+        resetDateEl.textContent = nextMonth.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+    }
+}
+
+function updateUsageDisplay(usedCount) {
+    const remaining = Math.max(0, 5 - usedCount);
+    const remainingUsesEl = document.getElementById('remainingUses');
+    if (remainingUsesEl) {
+        remainingUsesEl.textContent = remaining;
+    }
+    
+    const usageTracker = document.getElementById('usageTracker');
+    if (usageTracker) {
+        usageTracker.classList.remove('alert-info', 'alert-warning', 'alert-danger');
+        
+        if (remaining === 0) {
+            usageTracker.classList.add('alert-danger');
+            usageTracker.innerHTML = `
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <div class="flex-grow-1">
+                    <strong>No free uses remaining this month!</strong>
+                    <div class="small mt-1">Upgrade to continue using Resume Optimizer</div>
+                </div>
+                <a href="/#pricing" class="btn btn-sm btn-warning ms-3">Upgrade Now</a>
+            `;
+        } else if (remaining <= 2) {
+            usageTracker.classList.add('alert-warning');
+        } else {
+            usageTracker.classList.add('alert-info');
+        }
+    }
+}
+
+function checkUsageLimit() {
+    const TOOL_ID = 'resume_optimizer';
+    const usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+    const toolUsage = usageData[TOOL_ID] || { count: 0 };
+    return toolUsage.count < 5;
+}
+
+function incrementUsage() {
+    const TOOL_ID = 'resume_optimizer';
+    let usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+    if (usageData[TOOL_ID]) {
+        usageData[TOOL_ID].count++;
+        localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+        updateUsageDisplay(usageData[TOOL_ID].count);
+    }
+}
+
+// FIXED: Enhanced access control with Render URL support
+async function checkToolAccess() {
+    try {
+        const apiUrl = `${window.ResumeOptimizer.apiBaseUrl}/api/check-tool-access`;
+        console.log('Checking tool access at:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tool_id: 'resume_optimizer'
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success && result.has_access) {
+            console.log(`Tool access granted: ${result.access_type}`);
+            return true;
+        } else if (checkUsageLimit()) {
+            console.log('Using free tier access');
+            return true;
+        } else {
+            console.log('No access available');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error checking tool access:', error);
+        // Fallback to local usage check
+        return checkUsageLimit();
+    }
+}
+
+function showAccessDeniedMessage() {
+    const message = `
+        <div class="alert alert-warning">
+            <h5><i class="fas fa-lock me-2"></i>Resume Optimizer Access Required</h5>
+            <p>You've reached your free usage limit for this month. Choose an option to continue:</p>
+            <div class="d-flex gap-2 mt-3">
+                <a href="/#pricing" class="btn btn-primary">
+                    <i class="fas fa-crown me-1"></i> Upgrade to Pro ($15/month)
+                </a>
+                <button onclick="initiateSingleToolPayment()" class="btn btn-outline-primary">
+                    <i class="fas fa-credit-card me-1"></i> Single Use ($1)
+                </button>
+            </div>
+        </div>
+    `;
+    
+    const container = document.getElementById('resultsContainer') || document.querySelector('.content-card');
+    if (container) {
+        container.innerHTML = message;
+        container.style.display = 'block';
+    }
+}
+
+// FIXED: Single tool payment integration with Render URL
+async function initiateSingleToolPayment() {
+    try {
+        const apiUrl = `${window.ResumeOptimizer.apiBaseUrl}/api/payment/initiate`;
+        console.log('Initiating payment at:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tier_type: 'pay_as_you_go',
+                tool_name: 'resume_optimizer'
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Open Gumroad payment page
+            window.open(result.gumroad_url, '_blank');
+            
+            // Show payment pending message
+            showPaymentPendingMessage(result.payment_id);
+        } else {
+            throw new Error(result.error || 'Payment initiation failed');
+        }
+    } catch (error) {
+        console.error('Payment initiation error:', error);
+        showErrorMessage('Payment Error', 'Failed to initiate payment. Please try again.');
+    }
+}
+
+function showPaymentPendingMessage(paymentId) {
+    const message = `
+        <div class="alert alert-info">
+            <h5><i class="fas fa-clock me-2"></i>Payment Pending</h5>
+            <p>Complete your payment to get 24-hour access to Resume Optimizer.</p>
+            <div class="mt-3">
+                <button onclick="checkPaymentStatus('${paymentId}')" class="btn btn-primary">
+                    <i class="fas fa-refresh me-1"></i> Check Payment Status
+                </button>
+            </div>
+        </div>
+    `;
+    
+    const container = document.getElementById('resultsContainer') || document.querySelector('.content-card');
+    if (container) {
+        container.innerHTML = message;
+        container.style.display = 'block';
+    }
+}
+
+async function checkPaymentStatus(paymentId) {
+    try {
+        // Check tool access again - your backend will validate payment
+        const hasAccess = await checkToolAccess();
+        
+        if (hasAccess) {
+            showSuccessMessage('Payment confirmed! You now have access to Resume Optimizer.');
+            // Clear the payment message
+            clearPreviousResults();
+        } else {
+            showErrorMessage('Payment Not Found', 'Payment is still processing. Please wait a few moments and try again.');
+        }
+    } catch (error) {
+        console.error('Payment status check error:', error);
+        showErrorMessage('Status Check Failed', 'Unable to verify payment status. Please try again.');
+    }
+}
+// ============================================================================
+// SECTION 3: UI SETUP & EVENT HANDLERS (FIXED FOR RENDER)
+// ============================================================================
+
+function setupTemplateSelection() {
+    const templateCards = document.querySelectorAll('.template-card');
+    const selectedTemplateInput = document.getElementById('selectedTemplate');
+    
+    if (!templateCards.length || !selectedTemplateInput) {
+        console.log('Resume Optimizer: Template elements not found, skipping template setup');
+        return;
+    }
+    
+    templateCards.forEach((card) => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove selected class from all cards
+            templateCards.forEach(c => c.classList.remove('selected'));
+            
+            // Add selected class to clicked card
+            this.classList.add('selected');
+            
+            const template = this.getAttribute('data-template');
+            if (selectedTemplateInput) {
+                selectedTemplateInput.value = template;
+            }
+            
+            console.log('Selected template:', template);
+        });
+    });
+}
+
+function setupIndustrySelection() {
+    const industryOptions = document.querySelectorAll('.industry-option');
+    const selectedIndustryInput = document.getElementById('selectedIndustry');
+    
+    if (!industryOptions.length || !selectedIndustryInput) {
+        console.log('Resume Optimizer: Industry elements not found, skipping industry setup');
+        return;
+    }
+    
+    industryOptions.forEach((option) => {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove selected class from all options
+            industryOptions.forEach(o => o.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            this.classList.add('selected');
+            
+            const industry = this.getAttribute('data-industry');
+            if (selectedIndustryInput) {
+                selectedIndustryInput.value = industry;
+            }
+            
+            console.log('Selected industry:', industry);
+            
+            // Update skills suggestions based on industry
+            updateSkillSuggestions(industry);
+        });
+    });
+}
+
+function setupTabSwitching() {
+    const docTabs = document.querySelectorAll('.doc-tab');
+    
+    if (!docTabs.length) {
+        console.log('Resume Optimizer: Document tabs not found, skipping tab setup');
+        return;
+    }
+    
+    docTabs.forEach((tab) => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetTab = this.getAttribute('data-tab');
+            
+            console.log('Switching to tab:', targetTab);
+            
+            // Update active tab
+            docTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show/hide content sections
+            const buildSection = document.getElementById('buildSection');
+            const optimizeSection = document.getElementById('optimizeSection');
+            
+            if (targetTab === 'build') {
+                if (buildSection) {
+                    buildSection.classList.add('active');
+                    buildSection.style.display = 'block';
+                }
+                if (optimizeSection) {
+                    optimizeSection.classList.remove('active');
+                    optimizeSection.style.display = 'none';
+                }
+            } else if (targetTab === 'optimize') {
+                if (buildSection) {
+                    buildSection.classList.remove('active');
+                    buildSection.style.display = 'none';
+                }
+                if (optimizeSection) {
+                    optimizeSection.classList.add('active');
+                    optimizeSection.style.display = 'block';
+                }
+            }
+            
+            // Clear any previous results
+            clearPreviousResults();
+        });
+    });
+}
+
+function setupFormHandlers() {
+    const resumeBuilderForm = document.getElementById('resumeBuilderForm');
+    const optimizeForm = document.getElementById('optimizeForm');
+    
+    if (resumeBuilderForm) {
+        resumeBuilderForm.addEventListener('submit', handleResumeGeneration);
+    }
+    
+    if (optimizeForm) {
+        optimizeForm.addEventListener('submit', handleResumeOptimization);
+    }
+    
+    // Setup form validation
+    setupFormValidation();
+}
+
+function setupFormValidation() {
+    // Real-time validation for required fields
+    const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+    
+    requiredFields.forEach(field => {
+        field.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        field.addEventListener('input', function() {
+            clearFieldError(this);
+        });
+    });
+}
+
+function validateField(field) {
+    const value = field.value.trim();
+    const fieldName = field.name || field.id;
+    
+    // Remove existing error styling
+    field.classList.remove('is-invalid');
+    
+    // Check if field is empty
+    if (field.hasAttribute('required') && !value) {
+        showFieldError(field, `${fieldName.replace(/([A-Z])/g, ' $1')} is required`);
+        return false;
+    }
+    
+    // Email validation
+    if (field.type === 'email' && value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+            showFieldError(field, 'Please enter a valid email address');
+            return false;
+        }
+    }
+    
+    // Phone validation
+    if (field.type === 'tel' && value) {
+        const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
+        if (!phoneRegex.test(value)) {
+            showFieldError(field, 'Please enter a valid phone number');
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+function showFieldError(field, message) {
+    field.classList.add('is-invalid');
+    
+    // Remove existing error message
+    const existingError = field.parentNode.querySelector('.invalid-feedback');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    // Add new error message
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'invalid-feedback';
+    errorDiv.textContent = message;
+    field.parentNode.appendChild(errorDiv);
+}
+
+function clearFieldError(field) {
+    field.classList.remove('is-invalid');
+    const errorDiv = field.parentNode.querySelector('.invalid-feedback');
+    if (errorDiv) {
+        errorDiv.remove();
+    }
+}
+
+function setupFileUpload() {
+    const resumeFileInput = document.getElementById('resumeFile');
+    const resumeTextarea = document.getElementById('resumeText');
+    
+    if (resumeFileInput && resumeTextarea) {
+        resumeFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                console.log('File selected:', file.name, file.type);
+                
+                // Validate file type
+                const allowedTypes = ['.txt', '.doc', '.docx', '.pdf'];
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (!allowedTypes.includes(fileExtension)) {
+                    alert('Please select a valid file type: TXT, DOC, DOCX, or PDF');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validate file size (max 16MB)
+                const maxSize = 16 * 1024 * 1024; // 16MB
+                if (file.size > maxSize) {
+                    alert('File size too large. Maximum size is 16MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Show loading indicator
+                showFileProcessingIndicator(true);
+                
+                // Process file using your backend
+                uploadFileToBackend(file);
+            }
+        });
+    }
+}
+
+// FIXED: File upload function with Render URL support
+function uploadFileToBackend(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const apiUrl = `${window.ResumeOptimizer.apiBaseUrl}/api/resume-optimizer`;
+    console.log('Uploading file to:', apiUrl);
+    
+    fetch(apiUrl, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.text) {
+            const resumeTextarea = document.getElementById('resumeText');
+            if (resumeTextarea) {
+                resumeTextarea.value = data.text;
+                resumeTextarea.placeholder = `Content loaded from ${file.name}`;
+            }
+            console.log('File processed successfully by backend');
+        } else {
+            throw new Error(data.message || 'Failed to process file');
+        }
+    })
+    .catch(error => {
+        console.error('File upload error:', error);
+        alert('Error processing file. Please try uploading again or paste the text directly.');
+    })
+    .finally(() => {
+        showFileProcessingIndicator(false);
+    });
+}
+
+function showFileProcessingIndicator(show) {
+    const indicator = document.getElementById('fileProcessingIndicator');
+    if (!indicator) {
+        // Create indicator if it doesn't exist
+        const newIndicator = document.createElement('div');
+        newIndicator.id = 'fileProcessingIndicator';
+        newIndicator.className = 'text-center mt-2';
+        newIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing file...';
+        
+        const fileInput = document.getElementById('resumeFile');
+        if (fileInput && fileInput.parentNode) {
+            fileInput.parentNode.appendChild(newIndicator);
+        }
+    }
+    
+    const finalIndicator = document.getElementById('fileProcessingIndicator');
+    if (finalIndicator) {
+        finalIndicator.style.display = show ? 'block' : 'none';
+    }
+}
+// ============================================================================
+// SECTION 4: DYNAMIC ENTRY MANAGEMENT (NO CHANGES NEEDED)
+// ============================================================================
+
+function setupDynamicEntries() {
+    console.log('Setting up dynamic entry management...');
+    
+    // Setup skill level sliders
+    document.addEventListener('change', function(e) {
+        if (e.target.type === 'range' && e.target.name === 'skillLevel[]') {
+            updateSkillLevel(e.target);
+        }
+    });
+    
+    // Initialize existing skill levels
+    const skillSliders = document.querySelectorAll('input[name="skillLevel[]"]');
+    skillSliders.forEach(slider => updateSkillLevel(slider));
+}
+
+function addExperienceEntry() {
+    const container = document.getElementById('experienceContainer');
+    if (!container) return;
+    
+    const entryCount = container.querySelectorAll('.experience-entry').length;
+    const newEntry = document.createElement('div');
+    newEntry.className = 'experience-entry';
+    newEntry.innerHTML = `
+        <button type="button" class="remove-entry" onclick="removeEntry(this)" aria-label="Remove experience entry">×</button>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Job Title</label>
+                <input type="text" class="form-control" name="experienceTitle[]" placeholder="e.g., Senior Software Engineer" 
+                       data-entry-index="${entryCount}">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Company</label>
+                <input type="text" class="form-control" name="experienceCompany[]" placeholder="Company Name"
+                       data-entry-index="${entryCount}">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Start Date</label>
+                <input type="month" class="form-control" name="experienceStart[]" data-entry-index="${entryCount}">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">End Date</label>
+                <input type="month" class="form-control" name="experienceEnd[]" 
+                       placeholder="Leave blank if current" data-entry-index="${entryCount}">
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" id="currentJob${entryCount}" 
+                           onchange="toggleCurrentJob(this, ${entryCount})">
+                    <label class="form-check-label" for="currentJob${entryCount}">
+                        Current Position
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Key Achievements & Responsibilities</label>
+            <textarea class="form-control" name="experienceDescription[]" rows="4" 
+                      placeholder="• Led a team of 5 developers to deliver project 2 weeks ahead of schedule&#10;• Increased system performance by 40% through code optimization&#10;• Implemented new features that improved user engagement by 25%"
+                      data-entry-index="${entryCount}"></textarea>
+            <div class="form-text">Use bullet points starting with action verbs. Focus on quantifiable achievements.</div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Location</label>
+            <input type="text" class="form-control" name="experienceLocation[]" placeholder="City, State/Country" 
+                   data-entry-index="${entryCount}">
+        </div>
+    `;
+    
+    container.appendChild(newEntry);
+    
+    // Add smooth scroll to new entry
+    newEntry.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    // Focus on first input
+    const firstInput = newEntry.querySelector('input[type="text"]');
+    if (firstInput) {
+        setTimeout(() => firstInput.focus(), 300);
+    }
+    
+    console.log('Added new experience entry');
+}
+
+function addEducationEntry() {
+    const container = document.getElementById('educationContainer');
+    if (!container) return;
+    
+    const entryCount = container.querySelectorAll('.education-entry').length;
+    const newEntry = document.createElement('div');
+    newEntry.className = 'education-entry';
+    newEntry.innerHTML = `
+        <button type="button" class="remove-entry" onclick="removeEntry(this)" aria-label="Remove education entry">×</button>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Degree</label>
+                <input type="text" class="form-control" name="educationDegree[]" 
+                       placeholder="e.g., Bachelor of Computer Science" data-entry-index="${entryCount}">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Institution</label>
+                <input type="text" class="form-control" name="educationSchool[]" 
+                       placeholder="University/College Name" data-entry-index="${entryCount}">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Graduation Year</label>
+                <input type="number" class="form-control" name="educationYear[]" 
+                       min="1950" max="2030" data-entry-index="${entryCount}">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">GPA (Optional)</label>
+                <input type="text" class="form-control" name="educationGPA[]" 
+                       placeholder="3.8/4.0" pattern="[0-4]\\.[0-9]/4\\.[0-9]|[0-4]\\.[0-9]" 
+                       data-entry-index="${entryCount}">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Field of Study</label>
+                <input type="text" class="form-control" name="educationField[]" 
+                       placeholder="e.g., Computer Science" data-entry-index="${entryCount}">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Location</label>
+                <input type="text" class="form-control" name="educationLocation[]" 
+                       placeholder="City, State/Country" data-entry-index="${entryCount}">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Relevant Coursework/Achievements (Optional)</label>
+            <textarea class="form-control" name="educationDetails[]" rows="3" 
+                      placeholder="Relevant courses, honors, dean's list, thesis title, academic projects, etc."
+                      data-entry-index="${entryCount}"></textarea>
+        </div>
+    `;
+    
+    container.appendChild(newEntry);
+    
+    // Add smooth scroll to new entry
+    newEntry.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    // Focus on first input
+    const firstInput = newEntry.querySelector('input[type="text"]');
+    if (firstInput) {
+        setTimeout(() => firstInput.focus(), 300);
+    }
+    
+    console.log('Added new education entry');
+}
+
+function addSkillEntry() {
+    const container = document.getElementById('skillsContainer');
+    if (!container) return;
+    
+    const entryCount = container.querySelectorAll('.skill-entry').length;
+    const newEntry = document.createElement('div');
+    newEntry.className = 'skill-entry';
+    newEntry.innerHTML = `
+        <button type="button" class="remove-entry" onclick="removeEntry(this)" aria-label="Remove skill entry">×</button>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Skill Name</label>
+                <input type="text" class="form-control" name="skillName[]" 
+                       placeholder="e.g., JavaScript, Project Management" 
+                       data-entry-index="${entryCount}"
+                       list="skillSuggestionsList">
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Skill Category</label>
+                <select class="form-select" name="skillCategory[]" data-entry-index="${entryCount}">
+                    <option value="">Select category</option>
+                    <option value="technical">Technical Skills</option>
+                    <option value="soft">Soft Skills</option>
+                    <option value="language">Languages</option>
+                    <option value="tools">Tools & Software</option>
+                    <option value="certifications">Certifications</option>
+                    <option value="industry">Industry-Specific</option>
+                </select>
+            </div>
+        </div>
+        <div class="skill-level">
+            <label class="form-label">Proficiency Level:</label>
+            <input type="range" class="form-range" name="skillLevel[]" min="1" max="5" value="3" 
+                   onchange="updateSkillLevel(this)" data-entry-index="${entryCount}">
+            <span class="skill-level-display">Intermediate</span>
+        </div>
+        <div class="mt-2">
+            <small class="text-muted">
+                1 = Beginner, 2 = Novice, 3 = Intermediate, 4 = Advanced, 5 = Expert
+            </small>
+        </div>
+    `;
+    
+    container.appendChild(newEntry);
+    
+    // Add smooth scroll to new entry
+    newEntry.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    // Focus on first input
+    const firstInput = newEntry.querySelector('input[type="text"]');
+    if (firstInput) {
+        setTimeout(() => firstInput.focus(), 300);
+    }
+    
+    // Update skill level display
+    const slider = newEntry.querySelector('input[type="range"]');
+    if (slider) {
+        updateSkillLevel(slider);
+    }
+    
+    console.log('Added new skill entry');
+}
+
+function removeEntry(button) {
+    const entry = button.closest('.experience-entry, .education-entry, .skill-entry');
+    if (entry) {
+        // Add confirmation for removing entries with content
+        const inputs = entry.querySelectorAll('input, textarea, select');
+        let hasContent = false;
+        
+        inputs.forEach(input => {
+            if (input.value && input.value.trim()) {
+                hasContent = true;
+            }
+        });
+        
+        if (hasContent) {
+            if (!confirm('Are you sure you want to remove this entry? All data will be lost.')) {
+                return;
+            }
+        }
+        
+        // Animate removal
+        entry.style.opacity = '0.5';
+        entry.style.transform = 'scale(0.95)';
+        
+        setTimeout(() => {
+            entry.remove();
+            console.log('Removed entry');
+        }, 200);
+    }
+}
+
+function updateSkillLevel(slider) {
+    const value = parseInt(slider.value);
+    const display = slider.parentElement.querySelector('.skill-level-display');
+    const levels = ['Beginner', 'Novice', 'Intermediate', 'Advanced', 'Expert'];
+    
+    if (display) {
+        display.textContent = levels[value - 1] || 'Intermediate';
+        
+        // Add color coding
+        display.className = 'skill-level-display';
+        switch(value) {
+            case 1:
+                display.classList.add('text-danger');
+                break;
+            case 2:
+                display.classList.add('text-warning');
+                break;
+            case 3:
+                display.classList.add('text-info');
+                break;
+            case 4:
+                display.classList.add('text-primary');
+                break;
+            case 5:
+                display.classList.add('text-success');
+                break;
+        }
+    }
+}
+
+function toggleCurrentJob(checkbox, entryIndex) {
+    const endDateInput = document.querySelector(`input[name="experienceEnd[]"][data-entry-index="${entryIndex}"]`);
+    if (endDateInput) {
+        if (checkbox.checked) {
+            endDateInput.value = '';
+            endDateInput.disabled = true;
+            endDateInput.placeholder = 'Present';
+        } else {
+            endDateInput.disabled = false;
+            endDateInput.placeholder = 'Leave blank if current';
+        }
+    }
+}
+// ============================================================================
+// SECTION 5: RESUME GENERATION & OPTIMIZATION LOGIC (FIXED FOR RENDER)
+// ============================================================================
+
+// FIXED: Enhanced error handling for resume generation with Render URL support
+async function handleResumeGeneration(e) {
+    e.preventDefault();
+    
+    console.log('Resume generation started...');
+    
+    // Check access first
+    const hasAccess = await checkToolAccess();
+    if (!hasAccess) {
+        showAccessDeniedMessage();
+        return;
+    }
+    
+    // Validate required fields
+    if (!validateResumeForm()) {
+        return;
+    }
+    
+    // Show loading state
+    showLoadingState('Generating your professional resume...');
+    
+    try {
+        // Collect form data in the format your backend expects
+        const formData = collectResumeFormData(e.target);
+        
+        console.log('Sending data to backend:', JSON.stringify(formData, null, 2));
+        
+        // FIXED: Send to Render backend with proper URL
+        const apiUrl = `${window.ResumeOptimizer.apiBaseUrl}/api/resume-optimizer`;
+        console.log('Making request to:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        console.log('Response status:', response.status);
+        console.log('Response URL:', response.url);
+        
+        // Check if response is ok
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('HTTP Error:', response.status, errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText || 'Server error'}`);
+        }
+        
+        // Check content type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const responseText = await response.text();
+            console.error('Non-JSON response:', responseText);
+            throw new Error('Server returned non-JSON response');
+        }
+        
+        // Parse JSON with better error handling
+        let result;
+        try {
+            const responseText = await response.text();
+            console.log('Raw response:', responseText);
+            
+            if (!responseText.trim()) {
+                throw new Error('Empty response from server');
+            }
+            
+            result = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('JSON parse error:', parseError);
+            throw new Error('Invalid JSON response from server');
+        }
+        
+        console.log('Parsed result:', result);
+        
+        if (result.success) {
+            // Update usage counter
+            incrementUsage();
+            
+            // Display results
+            displayGeneratedResume(result);
+            
+            console.log('Resume generated successfully');
+        } else {
+            throw new Error(result.message || result.error || 'Failed to generate resume');
+        }
+        
+    } catch (error) {
+        console.error('Resume generation error:', error);
+        
+        // More specific error handling
+        if (error.message.includes('JSON')) {
+            showErrorMessage(
+                'Server Communication Error', 
+                'The server response was malformed. This might be a temporary issue. Please try again in a moment.',
+                true
+            );
+        } else if (error.message.includes('HTTP')) {
+            showErrorMessage(
+                'Server Error', 
+                'The server encountered an error. Please try again or contact support if the problem persists.',
+                true
+            );
+        } else if (error.message.includes('Failed to fetch')) {
+            showErrorMessage(
+                'Network Error', 
+                'Unable to connect to the server. Please check your internet connection and try again.',
+                true
+            );
+        } else {
+            showErrorMessage(
+                'Resume Generation Failed', 
+                error.message || 'An unexpected error occurred. Please try again.',
+                true
+            );
+        }
+    } finally {
+        hideLoadingState();
+    }
+}
+
+// FIXED: Enhanced resume optimization handler with Render URL support
+async function handleResumeOptimization(e) {
+    e.preventDefault();
+    
+    console.log('Resume optimization started...');
+    
+    // Check access first
+    const hasAccess = await checkToolAccess();
+    if (!hasAccess) {
+        showAccessDeniedMessage();
+        return;
+    }
+    
+    // Validate optimization form
+    if (!validateOptimizationForm()) {
+        return;
+    }
+    
+    // Show loading state
+    showLoadingState('Optimizing your resume for ATS and modern HR standards...');
+    
+    try {
+        // Collect optimization data in the format your backend expects
+        const optimizationData = collectOptimizationFormData(e.target);
+        
+        console.log('Sending optimization data:', JSON.stringify(optimizationData, null, 2));
+        
+        // FIXED: Send to Render backend with proper URL
+        const apiUrl = `${window.ResumeOptimizer.apiBaseUrl}/api/resume-optimizer`;
+        console.log('Making optimization request to:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(optimizationData)
+        });
+        
+        console.log('Optimization response status:', response.status);
+        
+        // Check if response is ok
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('HTTP Error:', response.status, errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText || 'Server error'}`);
+        }
+        
+        // Check content type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const responseText = await response.text();
+            console.error('Non-JSON response:', responseText);
+            throw new Error('Server returned non-JSON response');
+        }
+        
+        // Parse JSON with better error handling
+        let result;
+        try {
+            const responseText = await response.text();
+            console.log('Raw optimization response:', responseText);
+            
+            if (!responseText.trim()) {
+                throw new Error('Empty response from server');
+            }
+            
+            result = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('JSON parse error:', parseError);
+            throw new Error('Invalid JSON response from server');
+        }
+        
+        console.log('Parsed optimization result:', result);
+        
+        if (result.success) {
+            // Update usage counter
+            incrementUsage();
+            
+            // Display optimization results
+            displayOptimizationResults(result);
+            
+            console.log('Resume optimized successfully');
+        } else {
+            throw new Error(result.message || result.error || 'Failed to optimize resume');
+        }
+        
+    } catch (error) {
+        console.error('Resume optimization error:', error);
+        
+        // More specific error handling
+        if (error.message.includes('JSON')) {
+            showErrorMessage(
+                'Server Communication Error', 
+                'The server response was malformed. This might be a temporary issue. Please try again in a moment.',
+                true
+            );
+        } else if (error.message.includes('HTTP')) {
+            showErrorMessage(
+                'Server Error', 
+                'The server encountered an error. Please try again or contact support if the problem persists.',
+                true
+            );
+        } else if (error.message.includes('Failed to fetch')) {
+            showErrorMessage(
+                'Network Error', 
+                'Unable to connect to the server. Please check your internet connection and try again.',
+                true
+            );
+        } else {
+            showErrorMessage(
+                'Resume Optimization Failed', 
+                error.message || 'An unexpected error occurred. Please try again.',
+                true
+            );
+        }
+    } finally {
+        hideLoadingState();
+    }
+}
+
+// Data collection functions to match your backend expectations
+function collectResumeFormData(form) {
+    const formData = new FormData(form);
+    
+    // Collect data in the exact format expected by your backend
+    const data = {
+        // Required action field for backend routing
+        action: 'generate',
+        
+        // Template and industry - these MUST be set
+        template: document.getElementById('selectedTemplate')?.value || 'modern',
+        industry: document.getElementById('selectedIndustry')?.value || 'technology',
+        
+        // Personal information
+        fullName: formData.get('fullName')?.trim() || '',
+        jobTitle: formData.get('jobTitle')?.trim() || '',
+        email: formData.get('email')?.trim() || '',
+        phone: formData.get('phone')?.trim() || '',
+        location: formData.get('location')?.trim() || '',
+        linkedin: formData.get('linkedin')?.trim() || '',
+        summary: formData.get('summary')?.trim() || '',
+        
+        // Experience data in backend-expected format
+        experience: collectExperienceData(formData),
+        
+        // Education data in backend-expected format
+        education: collectEducationData(formData),
+        
+        // Skills data in backend-expected format
+        skills: collectSkillsData(formData),
+        
+        // Additional sections
+        certifications: formData.get('certifications')?.trim() || '',
+        projects: formData.get('projects')?.trim() || '',
+        awards: formData.get('awards')?.trim() || '',
+        interests: formData.get('interests')?.trim() || ''
+    };
+    
+    return data;
+}
+
+function collectExperienceData(formData) {
+    const titles = formData.getAll('experienceTitle[]');
+    const companies = formData.getAll('experienceCompany[]');
+    const startDates = formData.getAll('experienceStart[]');
+    const endDates = formData.getAll('experienceEnd[]');
+    const descriptions = formData.getAll('experienceDescription[]');
+    const locations = formData.getAll('experienceLocation[]');
+    
+    const experiences = [];
+    
+    for (let i = 0; i < titles.length; i++) {
+        if (titles[i]?.trim() || companies[i]?.trim()) {
+            experiences.push({
+                title: titles[i]?.trim() || '',
+                company: companies[i]?.trim() || '',
+                location: locations[i]?.trim() || '',
+                startDate: startDates[i] || '',
+                endDate: endDates[i] || 'Present',
+                description: descriptions[i]?.trim() || '',
+                isCurrent: !endDates[i] || endDates[i] === ''
+            });
+        }
+    }
+    
+    return experiences;
+}
+
+function collectEducationData(formData) {
+    const degrees = formData.getAll('educationDegree[]');
+    const schools = formData.getAll('educationSchool[]');
+    const years = formData.getAll('educationYear[]');
+    const gpas = formData.getAll('educationGPA[]');
+    const details = formData.getAll('educationDetails[]');
+    const fields = formData.getAll('educationField[]');
+    const locations = formData.getAll('educationLocation[]');
+    
+    const education = [];
+    
+    for (let i = 0; i < degrees.length; i++) {
+        if (degrees[i]?.trim() || schools[i]?.trim()) {
+            education.push({
+                degree: degrees[i]?.trim() || '',
+                school: schools[i]?.trim() || '',
+                field: fields[i]?.trim() || '',
+                location: locations[i]?.trim() || '',
+                year: years[i] || '',
+                gpa: gpas[i]?.trim() || '',
+                details: details[i]?.trim() || ''
+            });
+        }
+    }
+    
+    return education;
+}
+
+function collectSkillsData(formData) {
+    const names = formData.getAll('skillName[]');
+    const categories = formData.getAll('skillCategory[]');
+    const levels = formData.getAll('skillLevel[]');
+    
+    const skills = [];
+    
+    for (let i = 0; i < names.length; i++) {
+        if (names[i]?.trim()) {
+            skills.push({
+                name: names[i].trim(),
+                category: categories[i] || 'general',
+                level: parseInt(levels[i]) || 3,
+                levelText: ['Beginner', 'Novice', 'Intermediate', 'Advanced', 'Expert'][parseInt(levels[i]) - 1] || 'Intermediate'
+            });
+        }
+    }
+    
+    return skills;
+}
+
+function collectOptimizationFormData(form) {
+    const formData = new FormData(form);
+    
+    // Collect optimization data in backend-expected format
+    return {
+        // Required action field for backend routing
+        action: 'optimize',
+        
+        // Resume text from file or textarea
+        resumeText: document.getElementById('resumeText')?.value?.trim() || '',
+        
+        // Target job information
+        targetJobTitle: formData.get('targetJobTitle')?.trim() || '',
+        targetIndustry: formData.get('targetIndustry') || '',
+        jobDescription: formData.get('jobDescription')?.trim() || '',
+        
+        // Optimization preferences
+        atsOptimization: formData.has('atsOptimization'),
+        keywordEnhancement: formData.has('keywordEnhancement'),
+        impactStatements: formData.has('impactStatements'),
+        formatImprovement: formData.has('formatImprovement'),
+        lengthOptimization: formData.has('lengthOptimization'),
+        skillsAlignment: formData.has('skillsAlignment')
+    };
+}
+// ============================================================================
+// SECTION 6: RESULTS DISPLAY & EXPORT FUNCTIONS (NO CHANGES NEEDED)
+// ============================================================================
+
+function displayGeneratedResume(result) {
+    const resultsContainer = document.getElementById('resultsContainer');
+    const resumePreview = document.getElementById('resumePreview');
+    
+    if (!resultsContainer || !resumePreview) {
+        console.error('Results container not found');
+        return;
+    }
+    
+    // Store the generated resume globally
+    window.ResumeOptimizer.generatedResume = result;
+    
+    // Format and display the resume
+    resumePreview.innerHTML = formatResumeForDisplay(result.resume || result.content);
+    
+    // Update metadata display if available
+    updateResumeMetadata(result.metadata);
+    
+    // Show the results container
+    resultsContainer.style.display = 'block';
+    resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    
+    // Setup export functionality
+    setupExportButtons();
+    
+    // Show success message
+    showSuccessMessage('Resume generated successfully! Review and download your professional resume below.');
+    
+    console.log('Resume displayed successfully');
+}
+
+function displayOptimizationResults(result) {
+    const optimizationResults = document.getElementById('optimizationResults');
+    const optimizationPreview = document.getElementById('optimizationPreview');
+    const optimizationScore = document.getElementById('optimizationScore');
+    const atsScore = document.getElementById('atsScore');
+    
+    if (!optimizationResults || !optimizationPreview) {
+        console.error('Optimization results container not found');
+        return;
+    }
+    
+    // Store the optimized resume globally
+    window.ResumeOptimizer.optimizedResume = result;
+    
+    // Display ATS score if available
+    if (result.ats_score && optimizationScore && atsScore) {
+        atsScore.textContent = result.ats_score;
+        const progressBar = optimizationScore.querySelector('.progress-bar');
+        
+        if (progressBar) {
+            progressBar.style.width = result.ats_score + '%';
+            progressBar.classList.remove('bg-danger', 'bg-warning', 'bg-success');
+            
+            if (result.ats_score >= 80) {
+                progressBar.classList.add('bg-success');
+            } else if (result.ats_score >= 60) {
+                progressBar.classList.add('bg-warning');
+            } else {
+                progressBar.classList.add('bg-danger');
+            }
+        }
+        
+        optimizationScore.style.display = 'block';
+    }
+    
+    // Display the optimized resume
+    optimizationPreview.innerHTML = formatResumeForDisplay(result.optimized_resume || result.content);
+    
+    // Show optimization improvements if available
+    displayOptimizationImprovements(result.improvements);
+    
+    // Show the results container
+    optimizationResults.style.display = 'block';
+    optimizationResults.scrollIntoView({ behavior: 'smooth' });
+    
+    // Setup export functionality for optimized resume
+    setupOptimizedExportButtons();
+    
+    // Show success message with ATS score
+    const scoreText = result.ats_score ? ` (ATS Score: ${result.ats_score}%)` : '';
+    showSuccessMessage(`Resume optimized successfully!${scoreText} Review your enhanced resume below.`);
+    
+    console.log('Optimization results displayed successfully');
+}
+
+function formatResumeForDisplay(resumeContent) {
+    if (!resumeContent) return '<p>No resume content available.</p>';
+    
+    // Enhanced formatting for better display
+    let formattedContent = resumeContent;
+    
+    // Convert line breaks to proper HTML
+    formattedContent = formattedContent.replace(/\n\n/g, '</p><p>');
+    formattedContent = formattedContent.replace(/\n/g, '<br>');
+    
+    // Wrap in paragraphs if not already
+    if (!formattedContent.includes('<p>')) {
+        formattedContent = '<p>' + formattedContent + '</p>';
+    }
+    
+    // Format headers and sections
+    formattedContent = formattedContent.replace(/^([A-Z\s]{2,}):?\s*$/gm, '<h4 class="resume-section-header">$1</h4>');
+    formattedContent = formattedContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Format bullet points
+    formattedContent = formattedContent.replace(/^[•\-\*]\s*(.+)$/gm, '<li>$1</li>');
+    formattedContent = formattedContent.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+    
+    // Clean up multiple consecutive tags
+    formattedContent = formattedContent.replace(/<\/ul>\s*<ul>/g, '');
+    formattedContent = formattedContent.replace(/<\/p>\s*<p>/g, '</p><p>');
+    
+    // Format contact information
+    formattedContent = formattedContent.replace(/(\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b)/g, '<a href="mailto:$1">$1</a>');
+    formattedContent = formattedContent.replace(/(\b\d{3}[-.]?\d{3}[-.]?\d{4}\b)/g, '<a href="tel:$1">$1</a>');
+    
+    return formattedContent;
+}
+
+function updateResumeMetadata(metadata) {
+    if (!metadata) return;
+    
+    // Create or update metadata display
+    let metadataContainer = document.getElementById('resumeMetadata');
+    if (!metadataContainer) {
+        metadataContainer = document.createElement('div');
+        metadataContainer.id = 'resumeMetadata';
+        metadataContainer.className = 'alert alert-info mt-3';
+        
+        const resultsContainer = document.getElementById('resultsContainer');
+        const resumePreview = document.getElementById('resumePreview');
+        if (resultsContainer && resumePreview) {
+            resumePreview.parentNode.insertBefore(metadataContainer, resumePreview.nextSibling);
+        }
+    }
+    
+    const metadataHTML = `
+        <h6><i class="fas fa-info-circle me-2"></i>Resume Information</h6>
+        <div class="row">
+            <div class="col-md-6">
+                <small><strong>Template:</strong> ${metadata.template || 'Professional'}</small><br>
+                <small><strong>Industry:</strong> ${metadata.industry || 'General'}</small><br>
+                <small><strong>Full Name:</strong> ${metadata.full_name || 'Not specified'}</small>
+            </div>
+            <div class="col-md-6">
+                <small><strong>Word Count:</strong> ${metadata.word_count || 'N/A'}</small><br>
+                <small><strong>Generated:</strong> ${new Date().toLocaleString()}</small><br>
+                <small><strong>Status:</strong> <span class="badge bg-success">Ready to Use</span></small>
+            </div>
+        </div>
+    `;
+    
+    metadataContainer.innerHTML = metadataHTML;
+}
+
+function displayOptimizationImprovements(improvements) {
+    if (!improvements || !Array.isArray(improvements)) return;
+    
+    let improvementsContainer = document.getElementById('optimizationImprovements');
+    if (!improvementsContainer) {
+        improvementsContainer = document.createElement('div');
+        improvementsContainer.id = 'optimizationImprovements';
+        improvementsContainer.className = 'alert alert-success mt-3';
+        
+        const optimizationResults = document.getElementById('optimizationResults');
+        const optimizationPreview = document.getElementById('optimizationPreview');
+        if (optimizationResults && optimizationPreview) {
+            optimizationPreview.parentNode.insertBefore(improvementsContainer, optimizationPreview.nextSibling);
+        }
+    }
+    
+    const improvementsHTML = `
+        <h6><i class="fas fa-check-circle me-2"></i>Optimization Improvements Applied</h6>
+        <ul class="mb-0">
+            ${improvements.map(improvement => `<li>${improvement}</li>`).join('')}
+        </ul>
+    `;
+    
+    improvementsContainer.innerHTML = improvementsHTML;
+}
+
+// Export functionality
+function setupExportButtons() {
+    const exportPDF = document.getElementById('exportPDF');
+    const exportWord = document.getElementById('exportWord');
+    const copyResume = document.getElementById('copyResume');
+    
+    if (exportPDF) {
+        exportPDF.addEventListener('click', () => exportResume('pdf'));
+    }
+    if (exportWord) {
+        exportWord.addEventListener('click', () => exportResume('word'));
+    }
+    if (copyResume) {
+        copyResume.addEventListener('click', () => copyResumeToClipboard());
+    }
+}
+
+function setupOptimizedExportButtons() {
+    const downloadOptimized = document.getElementById('downloadOptimized');
+    const copyOptimized = document.getElementById('copyOptimized');
+    
+    if (downloadOptimized) {
+        downloadOptimized.addEventListener('click', () => exportOptimizedResume('html'));
+    }
+    if (copyOptimized) {
+        copyOptimized.addEventListener('click', () => copyOptimizedToClipboard());
+    }
+}
+
+function exportResume(format) {
+    const resumeContent = document.getElementById('resumePreview')?.innerHTML;
+    if (!resumeContent) {
+        showErrorMessage('No resume content to export', 'Please generate a resume first.');
+        return;
+    }
+    
+    const fileName = `resume_${new Date().toISOString().slice(0,10)}`;
+    
+    try {
+        switch (format) {
+            case 'pdf':
+                exportAsPDF(resumeContent, fileName);
+                break;
+            case 'word':
+                exportAsWord(resumeContent, fileName);
+                break;
+            case 'html':
+                exportAsHTML(resumeContent, fileName);
+                break;
+            default:
+                console.error('Unsupported export format:', format);
+        }
+        
+        showSuccessMessage(`Resume exported as ${format.toUpperCase()} successfully!`);
+    } catch (error) {
+        console.error('Export failed:', error);
+        showErrorMessage('Export failed', 'Please try again or use a different format.');
+    }
+}
+
+function exportOptimizedResume(format) {
+    const resumeContent = document.getElementById('optimizationPreview')?.innerHTML;
+    if (!resumeContent) {
+        showErrorMessage('No optimized resume content to export', 'Please optimize a resume first.');
+        return;
+    }
+    
+    const fileName = `optimized_resume_${new Date().toISOString().slice(0,10)}`;
+    
+    try {
+        switch (format) {
+            case 'html':
+                exportAsHTML(resumeContent, fileName);
+                break;
+            case 'pdf':
+                exportAsPDF(resumeContent, fileName);
+                break;
+            case 'word':
+                exportAsWord(resumeContent, fileName);
+                break;
+            default:
+                console.error('Unsupported export format:', format);
+        }
+        
+        showSuccessMessage(`Optimized resume exported as ${format.toUpperCase()} successfully!`);
+    } catch (error) {
+        console.error('Export failed:', error);
+        showErrorMessage('Export failed', 'Please try again or use a different format.');
+    }
+}
+
+function exportAsHTML(content, fileName) {
+    const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Professional Resume</title>
+            <style>
+                body {
+                    font-family: 'Times New Roman', serif;
+                    line-height: 1.6;
+                    margin: 1in;
+                    color: #333;
+                    max-width: 8.5in;
+                }
+                h1, h2, h3, h4 {
+                    color: #14697D;
+                    margin-top: 1.5em;
+                    margin-bottom: 0.5em;
+                }
+                h1 { font-size: 2.5em; margin-bottom: 0.2em; }
+                h2 { font-size: 1.8em; }
+                h3 { font-size: 1.4em; }
+                h4 { font-size: 1.2em; }
+                .resume-section-header {
+                    border-bottom: 2px solid #14697D;
+                    padding-bottom: 0.3em;
+                    margin-top: 1.5em;
+                }
+                ul {
+                    margin: 0.5em 0;
+                    padding-left: 1.5em;
+                }
+                li {
+                    margin-bottom: 0.3em;
+                }
+                strong {
+                    font-weight: bold;
+                }
+                p {
+                    margin: 0.5em 0;
+                }
+                a {
+                    color: #14697D;
+                    text-decoration: none;
+                }
+                a:hover {
+                    text-decoration: underline;
+                }
+                @media print {
+                    body { margin: 0.5in; }
+                    h1, h2, h3, h4 { page-break-after: avoid; }
+                }
+            </style>
+        </head>
+        <body>
+            ${content}
+        </body>
+        </html>
+    `;
+    
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    downloadFile(blob, `${fileName}.html`);
+}
+
+function exportAsPDF(content, fileName) {
+    // For PDF export, we'll create an HTML file optimized for printing/PDF conversion
+    const printContent = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Resume - ${fileName}</title>
+            <style>
+                @page { 
+                    size: letter; 
+                    margin: 0.75in; 
+                }
+                body {
+                    font-family: 'Times New Roman', serif;
+                    font-size: 11pt;
+                    line-height: 1.4;
+                    color: #000;
+                    margin: 0;
+                    padding: 0;
+                }
+                h1, h2, h3, h4 {
+                    color: #000;
+                    page-break-after: avoid;
+                }
+                h1 { font-size: 18pt; margin-bottom: 6pt; }
+                h2 { font-size: 14pt; margin: 12pt 0 6pt 0; }
+                h3 { font-size: 12pt; margin: 10pt 0 4pt 0; }
+                h4 { font-size: 11pt; margin: 8pt 0 4pt 0; font-weight: bold; }
+                .resume-section-header {
+                    border-bottom: 1pt solid #000;
+                    padding-bottom: 2pt;
+                    margin: 12pt 0 6pt 0;
+                }
+                ul {
+                    margin: 3pt 0;
+                    padding-left: 18pt;
+                }
+                li {
+                    margin-bottom: 2pt;
+                }
+                p {
+                    margin: 3pt 0;
+                }
+                strong {
+                    font-weight: bold;
+                }
+                a {
+                    color: #000;
+                    text-decoration: none;
+                }
+            </style>
+        </head>
+        <body>
+            ${content}
+            <script>
+                window.onload = function() {
+                    window.print();
+                }
+            <\/script>
+        </body>
+        </html>
+    `;
+    
+    const blob = new Blob([printContent], { type: 'text/html' });
+    downloadFile(blob, `${fileName}_printable.html`);
+    
+    // Show instructions for PDF conversion
+    showPDFInstructions();
+}
+
+function exportAsWord(content, fileName) {
+    // Create a Word-compatible HTML document
+    const wordContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+              xmlns:w='urn:schemas-microsoft-com:office:word' 
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+            <meta charset="utf-8">
+            <title>${fileName}</title>
+            <style>
+                body {
+                    font-family: 'Times New Roman', serif;
+                    font-size: 11pt;
+                    line-height: 1.4;
+                    margin: 1in;
+                }
+                h1, h2, h3, h4 {
+                    color: #000080;
+                }
+                h1 { font-size: 18pt; }
+                h2 { font-size: 14pt; }
+                h3 { font-size: 12pt; }
+                h4 { font-size: 11pt; font-weight: bold; }
+                .resume-section-header {
+                    border-bottom: 1pt solid #000080;
+                    padding-bottom: 3pt;
+                }
+                ul {
+                    margin: 6pt 0;
+                }
+                li {
+                    margin-bottom: 3pt;
+                }
+                a {
+                    color: #000080;
+                }
+            </style>
+        </head>
+        <body>
+            ${content}
+        </body>
+        </html>
+    `;
+    
+    const blob = new Blob([wordContent], { 
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+    });
+    downloadFile(blob, `${fileName}.doc`);
+}
+
+function downloadFile(blob, fileName) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function copyResumeToClipboard() {
+    const resumeContent = document.getElementById('resumePreview');
+    if (!resumeContent) return;
+    
+    const textContent = resumeContent.innerText || resumeContent.textContent;
+    
+    navigator.clipboard.writeText(textContent)
+        .then(() => {
+            showSuccessMessage('Resume copied to clipboard!');
+        })
+        .catch(err => {
+            console.error('Failed to copy resume:', err);
+            // Fallback for older browsers
+            fallbackCopyToClipboard(textContent);
+        });
+}
+
+function copyOptimizedToClipboard() {
+    const resumeContent = document.getElementById('optimizationPreview');
+    if (!resumeContent) return;
+    
+    const textContent = resumeContent.innerText || resumeContent.textContent;
+    
+    navigator.clipboard.writeText(textContent)
+        .then(() => {
+            showSuccessMessage('Optimized resume copied to clipboard!');
+        })
+        .catch(err => {
+            console.error('Failed to copy optimized resume:', err);
+            // Fallback for older browsers
+            fallbackCopyToClipboard(textContent);
+        });
+}
+
+function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showSuccessMessage('Resume copied to clipboard!');
+    } catch (err) {
+        console.error('Fallback copy failed:', err);
+        showErrorMessage('Copy failed', 'Please select and copy the text manually.');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+function showPDFInstructions() {
+    const instructionsModal = document.createElement('div');
+    instructionsModal.className = 'modal fade';
+    instructionsModal.innerHTML = `
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-file-pdf me-2"></i>PDF Export Instructions
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Your resume has been prepared for PDF export. Follow these steps:</p>
+                    <ol>
+                        <li>A print dialog will open automatically</li>
+                        <li>In the print dialog, select "Save as PDF" or "Microsoft Print to PDF"</li>
+                        <li>Choose your save location and filename</li>
+                        <li>Click "Save" to create your PDF resume</li>
+                    </ol>
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Pro Tip:</strong> The resume is optimized for standard 8.5" x 11" paper size with professional margins.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(instructionsModal);
+    
+    // Check if Bootstrap modal is available
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+        const modal = new bootstrap.Modal(instructionsModal);
+        modal.show();
+    } else {
+        // Fallback for when Bootstrap is not available
+        instructionsModal.style.display = 'block';
+        instructionsModal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        instructionsModal.style.position = 'fixed';
+        instructionsModal.style.top = '0';
+        instructionsModal.style.left = '0';
+        instructionsModal.style.width = '100%';
+        instructionsModal.style.height = '100%';
+        instructionsModal.style.zIndex = '9999';
+        
+        // Add close functionality
+        const closeBtn = instructionsModal.querySelector('.btn-close, .btn-secondary');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                document.body.removeChild(instructionsModal);
+            });
+        }
+    }
+    
+    // Remove modal after it's hidden
+    instructionsModal.addEventListener('hidden.bs.modal', () => {
+        if (instructionsModal.parentNode) {
+            document.body.removeChild(instructionsModal);
+        }
+    });
+}
+// ============================================================================
+// SECTION 7: UTILITY FUNCTIONS, VALIDATION & SMART FEATURES (NO CHANGES NEEDED)
+// ============================================================================
+
+// Form validation functions
+function validateResumeForm() {
+    // Check template selection
+    const selectedTemplate = document.getElementById('selectedTemplate')?.value;
+    if (!selectedTemplate) {
+        showValidationError('Please select a resume template first.');
+        return false;
+    }
+    
+    // Check industry selection
+    const selectedIndustry = document.getElementById('selectedIndustry')?.value;
+    if (!selectedIndustry) {
+        showValidationError('Please select your target industry first.');
+        return false;
+    }
+    
+    // Check required personal information
+    const fullName = document.getElementById('fullName')?.value?.trim();
+    if (!fullName) {
+        showValidationError('Please enter your full name.');
+        focusField('fullName');
+        return false;
+    }
+    
+    const email = document.getElementById('email')?.value?.trim();
+    if (!email) {
+        showValidationError('Please enter your email address.');
+        focusField('email');
+        return false;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showValidationError('Please enter a valid email address.');
+        focusField('email');
+        return false;
+    }
+    
+    return true;
+}
+
+function validateOptimizationForm() {
+    const resumeText = document.getElementById('resumeText')?.value?.trim();
+    
+    if (!resumeText) {
+        showValidationError('Please enter your resume text or upload a file.');
+        focusField('resumeText');
+        return false;
+    }
+    
+    // Check minimum content length
+    if (resumeText.length < 100) {
+        showValidationError('Please provide more detailed resume content (minimum 100 characters).');
+        focusField('resumeText');
+        return false;
+    }
+    
+    return true;
+}
+
+function showValidationError(message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-warning alert-dismissible fade show';
+    alertDiv.innerHTML = `
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    // Insert at top of form
+    const form = document.querySelector('.content-card form');
+    if (form) {
+        form.insertBefore(alertDiv, form.firstChild);
+        alertDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+}
+
+function focusField(fieldId) {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        setTimeout(() => {
+            field.focus();
+            field.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+}
+
+// Utility functions for UI management
+function showLoadingState(message = 'Processing...') {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const optimizationResults = document.getElementById('optimizationResults');
+    
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
+        
+        // Update loading message if element exists
+        const loadingMessage = loadingSpinner.querySelector('.loading-message');
+        if (loadingMessage) {
+            loadingMessage.textContent = message;
+        } else {
+            // Create loading message if it doesn't exist
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'loading-message mt-2';
+            messageDiv.textContent = message;
+            loadingSpinner.appendChild(messageDiv);
+        }
+    }
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'none';
+    }
+    if (optimizationResults) {
+        optimizationResults.style.display = 'none';
+    }
+    
+    // Scroll to loading area
+    if (loadingSpinner) {
+        loadingSpinner.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function hideLoadingState() {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'none';
+    }
+}
+
+function showErrorMessage(title, details = '', showRetry = true) {
+    const errorContainer = document.getElementById('resultsContainer') || document.querySelector('.content-card');
+    if (!errorContainer) return;
+    
+    const errorHTML = `
+        <div class="alert alert-danger">
+            <h5><i class="fas fa-exclamation-circle me-2"></i>${title}</h5>
+            ${details ? `<p class="mb-2">${details}</p>` : ''}
+            ${showRetry ? `
+                <div class="mt-3">
+                    <button class="btn btn-outline-danger" onclick="retryLastOperation()">
+                        <i class="fas fa-redo me-1"></i> Try Again
+                    </button>
+                    <button class="btn btn-outline-secondary ms-2" onclick="clearPreviousResults()">
+                        <i class="fas fa-times me-1"></i> Clear
+                    </button>
+                </div>
+            ` : ''}
+        </div>
+    `;
+    
+    errorContainer.innerHTML = errorHTML;
+    errorContainer.style.display = 'block';
+    errorContainer.scrollIntoView({ behavior: 'smooth' });
+}
+
+function showSuccessMessage(message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-success alert-dismissible fade show';
+    alertDiv.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    // Insert at appropriate location
+    const container = document.querySelector('.content-card') || document.querySelector('.container');
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+        alertDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+}
+
+function clearPreviousResults() {
+    const resultsContainer = document.getElementById('resultsContainer');
+    const optimizationResults = document.getElementById('optimizationResults');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'none';
+    }
+    if (optimizationResults) {
+        optimizationResults.style.display = 'none';
+    }
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'none';
+    }
+}
+
+function retryLastOperation() {
+    // Determine which operation to retry based on current tab
+    const activeTab = document.querySelector('.doc-tab.active');
+    if (activeTab) {
+        const tabType = activeTab.getAttribute('data-tab');
+        if (tabType === 'build') {
+            const form = document.getElementById('resumeBuilderForm');
+            if (form) {
+                handleResumeGeneration({ preventDefault: () => {}, target: form });
+            }
+        } else if (tabType === 'optimize') {
+            const form = document.getElementById('optimizeForm');
+            if (form) {
+                handleResumeOptimization({ preventDefault: () => {}, target: form });
+            }
+        }
+    }
+}
+
+// Smart suggestions and skill management
+function setupSkillManagement() {
+    // Create skill suggestions datalist if it doesn't exist
+    let datalist = document.getElementById('skillSuggestionsList');
+    if (!datalist) {
+        datalist = document.createElement('datalist');
+        datalist.id = 'skillSuggestionsList';
+        document.body.appendChild(datalist);
+    }
+    
+    // Populate with common skills
+    const commonSkills = [
+        // Technical Skills
+        'JavaScript', 'Python', 'Java', 'C++', 'HTML/CSS', 'React', 'Node.js', 'SQL', 'Git',
+        'AWS', 'Docker', 'Kubernetes', 'Machine Learning', 'Data Analysis', 'Agile/Scrum',
+        
+        // Soft Skills
+        'Leadership', 'Communication', 'Project Management', 'Team Collaboration', 'Problem Solving',
+        'Critical Thinking', 'Time Management', 'Adaptability', 'Negotiation', 'Public Speaking',
+        
+        // Tools & Software
+        'Microsoft Office', 'Adobe Creative Suite', 'Salesforce', 'Tableau', 'Power BI',
+        'AutoCAD', 'Photoshop', 'Excel', 'PowerPoint', 'Google Analytics',
+        
+        // Languages
+        'English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 'Arabic', 'Portuguese'
+    ];
+    
+    datalist.innerHTML = '';
+    commonSkills.forEach(skill => {
+        const option = document.createElement('option');
+        option.value = skill;
+        datalist.appendChild(option);
+    });
+}
+
+function updateSkillSuggestions(industry) {
+    const industryConfig = window.ResumeOptimizer.industryConfigs[industry];
+    const skillSuggestions = industryConfig?.keySkills || [];
+    
+    console.log(`Industry skills for ${industry}:`, skillSuggestions);
+    
+    // Update skill suggestion UI if it exists
+    const skillSuggestionArea = document.getElementById('skillSuggestions');
+    if (skillSuggestionArea && skillSuggestions.length > 0) {
+        skillSuggestionArea.innerHTML = `
+            <div class="mt-2">
+                <small class="text-muted">Suggested skills for ${industry}:</small>
+                <div class="mt-1">
+                    ${skillSuggestions.map(skill => 
+                        `<span class="badge bg-light text-dark me-1 skill-suggestion" style="cursor: pointer;">${skill}</span>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+        
+        // Add click handlers for skill suggestions
+        skillSuggestionArea.querySelectorAll('.skill-suggestion').forEach(badge => {
+            badge.addEventListener('click', function() {
+                addSuggestedSkill(this.textContent);
+            });
+        });
+    }
+}
+
+function addSuggestedSkill(skillName) {
+    // Find the first empty skill input or add a new skill entry
+    const skillInputs = document.querySelectorAll('input[name="skillName[]"]');
+    let emptyInput = null;
+    
+    for (let input of skillInputs) {
+        if (!input.value.trim()) {
+            emptyInput = input;
+            break;
+        }
+    }
+    
+    if (emptyInput) {
+        emptyInput.value = skillName;
+        emptyInput.focus();
+        
+        // Also set a default skill level for the suggested skill
+        const skillLevel = emptyInput.closest('.skill-entry')?.querySelector('input[name="skillLevel[]"]');
+        if (skillLevel && skillLevel.value === '3') {
+            skillLevel.value = '4'; // Set to Advanced for suggested skills
+            updateSkillLevel(skillLevel);
+        }
+    } else {
+        // Add new skill entry
+        addSkillEntry();
+        // Set the value in the newly created entry
+        const newSkillInputs = document.querySelectorAll('input[name="skillName[]"]');
+        const lastInput = newSkillInputs[newSkillInputs.length - 1];
+        if (lastInput) {
+            lastInput.value = skillName;
+            lastInput.focus();
+            
+            // Set skill level for new entry
+            const skillLevel = lastInput.closest('.skill-entry')?.querySelector('input[name="skillLevel[]"]');
+            if (skillLevel) {
+                skillLevel.value = '4';
+                updateSkillLevel(skillLevel);
+            }
+        }
+    }
+    
+    console.log(`Added suggested skill: ${skillName}`);
+}
+
+// Auto-save functionality
+let autoSaveTimeout;
+
+function setupAutoSave() {
+    const form = document.getElementById('resumeBuilderForm');
+    if (!form) {
+        console.log('Resume Optimizer: Resume builder form not found, skipping auto-save setup');
+        return;
+    }
+    
+    const inputs = form.querySelectorAll('input, textarea, select');
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                autoSaveFormData();
+            }, 2000); // Save after 2 seconds of inactivity
+        });
+    });
+}
+
+function autoSaveFormData() {
+    try {
+        const form = document.getElementById('resumeBuilderForm');
+        if (!form) return;
+        
+        const formData = collectResumeFormData(form);
+        
+        localStorage.setItem('resume_builder_autosave', JSON.stringify({
+            data: formData,
+            timestamp: new Date().toISOString()
+        }));
+        
+        console.log('Form data auto-saved');
+        
+        // Show brief save indicator
+        showAutoSaveIndicator();
+    } catch (error) {
+        console.error('Auto-save failed:', error);
+    }
+}
+
+function showAutoSaveIndicator() {
+    let indicator = document.getElementById('autoSaveIndicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'autoSaveIndicator';
+        indicator.className = 'position-fixed';
+        indicator.style.cssText = `
+            bottom: 20px; 
+            right: 20px; 
+            background: #28a745; 
+            color: white; 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            border-radius: 20px; 
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        `;
+        indicator.innerHTML = '<i class="fas fa-check me-1"></i> Saved';
+        document.body.appendChild(indicator);
+    }
+    
+    indicator.style.opacity = '1';
+    setTimeout(() => {
+        indicator.style.opacity = '0';
+    }, 2000);
+}
+
+function setupSmartSuggestions() {
+    const jobTitleInput = document.getElementById('jobTitle');
+    if (!jobTitleInput) {
+        console.log('Resume Optimizer: Job title input not found, skipping smart suggestions');
+        return;
+    }
+    
+    jobTitleInput.addEventListener('input', function() {
+        const value = this.value.toLowerCase();
+        suggestSkillsBasedOnJobTitle(value);
+    });
+}
+
+function suggestSkillsBasedOnJobTitle(jobTitle) {
+    const skillSuggestions = {
+        'software engineer': ['JavaScript', 'Python', 'Git', 'Agile', 'SQL', 'React', 'Node.js', 'Docker'],
+        'data scientist': ['Python', 'R', 'Machine Learning', 'SQL', 'Tableau', 'Statistics', 'TensorFlow'],
+        'project manager': ['Project Management', 'Agile', 'Scrum', 'Leadership', 'Communication', 'Risk Management'],
+        'marketing manager': ['Digital Marketing', 'SEO', 'Google Analytics', 'Content Strategy', 'Social Media'],
+        'designer': ['Adobe Creative Suite', 'UI/UX Design', 'Figma', 'Typography', 'User Research'],
+        'nurse': ['Patient Care', 'Clinical Skills', 'EMR Systems', 'CPR Certified', 'Medical Terminology'],
+        'teacher': ['Curriculum Development', 'Classroom Management', 'Educational Technology', 'Student Assessment'],
+        'accountant': ['Financial Analysis', 'Excel', 'QuickBooks', 'Tax Preparation', 'Budgeting'],
+        'sales': ['CRM Software', 'Lead Generation', 'Negotiation', 'Customer Relations', 'Sales Analytics']
+    };
+    
+    for (const [role, skills] of Object.entries(skillSuggestions)) {
+        if (jobTitle.includes(role)) {
+            showJobTitleSkillSuggestions(skills, role);
+            break;
+        }
+    }
+}
+
+function showJobTitleSkillSuggestions(skills, role) {
+    const suggestionArea = document.getElementById('jobTitleSkillSuggestions');
+    if (!suggestionArea) {
+        const jobTitleInput = document.getElementById('jobTitle');
+        if (!jobTitleInput) return;
+        
+        const newSuggestionArea = document.createElement('div');
+        newSuggestionArea.id = 'jobTitleSkillSuggestions';
+        newSuggestionArea.className = 'mt-2';
+        jobTitleInput.parentNode.appendChild(newSuggestionArea);
+    }
+    
+    const finalSuggestionArea = document.getElementById('jobTitleSkillSuggestions');
+    finalSuggestionArea.innerHTML = `
+        <div class="alert alert-info py-2">
+            <small><i class="fas fa-lightbulb me-1"></i> Recommended skills for ${role.replace('_', ' ')}:</small>
+            <div class="mt-1">
+                ${skills.map(skill => 
+                    `<span class="badge bg-primary me-1 mb-1 suggested-skill" style="cursor: pointer;" 
+                           onclick="addSuggestedSkill('${skill}')">${skill}</span>`
+                ).join('')}
+            </div>
+        </div>
+    `;
+    
+    // Auto-hide after 10 seconds
+    setTimeout(() => {
+        if (finalSuggestionArea) {
+            finalSuggestionArea.style.opacity = '0.7';
+        }
+    }, 10000);
+}
+
+// Additional setup functions
+function setupExportOptions() {
+    console.log('Setting up export options...');
+    
+    // Setup edit buttons
+    const editResumeBtn = document.getElementById('editResumeBtn');
+    const newResumeBtn = document.getElementById('newResumeBtn');
+    
+    if (editResumeBtn) {
+        editResumeBtn.addEventListener('click', function() {
+            // Hide results and show form
+            const resultsContainer = document.getElementById('resultsContainer');
+            const optimizationResults = document.getElementById('optimizationResults');
+            
+            if (resultsContainer) resultsContainer.style.display = 'none';
+            if (optimizationResults) optimizationResults.style.display = 'none';
+            
+            // Scroll to form
+            const form = document.querySelector('.content-card');
+            if (form) {
+                form.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+    
+    if (newResumeBtn) {
+        newResumeBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to start over? All current data will be lost.')) {
+                resetAllForms();
+                clearPreviousResults();
+                
+                // Clear stored data
+                localStorage.removeItem('resume_builder_autosave');
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                showSuccessMessage('Started fresh! You can now create a new resume.');
+            }
+        });
+    }
+}
+
+function resetAllForms() {
+    // Reset resume builder form
+    const resumeBuilderForm = document.getElementById('resumeBuilderForm');
+    if (resumeBuilderForm) {
+        resumeBuilderForm.reset();
+    }
+    
+    // Reset optimization form
+    const optimizeForm = document.getElementById('optimizeForm');
+    if (optimizeForm) {
+        optimizeForm.reset();
+    }
+    
+    // Reset selections
+    document.querySelectorAll('.template-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    document.querySelectorAll('.industry-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Clear hidden inputs
+    const selectedTemplate = document.getElementById('selectedTemplate');
+    const selectedIndustry = document.getElementById('selectedIndustry');
+    
+    if (selectedTemplate) selectedTemplate.value = '';
+    if (selectedIndustry) selectedIndustry.value = '';
+    
+    // Reset dynamic entries
+    resetDynamicEntries();
+    
+    console.log('All forms reset to default state');
+}
+
+function resetDynamicEntries() {
+    // Reset to single entries for each section
+    const experienceContainer = document.getElementById('experienceContainer');
+    const educationContainer = document.getElementById('educationContainer');
+    const skillsContainer = document.getElementById('skillsContainer');
+    
+    if (experienceContainer) {
+        const entries = experienceContainer.querySelectorAll('.experience-entry');
+        entries.forEach((entry, index) => {
+            if (index > 0) {
+                entry.remove();
+            } else {
+                // Reset first entry
+                const inputs = entry.querySelectorAll('input, textarea, select');
+                inputs.forEach(input => {
+                    input.value = '';
+                    input.disabled = false;
+                });
+                const checkbox = entry.querySelector('input[type="checkbox"]');
+                if (checkbox) checkbox.checked = false;
+            }
+        });
+    }
+    
+    if (educationContainer) {
+        const entries = educationContainer.querySelectorAll('.education-entry');
+        entries.forEach((entry, index) => {
+            if (index > 0) {
+                entry.remove();
+            } else {
+                // Reset first entry
+                const inputs = entry.querySelectorAll('input, textarea, select');
+                inputs.forEach(input => input.value = '');
+            }
+        });
+    }
+    
+    if (skillsContainer) {
+        const entries = skillsContainer.querySelectorAll('.skill-entry');
+        entries.forEach((entry, index) => {
+            if (index > 0) {
+                entry.remove();
+            } else {
+                // Reset first entry
+                const inputs = entry.querySelectorAll('input, select');
+                inputs.forEach(input => input.value = '');
+                const slider = entry.querySelector('input[type="range"]');
+                if (slider) {
+                    slider.value = 3;
+                    updateSkillLevel(slider);
+                }
+            }
+        });
+    }
+    
+    console.log('Dynamic entries reset to default state');
+}
+
+function setupValidationSystem() {
+    console.log('Setting up validation system...');
+    
+    // Real-time validation for key fields
+    const keyFields = [
+        'fullName', 'email', 'jobTitle', 'resumeText', 'targetJobTitle'
+    ];
+    
+    keyFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('blur', function() {
+                validateField(this);
+            });
+            
+            field.addEventListener('input', function() {
+                clearFieldError(this);
+            });
+        }
+    });
+    
+    // Form submission validation
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (!validateForm(this)) {
+                e.preventDefault();
+            }
+        });
+    });
+}
+
+function validateForm(form) {
+    const formId = form.id;
+    let isValid = true;
+    
+    // Clear previous errors
+    form.querySelectorAll('.is-invalid').forEach(field => {
+        field.classList.remove('is-invalid');
+    });
+    
+    form.querySelectorAll('.invalid-feedback').forEach(error => {
+        error.remove();
+    });
+    
+    if (formId === 'resumeBuilderForm') {
+        isValid = validateResumeBuilderForm(form);
+    } else if (formId === 'optimizeForm') {
+        isValid = validateOptimizeForm(form);
+    }
+    
+    return isValid;
+}
+
+function validateResumeBuilderForm(form) {
+    let isValid = true;
+    
+    // Check template selection
+    const template = document.getElementById('selectedTemplate')?.value;
+    if (!template) {
+        showFormError(form, 'Please select a resume template.');
+        isValid = false;
+    }
+    
+    // Check industry selection
+    const industry = document.getElementById('selectedIndustry')?.value;
+    if (!industry) {
+        showFormError(form, 'Please select your target industry.');
+        isValid = false;
+    }
+    
+    // Check required fields
+    const requiredFields = ['fullName', 'email'];
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field && !field.value.trim()) {
+            showFieldError(field, `${fieldId.replace(/([A-Z])/g, ' $1')} is required.`);
+            isValid = false;
+        }
+    });
+    
+    return isValid;
+}
+
+function validateOptimizeForm(form) {
+    let isValid = true;
+    
+    const resumeText = document.getElementById('resumeText');
+    if (!resumeText || !resumeText.value.trim()) {
+        showFieldError(resumeText, 'Please enter your resume text or upload a file.');
+        isValid = false;
+    } else if (resumeText.value.trim().length < 100) {
+        showFieldError(resumeText, 'Please provide more detailed resume content (minimum 100 characters).');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+function showFormError(form, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+    alertDiv.innerHTML = `
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    form.insertBefore(alertDiv, form.firstChild);
+    alertDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+// Global API for external access
+window.ResumeOptimizerAPI = {
+    generateResume: handleResumeGeneration,
+    optimizeResume: handleResumeOptimization,
+    exportResume: exportResume,
+    clearAllData: resetAllForms,
+    validateResumeForm: validateResumeForm,
+    validateOptimizationForm: validateOptimizationForm,
+    version: '1.0.0'
+};
+
+// Debug functions for development
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    window.ResumeOptimizerDebug = {
+        config: () => window.ResumeOptimizer,
+        autoSavedData: () => JSON.parse(localStorage.getItem('resume_builder_autosave') || '{}'),
+        usage: () => JSON.parse(localStorage.getItem('elevify_usage') || '{}'),
+        clearStorage: () => {
+            const keys = Object.keys(localStorage);
+            keys.forEach(key => {
+                if (key.startsWith('resume_') || key.startsWith('elevify_')) {
+                    localStorage.removeItem(key);
+                }
+            });
+            console.log('Storage cleared');
+        },
+        populateTestData: () => {
+            const testData = {
+                fullName: 'John Doe',
+                jobTitle: 'Software Engineer',
+                email: 'john.doe@example.com',
+                phone: '(555) 123-4567',
+                location: 'San Francisco, CA',
+                summary: 'Experienced software engineer with 5+ years of experience in full-stack development.'
+            };
+            
+            // Populate form fields
+            Object.keys(testData).forEach(key => {
+                const field = document.getElementById(key);
+                if (field && typeof testData[key] === 'string') {
+                    field.value = testData[key];
+                }
+            });
+            
+            console.log('Test data populated');
+        }
+    };
+    
+    console.log('🔧 Debug mode active. Use ResumeOptimizerDebug for debugging.');
+}
+
+// Console message for successful initialization
+console.log(`
+🚀 Resume Optimizer v1.0.0 - Fully Loaded!
+✅ Complete resume generation system
+✅ ATS optimization engine
+✅ Professional templates & formatting
+✅ Export functionality (PDF, Word, HTML)
+✅ Auto-save & recovery systems
+✅ Smart suggestions & industry targeting
+✅ Accessibility features
+✅ Error handling & validation
+✅ Backend compatibility with your app.py
+✅ Tool-specific access control integration
+✅ Payment system integration
+✅ FIXED: Render backend URL support
+
+API Base URL: ${window.ResumeOptimizer?.apiBaseUrl || 'Not configured'}
+Ready to help users create professional, ATS-optimized resumes!
+`);
+
+// ============================================================================
+// END OF COMPLETE RESUME OPTIMIZER JAVASCRIPT (FIXED FOR RENDER)
+// ============================================================================
+    </script>
+    
+</body>
+</html>

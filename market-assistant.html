@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Research Assistant | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .research-type-card h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .research-type-card small {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .research-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .research-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .research-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        p, li, span, div, label, .form-control, .form-select {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .btn {
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+        }
+        
+        .research-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .research-section {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .research-section:hover {
+            border-color: #14697D;
+            box-shadow: 0 2px 10px rgba(20, 105, 125, 0.15);
+        }
+        
+        .research-section.selected {
+            border-color: #FFbf23;
+            background-color: #fffbf0;
+        }
+        
+        .copy-btn {
+            background-color: #14697D;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background-color: #0f5566;
+            color: white;
+        }
+        
+        .processing-message {
+            display: none;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .insights-suggestions {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .research-outline {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .research-type-badge {
+            background-color: #14697D;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                        
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>Market Research Assistant</h1>
+                        <p class="lead">Generate comprehensive market research reports with AI-powered analysis, competitor insights, and actionable recommendations to drive your business strategy.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img13.svg" alt="Market Research Assistant" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-chart-line" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose research type</div>
+                            <div class="mt-2"><span class="step-number">2</span> Define your market</div>
+                            <div class="mt-2"><span class="step-number">3</span> Set research scope</div>
+                            <div class="mt-2"><span class="step-number">4</span> AI generates insights</div>
+                            <div class="mt-2"><span class="step-number">5</span> Export and implement!</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-magic" style="color: #FFbf23;"></i> Research Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Competitor analysis</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Market sizing & trends</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Customer segmentation</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> SWOT analysis</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Opportunity mapping</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Actionable recommendations</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-search" style="color: #A82C2C;"></i> Research Types</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-users" style="color: #14697D;"></i> Target Audience Analysis</div>
+                            <div class="mb-2"><i class="fas fa-building" style="color: #14697D;"></i> Competitive Landscape</div>
+                            <div class="mb-2"><i class="fas fa-chart-pie" style="color: #14697D;"></i> Market Opportunity</div>
+                            <div class="mb-2"><i class="fas fa-lightbulb" style="color: #14697D;"></i> Product-Market Fit</div>
+                            <div class="mb-2"><i class="fas fa-globe" style="color: #14697D;"></i> Industry Overview</div>
+                            <div class="mb-2"><i class="fas fa-dollar-sign" style="color: #14697D;"></i> Pricing Strategy</div>
+                            <div class="mb-2"><i class="fas fa-rocket" style="color: #14697D;"></i> Market Entry Strategy</div>
+                            <div><i class="fas fa-trending-up" style="color: #14697D;"></i> Growth Opportunities</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Create Your Market Research</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <form id="marketResearchForm">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Research Type</label>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="research-type-card card h-100" data-type="competitor_analysis">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-building mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Competitor Analysis</h6>
+                                                <small class="text-muted">Deep dive into competition</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="research-type-card card h-100" data-type="market_opportunity">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-chart-pie mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Market Opportunity</h6>
+                                                <small class="text-muted">Size & growth potential</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="research-type-card card h-100" data-type="target_audience">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-users mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Target Audience</h6>
+                                                <small class="text-muted">Customer segmentation</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="research-type-card card h-100" data-type="industry_overview">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-globe mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Industry Overview</h6>
+                                                <small class="text-muted">Market landscape</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="research-type-card card h-100" data-type="product_market_fit">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-lightbulb mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Product-Market Fit</h6>
+                                                <small class="text-muted">Validate your solution</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="research-type-card card h-100" data-type="pricing_strategy">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-dollar-sign mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Pricing Strategy</h6>
+                                                <small class="text-muted">Optimize your pricing</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="selectedResearchType" name="researchType" required>
+
+                            <!-- Basic Information -->
+                            <div class="mb-4">
+                                <h5>Research Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="businessName" class="form-label">Business/Product Name</label>
+                                        <input type="text" class="form-control" id="businessName" name="businessName" placeholder="e.g., TechStartup Inc." required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="industry" class="form-label">Industry</label>
+                                        <input type="text" class="form-control" id="industry" name="industry" placeholder="e.g., SaaS, E-commerce, Healthcare" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="marketScope" class="form-label">Market Scope</label>
+                                        <select class="form-select" id="marketScope" name="marketScope" required>
+                                            <option value="">Select scope</option>
+                                            <option value="local">Local Market</option>
+                                            <option value="national">National Market</option>
+                                            <option value="global">Global Market</option>
+                                            <option value="regional">Regional Market</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="researchDepth" class="form-label">Research Depth</label>
+                                        <select class="form-select" id="researchDepth" name="researchDepth" required>
+                                            <option value="">Select depth</option>
+                                            <option value="overview">High-level Overview</option>
+                                            <option value="detailed">Detailed Analysis</option>
+                                            <option value="comprehensive">Comprehensive Report</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Content -->
+                            <div class="mb-4">
+                                <h5>Research Objectives</h5>
+                                <div class="mb-3">
+                                    <label for="researchGoal" class="form-label">Primary Research Goal</label>
+                                    <textarea class="form-control" id="researchGoal" name="researchGoal" rows="2" placeholder="e.g., Understand competitive landscape to identify market gaps and opportunities for our new product launch" required></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="targetMarket" class="form-label">Target Market/Geography</label>
+                                        <input type="text" class="form-control" id="targetMarket" name="targetMarket" placeholder="e.g., North America, SMBs, Tech professionals">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="timeframe" class="form-label">Timeline Focus</label>
+                                        <select class="form-select" id="timeframe" name="timeframe">
+                                            <option value="">Select timeframe</option>
+                                            <option value="current">Current state</option>
+                                            <option value="6months">Next 6 months</option>
+                                            <option value="1year">Next 1 year</option>
+                                            <option value="3years">Next 3 years</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="specificQuestions" class="form-label">Specific Questions to Address</label>
+                                    <textarea class="form-control" id="specificQuestions" name="specificQuestions" rows="3" placeholder="Enter specific questions you want answered (separate with line breaks)"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="competitors" class="form-label">Key Competitors (if known)</label>
+                                    <input type="text" class="form-control" id="competitors" name="competitors" placeholder="e.g., Company A, Company B, Company C">
+                                </div>
+                            </div>
+
+                            <!-- Additional Options -->
+                            <div class="mb-4">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeSWOT" checked>
+                                    <label class="form-check-label" for="includeSWOT">
+                                        Include SWOT analysis
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeRecommendations">
+                                    <label class="form-check-label" for="includeRecommendations">
+                                        Generate strategic recommendations
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="includeFinancials">
+                                    <label class="form-check-label" for="includeFinancials">
+                                        Include financial projections and market sizing
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-search me-2"></i> Generate Market Research
+                            </button>
+                        </form>
+                        
+                        <!-- Processing Message -->
+                        <div class="processing-message" id="processingMessage">
+                            <div class="loading-spinner d-inline-block me-2"></div>
+                            <h5 class="mb-0">Conducting comprehensive market research...</h5>
+                            <p class="text-muted mt-2 mb-0">This may take up to 45 seconds while our AI analyzes market data and trends.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Market Research Report</h4>
+                        
+                        <!-- Research Information -->
+                        <div class="mb-4" id="researchInfoSection">
+                            <h5><i class="fas fa-info-circle me-2"></i>Research Overview</h5>
+                            <div id="researchInfoContainer" class="p-3 bg-light rounded">
+                                <!-- Research info will be added dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Research Preview -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-eye me-2"></i>Research Report Preview</h5>
+                            <div class="research-preview" id="researchPreview">
+                                <!-- Research content will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Strategic Insights -->
+                        <div class="mb-4" id="insightsSection" style="display: none;">
+                            <h5><i class="fas fa-lightbulb me-2"></i>Strategic Insights & Recommendations</h5>
+                            <div class="insights-suggestions" id="insightsContent">
+                                <!-- Strategic insights will be added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="copyResearch">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Report</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                            <div class="export-option" id="downloadResearch">
+                                <i class="fas fa-download"></i>
+                                <div>Download</div>
+                                <small class="text-muted">As PDF file</small>
+                            </div>
+                            <div class="export-option" id="exportExcel">
+                                <i class="fas fa-file-excel"></i>
+                                <div>Export Excel</div>
+                                <small class="text-muted">Data template</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editResearchBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Research
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newResearchBtn">
+                                <i class="fas fa-plus me-1"></i> Create New Research
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">dominate</span> your market?</h2>
+                <p class="lead mb-4">Join thousands of businesses who make smarter decisions with Elevify's AI market research tools.</p>
+                <a href="/#tools" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div> 
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+// FIXED Market Research Assistant - Frontend for Render Backend
+// This version works with your existing backend on Render
+
+// Global variables
+let currentResearchData = null;
+let isGenerating = false;
+
+// API Configuration - Your Render backend URL
+const API_BASE_URL = 'https://elevify.onrender.com'; // Your actual Render URL
+
+console.log('API Base URL:', API_BASE_URL);
+
+// Research type selection
+document.querySelectorAll('.research-type-card').forEach(card => {
+    card.addEventListener('click', function() {
+        // Remove selected class from all cards
+        document.querySelectorAll('.research-type-card').forEach(c => c.classList.remove('selected'));
+        
+        // Add selected class to clicked card
+        this.classList.add('selected');
+        
+        // Set the hidden input value
+        document.getElementById('selectedResearchType').value = this.dataset.type;
+        
+        // Update form fields based on research type
+        updateFormForResearchType(this.dataset.type);
+    });
+});
+
+// Update form fields based on research type
+function updateFormForResearchType(researchType) {
+    const goalField = document.getElementById('researchGoal');
+    const specificQuestionsField = document.getElementById('specificQuestions');
+    
+    const placeholders = {
+        'competitor_analysis': {
+            goal: 'Analyze key competitors in the market to identify their strengths, weaknesses, and market positioning strategies',
+            questions: 'Who are the top 3-5 competitors?\nWhat are their pricing strategies?\nWhat are their key differentiators?\nWhat market gaps exist?'
+        },
+        'market_opportunity': {
+            goal: 'Assess market size, growth potential, and opportunities for business expansion or new product launch',
+            questions: 'What is the total addressable market size?\nWhat are the growth trends?\nWhat segments are underserved?\nWhat are the barriers to entry?'
+        },
+        'target_audience': {
+            goal: 'Define and analyze target customer segments, their behaviors, needs, and preferences',
+            questions: 'Who is the primary target audience?\nWhat are their demographics and psychographics?\nWhat are their pain points?\nHow do they make purchasing decisions?'
+        },
+        'industry_overview': {
+            goal: 'Provide comprehensive analysis of industry trends, regulations, and market dynamics',
+            questions: 'What are the key industry trends?\nWhat regulations affect the market?\nWhat are the major challenges?\nWhat innovations are emerging?'
+        },
+        'product_market_fit': {
+            goal: 'Evaluate how well the product meets market needs and identify optimization opportunities',
+            questions: 'How well does the product solve customer problems?\nWhat features are most valued?\nWhat improvements are needed?\nHow does it compare to alternatives?'
+        },
+        'pricing_strategy': {
+            goal: 'Analyze optimal pricing strategies based on market conditions, competition, and customer value perception',
+            questions: 'What are competitor pricing models?\nWhat is the price sensitivity?\nWhat value do customers perceive?\nWhat pricing strategy would be optimal?'
+        }
+    };
+    
+    const placeholder = placeholders[researchType] || placeholders['competitor_analysis'];
+    goalField.placeholder = placeholder.goal;
+    specificQuestionsField.placeholder = placeholder.questions;
+}
+
+// Form submission - Works with your Render backend
+document.getElementById('marketResearchForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Check if research type is selected
+    if (!document.getElementById('selectedResearchType').value) {
+        showError('Please select a research type');
+        return;
+    }
+    
+    // Prevent multiple submissions
+    if (isGenerating) {
+        return;
+    }
+    
+    isGenerating = true;
+    
+    // Show processing message
+    showProcessingMessage();
+    
+    // Hide form
+    this.style.display = 'none';
+    
+    try {
+        // Collect form data in the format your backend expects
+        const formData = collectFormDataForBackend();
+        
+        // Validate required fields
+        if (!validateFormData(formData)) {
+            throw new Error('Please fill in all required fields');
+        }
+        
+        // Call your Render backend API
+        const response = await callMarketResearchAPI(formData);
+        
+        if (response.success) {
+            currentResearchData = response;
+            displayResearchResults(response);
+            updateUsageCounter();
+        } else {
+            throw new Error(response.error || 'Failed to generate research');
+        }
+        
+    } catch (error) {
+        console.error('Research generation error:', error);
+        showError(error.message || 'Failed to generate market research. Please try again.');
+        
+        // Show form again on error
+        this.style.display = 'block';
+    } finally {
+        isGenerating = false;
+        hideProcessingMessage();
+    }
+});
+
+// Collect form data in the exact format your backend expects
+function collectFormDataForBackend() {
+    return {
+        // Research type and basic info - matching your backend field names
+        researchType: document.getElementById('selectedResearchType').value,
+        businessName: document.getElementById('businessName').value.trim(),
+        industry: document.getElementById('industry').value.trim(),
+        marketScope: document.getElementById('marketScope').value,
+        researchDepth: document.getElementById('researchDepth').value,
+        
+        // Research objectives - matching your backend field names
+        researchGoal: document.getElementById('researchGoal').value.trim(),
+        targetMarket: document.getElementById('targetMarket').value.trim(),
+        timeframe: document.getElementById('timeframe').value,
+        specificQuestions: document.getElementById('specificQuestions').value.trim(),
+        competitors: document.getElementById('competitors').value.trim(),
+        
+        // Additional options - matching your backend field names
+        includeSWOT: document.getElementById('includeSWOT').checked,
+        includeRecommendations: document.getElementById('includeRecommendations').checked,
+        includeFinancials: document.getElementById('includeFinancials').checked,
+        
+        // Timestamp for tracking
+        timestamp: new Date().toISOString()
+    };
+}
+
+// Validate form data
+function validateFormData(data) {
+    const required = ['researchType', 'businessName', 'industry', 'marketScope', 'researchDepth', 'researchGoal'];
+    
+    for (const field of required) {
+        if (!data[field] || data[field].trim() === '') {
+            console.error(`Required field missing: ${field}`);
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+// Call your Render backend API - configured for your exact setup with CORS handling
+async function callMarketResearchAPI(formData) {
+    try {
+        console.log('Calling Render backend API with data:', formData);
+        console.log('API URL:', `${API_BASE_URL}/api/market-assistant`);
+        
+        // First, try a simple fetch without credentials to avoid CORS preflight issues
+        const response = await fetch(`${API_BASE_URL}/api/market-assistant`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData),
+            mode: 'cors'
+        });
+        
+        console.log('API Response status:', response.status);
+        console.log('API Response headers:', [...response.headers.entries()]);
+        
+        if (!response.ok) {
+            let errorMessage = `HTTP ${response.status}`;
+            
+            try {
+                const errorData = await response.json();
+                console.log('Error response data:', errorData);
+                errorMessage = errorData.message || errorData.error || errorMessage;
+            } catch (e) {
+                console.log('Could not parse error response as JSON');
+                errorMessage = response.statusText || errorMessage;
+            }
+            
+            if (response.status === 429) {
+                throw new Error('Rate limit exceeded. Please wait a moment before trying again.');
+            } else if (response.status === 403) {
+                throw new Error('Access denied. You may need to upgrade your subscription.');
+            } else if (response.status === 404) {
+                throw new Error('API endpoint not found. Please check if the backend is properly deployed.');
+            } else if (response.status >= 500) {
+                throw new Error('Server error. Please try again in a few moments.');
+            } else {
+                throw new Error(errorMessage);
+            }
+        }
+        
+        const result = await response.json();
+        console.log('API Response data:', result);
+        
+        return result;
+        
+    } catch (error) {
+        console.error('API call error:', error);
+        
+        // Handle different types of errors
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            throw new Error(`CORS or network error: Cannot connect to backend server at ${API_BASE_URL}. This might be a CORS configuration issue.`);
+        } else if (error.message.includes('CORS')) {
+            throw new Error(`CORS error: The backend server needs to allow requests from ${window.location.origin}`);
+        } else {
+            throw error;
+        }
+    }
+}
+
+// Display research results - handles your backend response format
+function displayResearchResults(response) {
+    try {
+        // Your backend returns content in the 'content' field
+        let researchContent = response.content || response.research || '';
+        
+        if (!researchContent) {
+            // Try to extract from nested data structure
+            if (response.data && response.data.content) {
+                researchContent = response.data.content;
+            } else {
+                throw new Error('No research content found in response');
+            }
+        }
+        
+        // Generate research info
+        const formData = collectFormDataForBackend();
+        const researchInfo = generateResearchInfo(formData, response);
+        document.getElementById('researchInfoContainer').innerHTML = researchInfo;
+        
+        // Display the research content
+        const formattedContent = formatResearchContent(researchContent);
+        document.getElementById('researchPreview').innerHTML = formattedContent;
+        
+        // Show insights if available
+        if (response.insights || response.recommendations || formData.includeRecommendations) {
+            displayInsights(response, formData);
+        }
+        
+        // Show results container
+        document.getElementById('resultsContainer').style.display = 'block';
+        
+        // Scroll to results
+        document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth' });
+        
+        console.log('Research results displayed successfully');
+        
+    } catch (error) {
+        console.error('Error displaying results:', error);
+        showError('Research generated but failed to display properly. Please try regenerating.');
+    }
+}
+
+// Format research content for better display
+function formatResearchContent(content) {
+    if (!content) return '<p>No content available</p>';
+    
+    // Convert markdown-style formatting to HTML
+    let formatted = content
+        // Headers
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        // Bold text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        // Bullet points
+        .replace(/^\* (.*$)/gim, '<li>$1</li>')
+        .replace(/^- (.*$)/gim, '<li>$1</li>')
+        // Numbered lists
+        .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
+        // Line breaks
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+    
+    // Wrap in paragraphs and handle lists
+    formatted = '<p>' + formatted + '</p>';
+    
+    // Handle bullet point lists
+    formatted = formatted.replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>');
+    formatted = formatted.replace(/<\/ul>\s*<ul>/g, '');
+    
+    // Handle numbered lists
+    formatted = formatted.replace(/(<li>\d+\..*?<\/li>)/gs, '<ol>$1</ol>');
+    formatted = formatted.replace(/<\/ol>\s*<ol>/g, '');
+    
+    // Clean up empty paragraphs
+    formatted = formatted.replace(/<p><\/p>/g, '');
+    formatted = formatted.replace(/<p><br><\/p>/g, '');
+    
+    return formatted;
+}
+
+// Generate research info display
+function generateResearchInfo(formData, response) {
+    const metadata = response.metadata || {};
+    
+    return `
+        <div class="row">
+            <div class="col-md-3">
+                <strong>Business:</strong><br>
+                <span class="text-muted">${formData.businessName}</span>
+            </div>
+            <div class="col-md-3">
+                <strong>Industry:</strong><br>
+                <span class="text-muted">${formData.industry}</span>
+            </div>
+            <div class="col-md-3">
+                <strong>Research Type:</strong><br>
+                <span class="research-type-badge">${formatResearchType(formData.researchType)}</span>
+            </div>
+            <div class="col-md-3">
+                <strong>Generated:</strong><br>
+                <span class="text-muted">${new Date().toLocaleDateString()}</span>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <strong>Market Scope:</strong><br>
+                <span class="text-muted">${formatMarketScope(formData.marketScope)}</span>
+            </div>
+            <div class="col-md-4">
+                <strong>Research Depth:</strong><br>
+                <span class="text-muted">${formatResearchDepth(formData.researchDepth)}</span>
+            </div>
+            <div class="col-md-4">
+                <strong>Word Count:</strong><br>
+                <span class="text-muted">${metadata.word_count || (response.content ? response.content.split(' ').length : 'N/A')}</span>
+            </div>
+        </div>
+    `;
+}
+
+// Format research type for display
+function formatResearchType(type) {
+    const types = {
+        'competitor_analysis': 'Competitor Analysis',
+        'market_opportunity': 'Market Opportunity',
+        'target_audience': 'Target Audience',
+        'industry_overview': 'Industry Overview',
+        'product_market_fit': 'Product-Market Fit',
+        'pricing_strategy': 'Pricing Strategy'
+    };
+    
+    return types[type] || type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+
+// Format market scope for display
+function formatMarketScope(scope) {
+    const scopes = {
+        'local': 'Local Market',
+        'national': 'National Market', 
+        'global': 'Global Market',
+        'regional': 'Regional Market'
+    };
+    
+    return scopes[scope] || scope.replace(/\b\w/g, l => l.toUpperCase());
+}
+
+// Format research depth for display
+function formatResearchDepth(depth) {
+    const depths = {
+        'overview': 'High-level Overview',
+        'detailed': 'Detailed Analysis',
+        'comprehensive': 'Comprehensive Report'
+    };
+    
+    return depths[depth] || depth.replace(/\b\w/g, l => l.toUpperCase());
+}
+
+// Display insights section
+function displayInsights(response, formData) {
+    let insightsContent = '';
+    
+    if (response.insights) {
+        insightsContent = response.insights;
+    } else if (response.recommendations) {
+        insightsContent = response.recommendations;
+    } else {
+        // Generate basic insights if none provided
+        insightsContent = generateBasicInsights(formData);
+    }
+    
+    document.getElementById('insightsContent').innerHTML = formatResearchContent(insightsContent);
+    document.getElementById('insightsSection').style.display = 'block';
+}
+
+// Generate basic insights if none provided by API
+function generateBasicInsights(formData) {
+    return `
+        <h5>Strategic Recommendations</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <h6><i class="fas fa-lightbulb me-2"></i>Key Opportunities</h6>
+                <ul>
+                    <li>Leverage ${formData.industry} industry trends</li>
+                    <li>Focus on ${formData.targetMarket || 'key market segments'}</li>
+                    <li>Optimize for ${formData.marketScope} expansion</li>
+                    <li>Implement data-driven decision making</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6><i class="fas fa-exclamation-triangle me-2"></i>Considerations</h6>
+                <ul>
+                    <li>Monitor competitive landscape changes</li>
+                    <li>Validate assumptions with market data</li>
+                    <li>Consider regulatory requirements</li>
+                    <li>Plan for scalability challenges</li>
+                </ul>
+            </div>
+        </div>
+    `;
+}
+
+// Show processing message
+function showProcessingMessage() {
+    const processingDiv = document.getElementById('processingMessage');
+    processingDiv.style.display = 'block';
+    processingDiv.querySelector('.loading-spinner').style.display = 'inline-block';
+}
+
+// Hide processing message
+function hideProcessingMessage() {
+    const processingDiv = document.getElementById('processingMessage');
+    processingDiv.style.display = 'none';
+    processingDiv.querySelector('.loading-spinner').style.display = 'none';
+}
+
+// Show error message
+function showError(message) {
+    // Remove any existing error alerts
+    const existingAlerts = document.querySelectorAll('.alert-danger');
+    existingAlerts.forEach(alert => alert.remove());
+    
+    // Create new error alert
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+    alertDiv.innerHTML = `
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong>Error:</strong> ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    // Insert after the form
+    const form = document.getElementById('marketResearchForm');
+    form.parentNode.insertBefore(alertDiv, form.nextSibling);
+    
+    // Auto-dismiss after 10 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 10000);
+}
+
+// Update usage counter
+function updateUsageCounter() {
+    const remainingElement = document.getElementById('remainingUses');
+    if (remainingElement) {
+        const currentUses = parseInt(remainingElement.textContent);
+        if (currentUses > 0) {
+            remainingElement.textContent = currentUses - 1;
+        }
+    }
+}
+
+// Export functionality
+document.getElementById('copyResearch').addEventListener('click', function() {
+    if (!currentResearchData) {
+        showError('No research data to copy');
+        return;
+    }
+    
+    const content = document.getElementById('researchPreview').innerText;
+    navigator.clipboard.writeText(content).then(() => {
+        showSuccessMessage('Research report copied to clipboard!');
+    }).catch(() => {
+        showError('Failed to copy to clipboard');
+    });
+});
+
+document.getElementById('downloadResearch').addEventListener('click', function() {
+    if (!currentResearchData) {
+        showError('No research data to download');
+        return;
+    }
+    
+    try {
+        const content = document.getElementById('researchPreview').innerHTML;
+        const formData = collectFormDataForBackend();
+        
+        // Create HTML document
+        const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Market Research Report - ${formData.businessName}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        h1, h2, h3 { color: #14697D; }
+        .header { border-bottom: 2px solid #14697D; padding-bottom: 20px; margin-bottom: 30px; }
+        .metadata { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Market Research Report</h1>
+        <div class="metadata">
+            <strong>Business:</strong> ${formData.businessName}<br>
+            <strong>Industry:</strong> ${formData.industry}<br>
+            <strong>Research Type:</strong> ${formatResearchType(formData.researchType)}<br>
+            <strong>Generated:</strong> ${new Date().toLocaleDateString()}
+        </div>
+    </div>
+    <div class="content">
+        ${content}
+    </div>
+</body>
+</html>`;
+        
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `market-research-${formData.businessName.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showSuccessMessage('Research report downloaded successfully!');
+    } catch (error) {
+        console.error('Download error:', error);
+        showError('Failed to download report');
+    }
+});
+
+document.getElementById('exportExcel').addEventListener('click', function() {
+    showSuccessMessage('Excel export feature coming soon!');
+});
+
+// Edit research functionality
+document.getElementById('editResearchBtn').addEventListener('click', function() {
+    if (!currentResearchData) {
+        showError('No research data to edit');
+        return;
+    }
+    
+    // Hide results and show form with current data
+    document.getElementById('resultsContainer').style.display = 'none';
+    document.getElementById('marketResearchForm').style.display = 'block';
+    
+    // Scroll to form
+    document.getElementById('marketResearchForm').scrollIntoView({ behavior: 'smooth' });
+    
+    showSuccessMessage('Edit your research parameters and regenerate');
+});
+
+// New research functionality
+document.getElementById('newResearchBtn').addEventListener('click', function() {
+    // Reset form
+    document.getElementById('marketResearchForm').reset();
+    document.getElementById('selectedResearchType').value = '';
+    document.querySelectorAll('.research-type-card').forEach(c => c.classList.remove('selected'));
+    
+    // Clear current data
+    currentResearchData = null;
+    
+    // Hide results and show form
+    document.getElementById('resultsContainer').style.display = 'none';
+    document.getElementById('marketResearchForm').style.display = 'block';
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    showSuccessMessage('Ready to create new research');
+});
+
+// Show success message
+function showSuccessMessage(message) {
+    // Remove any existing success alerts
+    const existingAlerts = document.querySelectorAll('.alert-success');
+    existingAlerts.forEach(alert => alert.remove());
+    
+    // Create new success alert
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
+    alertDiv.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    // Insert at the top of the main container
+    const container = document.querySelector('.container');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+// Set reset date for usage tracker
+function initializeUsageTracker() {
+    const now = new Date();
+    const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const resetDateElement = document.getElementById('resetDate');
+    if (resetDateElement) {
+        resetDateElement.textContent = nextMonth.toLocaleDateString();
+    }
+}
+
+// Check API connectivity on page load - simplified to avoid CORS preflight
+async function checkAPIConnectivity() {
+    try {
+        console.log('Checking API connectivity to:', API_BASE_URL);
+        
+        // Use a simple GET request to avoid CORS preflight issues
+        const response = await fetch(`${API_BASE_URL}/health`, {
+            method: 'GET',
+            mode: 'cors'
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Backend API is accessible:', data);
+            
+            // Show success message briefly
+            const successDiv = document.createElement('div');
+            successDiv.className = 'alert alert-success alert-dismissible fade show';
+            successDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Connected:</strong> AI research service is ready. 
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(successDiv, container.firstChild);
+            
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.remove();
+                }
+            }, 3000);
+            
+            return true;
+        } else {
+            throw new Error(`Backend returned status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('❌ Backend API connectivity check failed:', error);
+        
+        // Show warning but don't block functionality
+        const warningDiv = document.createElement('div');
+        warningDiv.className = 'alert alert-warning alert-dismissible fade show';
+        warningDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Connection Issue:</strong> Cannot verify backend connection. You can still try to generate research.
+            <br><small>If you get CORS errors, please contact support.</small>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        const container = document.querySelector('.container');
+        container.insertBefore(warningDiv, container.firstChild);
+        
+        return false;
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Market Research Assistant initialized');
+    console.log('Backend URL:', API_BASE_URL);
+    
+    initializeUsageTracker();
+    checkAPIConnectivity();
+});
+
+// Helper function to get form data for debugging
+function collectFormData() {
+    return collectFormDataForBackend();
+}
+
+// Export for debugging
+window.marketResearchDebug = {
+    collectFormData: collectFormDataForBackend,
+    validateFormData,
+    callMarketResearchAPI,
+    currentResearchData: () => currentResearchData,
+    checkConnectivity: checkAPIConnectivity,
+    API_BASE_URL
+};
+    </script>
+</body>
+</html>

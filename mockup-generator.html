@@ -1,0 +1,2212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mockup Generator | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .mockup-type-card h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .mockup-type-card small {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .mockup-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .mockup-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .mockup-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        p, li, span, div, label, .form-control, .form-select {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .btn {
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+        }
+        
+        .mockup-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+            text-align: center;
+        }
+        
+        .mockup-preview img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .processing-message {
+            display: none;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .mockup-variations {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .variation-preview {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .device-badge {
+            background-color: #14697D;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .template-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .template-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .template-card:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+
+        .template-card.selected {
+            border-color: #FFbf23;
+            background-color: #fffbf0;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                       
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>Mockup Generator</h1>
+                        <p class="lead">Create stunning, professional mockups with AI-powered design tools. Showcase your work in realistic device frames, environments, and presentation formats.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img15.svg" alt="Mockup Generator" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-magic" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose mockup type</div>
+                            <div class="mt-2"><span class="step-number">2</span> Select device/template</div>
+                            <div class="mt-2"><span class="step-number">3</span> Upload your design</div>
+                            <div class="mt-2"><span class="step-number">4</span> Customize appearance</div>
+                            <div class="mt-2"><span class="step-number">5</span> Download your mockup!</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-star" style="color: #FFbf23;"></i> Mockup Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Professional templates</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Multiple device frames</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> High-resolution output</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Background customization</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Instant preview</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Multiple export formats</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-palette" style="color: #A82C2C;"></i> Mockup Types</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-mobile-alt" style="color: #14697D;"></i> Mobile & Tablet</div>
+                            <div class="mb-2"><i class="fas fa-laptop" style="color: #14697D;"></i> Desktop & Laptop</div>
+                            <div class="mb-2"><i class="fas fa-tv" style="color: #14697D;"></i> Web Browser</div>
+                            <div class="mb-2"><i class="fas fa-print" style="color: #14697D;"></i> Print Materials</div>
+                            <div class="mb-2"><i class="fas fa-tshirt" style="color: #14697D;"></i> Apparel & Products</div>
+                            <div class="mb-2"><i class="fas fa-building" style="color: #14697D;"></i> Signage & Branding</div>
+                            <div class="mb-2"><i class="fas fa-gift" style="color: #14697D;"></i> Packaging</div>
+                            <div><i class="fas fa-camera" style="color: #14697D;"></i> Social Media</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Create Your Mockup</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <form id="mockupGeneratorForm">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Mockup Type</label>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="mockup-type-card card h-100" data-type="mobile">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-mobile-alt mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Mobile & Tablet</h6>
+                                                <small class="text-muted">iOS, Android devices</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="mockup-type-card card h-100" data-type="desktop">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-laptop mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Desktop & Laptop</h6>
+                                                <small class="text-muted">MacBook, iMac, PC</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="mockup-type-card card h-100" data-type="browser">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-window-maximize mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Web Browser</h6>
+                                                <small class="text-muted">Chrome, Safari, Firefox</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="mockup-type-card card h-100" data-type="print">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-print mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Print Materials</h6>
+                                                <small class="text-muted">Posters, flyers, cards</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="mockup-type-card card h-100" data-type="apparel">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-tshirt mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Apparel & Products</h6>
+                                                <small class="text-muted">T-shirts, mugs, bags</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="mockup-type-card card h-100" data-type="social">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-share-alt mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Social Media</h6>
+                                                <small class="text-muted">Instagram, Facebook posts</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="selectedMockupType" name="mockupType" required>
+
+                            <!-- Upload Section -->
+                            <div class="mb-4">
+                                <h5>Upload Your Design</h5>
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="designUpload" class="form-label">Design File</label>
+                                        <input type="file" class="form-control" id="designUpload" name="designUpload" accept="image/*,.pdf,.psd,.sketch,.fig" required>
+                                        <div class="form-text">Supported formats: JPG, PNG, PDF, PSD, Sketch, Figma (up to 50MB)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Customization Options -->
+                            <div class="mb-4">
+                                <h5>Customization</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="backgroundColor" class="form-label">Background Color</label>
+                                        <div class="d-flex align-items-center">
+                                            <input type="color" class="color-picker me-2" id="backgroundColor" name="backgroundColor" value="#ffffff">
+                                            <input type="text" class="form-control" id="backgroundColorText" placeholder="#ffffff" value="#ffffff">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="shadowIntensity" class="form-label">Shadow Intensity</label>
+                                        <select class="form-select" id="shadowIntensity" name="shadowIntensity">
+                                            <option value="none">None</option>
+                                            <option value="light">Light</option>
+                                            <option value="medium" selected>Medium</option>
+                                            <option value="strong">Strong</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rotation" class="form-label">Device Rotation</label>
+                                        <select class="form-select" id="rotation" name="rotation">
+                                            <option value="0">0° (Straight)</option>
+                                            <option value="15">15° Tilt</option>
+                                            <option value="30">30° Tilt</option>
+                                            <option value="-15">-15° Tilt</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="outputResolution" class="form-label">Output Resolution</label>
+                                        <select class="form-select" id="outputResolution" name="outputResolution">
+                                            <option value="web">Web (72 DPI)</option>
+                                            <option value="print">Print (300 DPI)</option>
+                                            <option value="retina">Retina (144 DPI)</option>
+                                            <option value="4k">4K Ultra HD</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Template Selection (shown after mockup type is selected) -->
+                            <div class="mb-4" id="templateSection" style="display: none;">
+                                <h5>Choose Template</h5>
+                                <div class="template-gallery" id="templateGallery">
+                                    <!-- Templates will be populated based on selected mockup type -->
+                                </div>
+                            </div>
+
+                            <!-- Additional Options -->
+                            <div class="mb-4">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeReflection" checked>
+                                    <label class="form-check-label" for="includeReflection">
+                                        Add reflection effect
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeBackground">
+                                    <label class="form-check-label" for="includeBackground">
+                                        Include environment background
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="generateVariations">
+                                    <label class="form-check-label" for="generateVariations">
+                                        Generate multiple variations
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-magic me-2"></i> Generate Mockup
+                            </button>
+                        </form>
+                        
+                        <!-- Processing Message -->
+                        <div class="processing-message" id="processingMessage">
+                            <div class="loading-spinner d-inline-block me-2"></div>
+                            <h5 class="mb-0">Creating your professional mockup...</h5>
+                            <p class="text-muted mt-2 mb-0">This may take up to 45 seconds while our AI processes your design.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Mockup</h4>
+                        
+                        <!-- Mockup Preview -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-eye me-2"></i>Mockup Preview</h5>
+                            <div class="mockup-preview" id="mockupPreview">
+                                <div class="placeholder-mockup">
+                                    <div style="background: linear-gradient(45deg, #f0f0f0, #e0e0e0); width: 300px; height: 600px; margin: 0 auto; border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-mobile-alt" style="font-size: 4rem; color: #14697D;"></i>
+                                    </div>
+                                    <p class="mt-3 text-muted">Your mockup will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mockup Variations -->
+                        <div class="mb-4" id="variationsSection" style="display: none;">
+                            <h5><i class="fas fa-images me-2"></i>Mockup Variations</h5>
+                            <div class="mockup-variations" id="variationsContent">
+                                <!-- Variations will be added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="downloadHD">
+                                <i class="fas fa-download"></i>
+                                <div>Download HD</div>
+                                <small class="text-muted">High resolution</small>
+                            </div>
+                            <div class="export-option" id="downloadPNG">
+                                <i class="fas fa-file-image"></i>
+                                <div>PNG Format</div>
+                                <small class="text-muted">Transparent background</small>
+                            </div>
+                            <div class="export-option" id="downloadJPG">
+                                <i class="fas fa-file-image"></i>
+                                <div>JPG Format</div>
+                                <small class="text-muted">Smaller file size</small>
+                            </div>
+                            <div class="export-option" id="downloadPSD">
+                                <i class="fas fa-layer-group"></i>
+                                <div>PSD File</div>
+                                <small class="text-muted">Editable layers</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editMockupBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Mockup
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newMockupBtn">
+                                <i class="fas fa-plus me-1"></i> Create New Mockup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">showcase</span> your design presentations?</h2>
+                <p class="lead mb-4">Join thousands of designers and marketers who create stunning mockups with Elevify's AI-powered tools.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div> 
+    </footer>
+
+    <script>
+       // ============================================================================
+// MOCKUP GENERATOR JAVASCRIPT - PART 1 OF 3
+// Core functionality: Selection, Templates, Form Handling
+// ============================================================================
+
+// Mockup type selection
+document.querySelectorAll('.mockup-type-card').forEach(card => {
+    card.addEventListener('click', function() {
+        // Remove selected class from all cards
+        document.querySelectorAll('.mockup-type-card').forEach(c => c.classList.remove('selected'));
+        
+        // Add selected class to clicked card
+        this.classList.add('selected');
+        
+        // Set the hidden input value
+        document.getElementById('selectedMockupType').value = this.dataset.type;
+        
+        // Show template section and populate templates
+        showTemplatesForType(this.dataset.type);
+    });
+});
+
+// Template data for different mockup types
+const templates = {
+    mobile: [
+        { id: 'iphone14', name: 'iPhone 14 Pro', preview: '📱', description: 'Latest iPhone with Dynamic Island' },
+        { id: 'iphone13', name: 'iPhone 13', preview: '📱', description: 'Popular iPhone model' },
+        { id: 'samsung', name: 'Samsung Galaxy S23', preview: '📱', description: 'Premium Android device' },
+        { id: 'ipad', name: 'iPad Pro', preview: '📱', description: 'Professional tablet experience' },
+        { id: 'pixel', name: 'Google Pixel 7', preview: '📱', description: 'Pure Android experience' },
+        { id: 'oneplus', name: 'OnePlus 11', preview: '📱', description: 'Premium Android flagship' }
+    ],
+    desktop: [
+        { id: 'macbook', name: 'MacBook Pro', preview: '💻', description: 'Apple\'s premium laptop' },
+        { id: 'imac', name: 'iMac 24"', preview: '🖥️', description: 'All-in-one desktop' },
+        { id: 'pc', name: 'PC Monitor', preview: '🖥️', description: 'Professional desktop setup' },
+        { id: 'surface', name: 'Surface Studio', preview: '💻', description: 'Creative workstation' },
+        { id: 'dell', name: 'Dell XPS', preview: '💻', description: 'Premium Windows laptop' },
+        { id: 'gaming', name: 'Gaming Setup', preview: '🖥️', description: 'High-performance gaming rig' }
+    ],
+    browser: [
+        { id: 'chrome', name: 'Chrome Browser', preview: '🌐', description: 'Most popular web browser' },
+        { id: 'safari', name: 'Safari Browser', preview: '🌐', description: 'Apple\'s web browser' },
+        { id: 'firefox', name: 'Firefox Browser', preview: '🌐', description: 'Privacy-focused browser' },
+        { id: 'edge', name: 'Edge Browser', preview: '🌐', description: 'Microsoft\'s modern browser' },
+        { id: 'opera', name: 'Opera Browser', preview: '🌐', description: 'Feature-rich browser' },
+        { id: 'brave', name: 'Brave Browser', preview: '🌐', description: 'Privacy-first browser' }
+    ],
+    print: [
+        { id: 'poster', name: 'Poster Mockup', preview: '📄', description: 'Large format poster' },
+        { id: 'flyer', name: 'Flyer Design', preview: '📄', description: 'Marketing flyer' },
+        { id: 'businesscard', name: 'Business Card', preview: '🎫', description: 'Professional business card' },
+        { id: 'magazine', name: 'Magazine Cover', preview: '📰', description: 'Magazine publication' },
+        { id: 'brochure', name: 'Brochure', preview: '📃', description: 'Tri-fold brochure' },
+        { id: 'book', name: 'Book Cover', preview: '📚', description: 'Book publication' }
+    ],
+    apparel: [
+        { id: 'tshirt', name: 'T-Shirt Front', preview: '👕', description: 'Classic t-shirt design' },
+        { id: 'hoodie', name: 'Hoodie Design', preview: '🧥', description: 'Comfortable hoodie' },
+        { id: 'mug', name: 'Coffee Mug', preview: '☕', description: 'Ceramic coffee mug' },
+        { id: 'totebag', name: 'Tote Bag', preview: '👜', description: 'Eco-friendly tote bag' },
+        { id: 'cap', name: 'Baseball Cap', preview: '🧢', description: 'Classic baseball cap' },
+        { id: 'pillow', name: 'Throw Pillow', preview: '🛏️', description: 'Decorative pillow' }
+    ],
+    social: [
+        { id: 'instagram', name: 'Instagram Post', preview: '📸', description: 'Square Instagram post' },
+        { id: 'facebook', name: 'Facebook Cover', preview: '📘', description: 'Facebook cover photo' },
+        { id: 'twitter', name: 'Twitter Header', preview: '🐦', description: 'Twitter profile header' },
+        { id: 'linkedin', name: 'LinkedIn Banner', preview: '💼', description: 'Professional LinkedIn banner' },
+        { id: 'youtube', name: 'YouTube Thumbnail', preview: '📺', description: 'Video thumbnail' },
+        { id: 'pinterest', name: 'Pinterest Pin', preview: '📌', description: 'Vertical Pinterest pin' }
+    ]
+};
+
+function showTemplatesForType(type) {
+    const templateSection = document.getElementById('templateSection');
+    const templateGallery = document.getElementById('templateGallery');
+    
+    // Clear existing templates
+    templateGallery.innerHTML = '';
+    
+    // Add templates for the selected type
+    if (templates[type]) {
+        templates[type].forEach(template => {
+            const templateCard = document.createElement('div');
+            templateCard.className = 'template-card';
+            templateCard.dataset.template = template.id;
+            templateCard.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">${template.preview}</div>
+                <h6>${template.name}</h6>
+                <small class="text-muted">${template.description}</small>
+            `;
+            
+            templateCard.addEventListener('click', function() {
+                document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+            
+            templateGallery.appendChild(templateCard);
+        });
+        
+        templateSection.style.display = 'block';
+    } else {
+        templateSection.style.display = 'none';
+    }
+}
+
+// Color picker synchronization
+const colorPicker = document.getElementById('backgroundColor');
+const colorText = document.getElementById('backgroundColorText');
+
+colorPicker.addEventListener('change', function() {
+    colorText.value = this.value;
+});
+
+colorText.addEventListener('input', function() {
+    if (this.value.match(/^#[0-9A-F]{6}$/i)) {
+        colorPicker.value = this.value;
+    }
+});
+
+// Enhanced form submission with AI mockup generation
+document.getElementById('mockupGeneratorForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Validate required fields
+    const mockupType = document.getElementById('selectedMockupType').value;
+    const designUpload = document.getElementById('designUpload').files[0];
+    
+    if (!mockupType) {
+        alert('Please select a mockup type');
+        return;
+    }
+    
+    if (!designUpload) {
+        alert('Please upload a design file');
+        return;
+    }
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+    if (!allowedTypes.includes(designUpload.type)) {
+        alert('Please upload a valid image file (JPG, PNG, GIF, WebP) or PDF');
+        return;
+    }
+    
+    // Validate file size (50MB limit)
+    const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+    if (designUpload.size > maxSize) {
+        alert('File size must be less than 50MB');
+        return;
+    }
+    
+    // Show processing message
+    document.getElementById('processingMessage').style.display = 'block';
+    document.querySelector('.loading-spinner').style.display = 'inline-block';
+    
+    // Scroll to processing message
+    document.getElementById('processingMessage').scrollIntoView({ behavior: 'smooth' });
+    
+    // Generate mockup using AI
+    generateAIMockup();
+});
+
+async function generateAIMockup() {
+    try {
+        // Get form data
+        const mockupType = document.getElementById('selectedMockupType').value;
+        const selectedTemplate = document.querySelector('.template-card.selected');
+        const templateId = selectedTemplate ? selectedTemplate.dataset.template : (templates[mockupType] ? templates[mockupType][0].id : 'default');
+        const backgroundColor = document.getElementById('backgroundColor').value;
+        const shadowIntensity = document.getElementById('shadowIntensity').value;
+        const rotation = document.getElementById('rotation').value;
+        const outputResolution = document.getElementById('outputResolution').value;
+        const includeReflection = document.getElementById('includeReflection').checked;
+        const includeBackground = document.getElementById('includeBackground').checked;
+        const generateVariations = document.getElementById('generateVariations').checked;
+        const designFile = document.getElementById('designUpload').files[0];
+        
+        // Get template info
+        const templateInfo = templates[mockupType] ? templates[mockupType].find(t => t.id === templateId) : null;
+        
+        // Convert file to base64 for API
+        const fileBase64 = await fileToBase64(designFile);
+        
+        // Prepare mockup data for the correct backend endpoint
+        const mockupData = {
+            mockupType: mockupType,
+            templateId: templateId,
+            templateName: templateInfo ? templateInfo.name : 'Default Template',
+            backgroundColor: backgroundColor,
+            shadowIntensity: shadowIntensity,
+            rotation: rotation,
+            outputResolution: outputResolution,
+            includeReflection: includeReflection,
+            includeBackground: includeBackground,
+            generateVariations: generateVariations,
+            designFile: {
+                name: designFile.name,
+                type: designFile.type,
+                size: designFile.size,
+                data: fileBase64
+            }
+        };
+        
+        // Call the correct backend endpoint
+        const response = await fetch('/api/mockup-generator', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(mockupData)
+        });
+        
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Server returned non-JSON response. Please check your backend configuration.');
+        }
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            generateMockupResult(result);
+        } else {
+            throw new Error(result.error || result.message || 'Failed to generate mockup');
+        }
+        
+    } catch (error) {
+        console.error('Error generating mockup:', error);
+        document.getElementById('processingMessage').style.display = 'none';
+        
+        // Show user-friendly error message
+        const errorMessage = error.message.includes('non-JSON response') 
+            ? 'Server configuration error. Please contact support.'
+            : `Error generating mockup: ${error.message}. Please try again.`;
+            
+        showErrorMessage(errorMessage);
+    }
+}
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
+function generateMockupResult(result) {
+    // Hide processing message
+    document.getElementById('processingMessage').style.display = 'none';
+    
+    // Show results
+    const resultsContainer = document.getElementById('resultsContainer');
+    const mockupPreview = document.getElementById('mockupPreview');
+    
+    // Generate professional mockup HTML from AI response
+    let mockupHtml = '';
+    
+    if (result.content || result.banner_html || result.banner_design) {
+        // Use AI-generated mockup HTML
+        mockupHtml = result.content || result.banner_html || result.banner_design;
+    } else {
+        // Fallback: Create mockup based on specifications
+        mockupHtml = createFallbackMockup(result);
+    }
+    
+    // Display the mockup
+    mockupPreview.innerHTML = mockupHtml + `
+        <div class="mt-4 p-3 bg-light rounded">
+            <h6><i class="fas fa-check-circle text-success me-2"></i>Professional Mockup Generated Successfully!</h6>
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <small class="text-muted d-block">Mockup Type</small>
+                    <strong>${result.metadata?.mockup_type || 'Professional Mockup'}</strong>
+                </div>
+                <div class="col-md-4">
+                    <small class="text-muted d-block">Template</small>
+                    <strong>${result.metadata?.template_name || 'Custom Template'}</strong>
+                </div>
+                <div class="col-md-4">
+                    <small class="text-muted d-block">Quality</small>
+                    <strong>${result.metadata?.quality || 'High'} Resolution</strong>
+                </div>
+            </div>
+            ${result.metadata?.ready_to_use ? '<div class="mt-2"><span class="badge bg-success">Ready to Use</span></div>' : ''}
+        </div>
+    `;
+    
+    // Show variations if enabled and available
+    if (result.design_variations || result.metadata?.has_variations) {
+        document.getElementById('variationsSection').style.display = 'block';
+        const variationsContent = document.getElementById('variationsContent');
+        
+        if (result.design_variations) {
+            variationsContent.innerHTML = result.design_variations;
+        } else {
+            // Create variation previews
+            variationsContent.innerHTML = createVariationPreviews(result);
+        }
+    }
+    
+    // Update download options with real functionality
+    updateDownloadOptions(result);
+    
+    // Show results container
+    resultsContainer.style.display = 'block';
+    resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    
+    // Show success message
+    showSuccessMessage(result);
+}
+
+// ============================================================================
+// END OF PART 1 - Continue with Part 2 for mockup creation functions
+// ============================================================================
+// ============================================================================
+// MOCKUP GENERATOR JAVASCRIPT - PART 2 OF 3
+// Mockup Creation Functions and UI Components
+// ============================================================================
+
+function createFallbackMockup(result) {
+    const mockupType = result.metadata?.mockup_type || 'professional';
+    const templateName = result.metadata?.template_name || 'Device';
+    const backgroundColor = result.metadata?.background_color || '#f8f9fa';
+    
+    // Generate different mockup styles based on type
+    switch(mockupType) {
+        case 'mobile':
+            return createMobileMockup(templateName, backgroundColor);
+        case 'desktop':
+            return createDesktopMockup(templateName, backgroundColor);
+        case 'browser':
+            return createBrowserMockup(templateName, backgroundColor);
+        case 'tablet':
+            return createTabletMockup(templateName, backgroundColor);
+        default:
+            return createGenericMockup(templateName, backgroundColor);
+    }
+}
+
+function createMobileMockup(templateName, backgroundColor) {
+    return `
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 400px; background: linear-gradient(135deg, ${backgroundColor} 0%, #ffffff 100%); border-radius: 20px; padding: 2rem;">
+            <div style="position: relative;">
+                <!-- Phone frame -->
+                <div style="width: 280px; height: 560px; background: linear-gradient(145deg, #2c3e50, #34495e); border-radius: 35px; padding: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1);">
+                    <!-- Screen -->
+                    <div style="width: 240px; height: 520px; background: #000; border-radius: 25px; overflow: hidden; position: relative;">
+                        <!-- Status bar -->
+                        <div style="height: 30px; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; color: white; font-size: 12px;">
+                            <span>9:41</span>
+                            <span style="display: flex; gap: 5px;">
+                                <div style="width: 18px; height: 10px; border: 1px solid white; border-radius: 2px; position: relative;">
+                                    <div style="width: 14px; height: 6px; background: white; border-radius: 1px; position: absolute; top: 1px; left: 1px;"></div>
+                                </div>
+                            </span>
+                        </div>
+                        <!-- App content area -->
+                        <div style="height: 490px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-direction: column; color: white; text-align: center; padding: 20px;">
+                            <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-mobile-alt" style="font-size: 2rem;"></i>
+                            </div>
+                            <h6 style="margin: 0; font-weight: 600;">Your Design Here</h6>
+                            <p style="margin: 10px 0 0 0; opacity: 0.8; font-size: 14px;">Professional ${templateName} mockup</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Reflection -->
+                <div style="position: absolute; bottom: -20px; left: 0; right: 0; height: 100px; background: linear-gradient(to bottom, rgba(44,62,80,0.3) 0%, transparent 100%); transform: scaleY(-1); border-radius: 35px; opacity: 0.5;"></div>
+            </div>
+        </div>
+    `;
+}
+
+function createDesktopMockup(templateName, backgroundColor) {
+    return `
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 400px; background: linear-gradient(135deg, ${backgroundColor} 0%, #ffffff 100%); border-radius: 20px; padding: 2rem;">
+            <div style="position: relative; transform: perspective(1000px) rotateX(5deg) rotateY(-5deg);">
+                <!-- Laptop base -->
+                <div style="width: 500px; height: 320px; background: linear-gradient(145deg, #2c3e50, #34495e); border-radius: 15px 15px 5px 5px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.3);">
+                    <!-- Screen -->
+                    <div style="width: 460px; height: 280px; background: #000; border-radius: 10px; margin: 20px; overflow: hidden;">
+                        <!-- Menu bar -->
+                        <div style="height: 30px; background: #f0f0f0; display: flex; align-items: center; padding: 0 15px;">
+                            <div style="display: flex; gap: 8px;">
+                                <div style="width: 12px; height: 12px; background: #ff5f57; border-radius: 50%;"></div>
+                                <div style="width: 12px; height: 12px; background: #ffbd2e; border-radius: 50%;"></div>
+                                <div style="width: 12px; height: 12px; background: #28ca42; border-radius: 50%;"></div>
+                            </div>
+                        </div>
+                        <!-- Content area -->
+                        <div style="height: 250px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-direction: column; color: white; text-align: center;">
+                            <div style="width: 100px; height: 100px; background: rgba(255,255,255,0.2); border-radius: 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-laptop" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 style="margin: 0; font-weight: 600;">Your Design Here</h5>
+                            <p style="margin: 10px 0 0 0; opacity: 0.8;">Professional ${templateName} mockup</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Keyboard area -->
+                <div style="width: 500px; height: 20px; background: linear-gradient(145deg, #34495e, #2c3e50); border-radius: 0 0 15px 15px; margin-top: -5px;"></div>
+                <!-- Reflection -->
+                <div style="position: absolute; bottom: -30px; left: 0; right: 0; height: 80px; background: linear-gradient(to bottom, rgba(44,62,80,0.2) 0%, transparent 100%); transform: scaleY(-1); border-radius: 15px; opacity: 0.6;"></div>
+            </div>
+        </div>
+    `;
+}
+
+function createBrowserMockup(templateName, backgroundColor) {
+    return `
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 400px; background: linear-gradient(135deg, ${backgroundColor} 0%, #ffffff 100%); border-radius: 20px; padding: 2rem;">
+            <div style="width: 600px; background: white; border-radius: 15px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); overflow: hidden;">
+                <!-- Browser header -->
+                <div style="height: 50px; background: #f8f9fa; border-bottom: 1px solid #e9ecef; display: flex; align-items: center; padding: 0 20px;">
+                    <div style="display: flex; gap: 8px; margin-right: 20px;">
+                        <div style="width: 12px; height: 12px; background: #ff5f57; border-radius: 50%;"></div>
+                        <div style="width: 12px; height: 12px; background: #ffbd2e; border-radius: 50%;"></div>
+                        <div style="width: 12px; height: 12px; background: #28ca42; border-radius: 50%;"></div>
+                    </div>
+                    <div style="flex: 1; height: 30px; background: white; border: 1px solid #ddd; border-radius: 20px; display: flex; align-items: center; padding: 0 15px; color: #666;">
+                        <i class="fas fa-lock" style="margin-right: 8px; font-size: 12px;"></i>
+                        https://yourwebsite.com
+                    </div>
+                </div>
+                <!-- Browser content -->
+                <div style="height: 350px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-direction: column; color: white; text-align: center;">
+                    <div style="width: 120px; height: 120px; background: rgba(255,255,255,0.2); border-radius: 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-globe" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4 style="margin: 0; font-weight: 600;">Your Website Here</h4>
+                    <p style="margin: 10px 0 0 0; opacity: 0.8;">Professional ${templateName} preview</p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function createTabletMockup(templateName, backgroundColor) {
+    return `
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 400px; background: linear-gradient(135deg, ${backgroundColor} 0%, #ffffff 100%); border-radius: 20px; padding: 2rem;">
+            <div style="position: relative; transform: perspective(1000px) rotateX(10deg) rotateY(-2deg);">
+                <!-- Tablet frame -->
+                <div style="width: 400px; height: 300px; background: linear-gradient(145deg, #2c3e50, #34495e); border-radius: 25px; padding: 15px; box-shadow: 0 25px 50px rgba(0,0,0,0.3);">
+                    <!-- Screen -->
+                    <div style="width: 370px; height: 270px; background: #000; border-radius: 15px; overflow: hidden;">
+                        <!-- Content area -->
+                        <div style="height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; flex-direction: column; color: white; text-align: center;">
+                            <div style="width: 100px; height: 100px; background: rgba(255,255,255,0.2); border-radius: 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-tablet-alt" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 style="margin: 0; font-weight: 600;">Your Design Here</h5>
+                            <p style="margin: 10px 0 0 0; opacity: 0.8;">Professional ${templateName} mockup</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Reflection -->
+                <div style="position: absolute; bottom: -25px; left: 0; right: 0; height: 60px; background: linear-gradient(to bottom, rgba(44,62,80,0.2) 0%, transparent 100%); transform: scaleY(-1); border-radius: 25px; opacity: 0.5;"></div>
+            </div>
+        </div>
+    `;
+}
+
+function createGenericMockup(templateName, backgroundColor) {
+    return `
+        <div style="display: flex; justify-content: center; align-items: center; min-height: 400px; background: linear-gradient(135deg, ${backgroundColor} 0%, #ffffff 100%); border-radius: 20px; padding: 2rem;">
+            <div style="width: 500px; height: 350px; background: linear-gradient(145deg, #2c3e50, #34495e); border-radius: 20px; padding: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); position: relative;">
+                <!-- Content area -->
+                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; flex-direction: column; color: white; text-align: center;">
+                    <div style="width: 120px; height: 120px; background: rgba(255,255,255,0.2); border-radius: 20px; margin-bottom: 30px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-image" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 style="margin: 0; font-weight: 600;">Your Design Here</h4>
+                    <p style="margin: 15px 0 0 0; opacity: 0.8; font-size: 18px;">Professional ${templateName} mockup</p>
+                </div>
+                <!-- Decorative elements -->
+                <div style="position: absolute; top: -10px; right: -10px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; opacity: 0.7;"></div>
+                <div style="position: absolute; bottom: -15px; left: -15px; width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 50%; opacity: 0.7;"></div>
+            </div>
+        </div>
+    `;
+}
+
+function createVariationPreviews(result) {
+    const mockupType = result.metadata?.mockup_type || 'device';
+    const variations = [
+        { name: 'Light Theme', bg: '#f8f9fa', accent: '#007bff' },
+        { name: 'Dark Theme', bg: '#343a40', accent: '#28a745' },
+        { name: 'Gradient Theme', bg: 'linear-gradient(45deg, #667eea, #764ba2)', accent: '#fff' }
+    ];
+    
+    return `
+        <div class="row">
+            ${variations.map((variation, index) => `
+                <div class="col-md-4">
+                    <div class="variation-preview">
+                        <div class="device-badge mb-2">Variation ${index + 1}</div>
+                        <div style="
+                            background: ${variation.bg};
+                            width: 150px;
+                            height: 200px;
+                            margin: 0 auto;
+                            border-radius: 10px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: ${variation.accent};
+                            font-weight: 600;
+                            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+                        ">
+                            <i class="fas fa-${mockupType === 'mobile' ? 'mobile-alt' : mockupType === 'desktop' ? 'laptop' : 'image'}" style="font-size: 2rem;"></i>
+                        </div>
+                        <h6 class="mt-2">${variation.name}</h6>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function updateDownloadOptions(result) {
+    // Update download options with real functionality
+    const downloadButtons = {
+        'downloadHD': 'High Resolution PNG',
+        'downloadPNG': 'PNG with Transparency',
+        'downloadJPG': 'JPG Optimized',
+        'downloadPSD': 'Layered PSD File'
+    };
+
+    Object.keys(downloadButtons).forEach(buttonId => {
+        const button = document.getElementById(buttonId);
+        if (button) {
+            button.onclick = () => downloadMockup(buttonId.replace('download', '').toLowerCase(), result);
+        }
+    });
+}
+
+function downloadMockup(format, result) {
+    // Create download functionality
+    try {
+        const mockupElement = document.querySelector('#mockupPreview > div');
+        if (!mockupElement) {
+            alert('No mockup available for download');
+            return;
+        }
+
+        // For now, we'll use html2canvas or similar approach
+        // In a real implementation, you'd call your backend to generate the actual file
+        if (typeof html2canvas !== 'undefined') {
+            html2canvas(mockupElement, {
+                backgroundColor: null,
+                scale: format === 'hd' ? 2 : 1,
+                useCORS: true,
+                allowTaint: true
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `mockup-${Date.now()}.${format === 'jpg' ? 'jpg' : 'png'}`;
+                link.href = canvas.toDataURL(`image/${format === 'jpg' ? 'jpeg' : 'png'}`, format === 'jpg' ? 0.9 : 1.0);
+                link.click();
+            });
+        } else {
+            // Fallback: Show instructions for manual download
+            showDownloadInstructions(format);
+        }
+    } catch (error) {
+        console.error('Download error:', error);
+        showDownloadInstructions(format);
+    }
+}
+
+function showDownloadInstructions(format) {
+    const instructions = `
+        <div class="alert alert-info">
+            <h6><i class="fas fa-info-circle me-2"></i>Download Instructions</h6>
+            <p>To save your ${format.toUpperCase()} mockup:</p>
+            <ol>
+                <li>Right-click on the mockup preview above</li>
+                <li>Select "Save image as..." or "Copy image"</li>
+                <li>Choose your desired location and save</li>
+            </ol>
+            <small class="text-muted">For higher quality exports, consider using our Pro tools or contact support.</small>
+        </div>
+    `;
+    
+    // Show instructions in a modal or alert
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = instructions;
+    tempDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-width: 400px;';
+    
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 9998;';
+    
+    overlay.onclick = () => {
+        document.body.removeChild(overlay);
+        document.body.removeChild(tempDiv);
+    };
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(tempDiv);
+    
+    setTimeout(() => {
+        if (document.body.contains(overlay)) {
+            document.body.removeChild(overlay);
+            document.body.removeChild(tempDiv);
+        }
+    }, 10000);
+}
+
+function showSuccessMessage(result) {
+    // Create and show success notification
+    const successMessage = document.createElement('div');
+    successMessage.innerHTML = `
+        <div class="alert alert-success alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>Mockup Generated!</strong> Your professional ${result.metadata?.mockup_type || 'device'} mockup is ready.
+            <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(successMessage);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (document.body.contains(successMessage)) {
+            document.body.removeChild(successMessage);
+        }
+    }, 5000);
+}
+
+function showErrorMessage(message) {
+    // Create and show error notification
+    const errorMessage = document.createElement('div');
+    errorMessage.innerHTML = `
+        <div class="alert alert-danger alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Error!</strong> ${message}
+            <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(errorMessage);
+    
+    // Auto-remove after 8 seconds
+    setTimeout(() => {
+        if (document.body.contains(errorMessage)) {
+            document.body.removeChild(errorMessage);
+        }
+    }, 8000);
+}
+
+// ============================================================================
+// END OF PART 2 - Continue with Part 3 for event handlers and utilities
+// ============================================================================
+// ============================================================================
+// MOCKUP GENERATOR JAVASCRIPT - PART 3 OF 3
+// Event Handlers, Utilities, and Initialization
+// ============================================================================
+
+// Export functionality event listeners
+document.getElementById('downloadHD').addEventListener('click', function() {
+    downloadMockup('hd', { format: 'PNG', quality: 'High Resolution' });
+});
+
+document.getElementById('downloadPNG').addEventListener('click', function() {
+    downloadMockup('png', { format: 'PNG', quality: 'Standard with Transparency' });
+});
+
+document.getElementById('downloadJPG').addEventListener('click', function() {
+    downloadMockup('jpg', { format: 'JPG', quality: 'Optimized for Web' });
+});
+
+document.getElementById('downloadPSD').addEventListener('click', function() {
+    // For PSD, show special instructions
+    const psdInstructions = `
+        <div class="alert alert-warning">
+            <h6><i class="fas fa-layer-group me-2"></i>PSD File Generation</h6>
+            <p>Layered PSD files require additional processing. Your mockup structure:</p>
+            <ul>
+                <li><strong>Background Layer:</strong> Device frame and shadows</li>
+                <li><strong>Screen Layer:</strong> Your design content</li>
+                <li><strong>Effects Layer:</strong> Reflections and lighting</li>
+                <li><strong>Smart Object:</strong> Editable design area</li>
+            </ul>
+            <p class="mb-0">Contact our support team for custom PSD generation with your specific requirements.</p>
+        </div>
+    `;
+    
+    showCustomAlert('PSD Download', psdInstructions);
+});
+
+function showCustomAlert(title, content) {
+    const modal = document.createElement('div');
+    modal.innerHTML = `
+        <div class="modal fade show" style="display: block; background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">${title}</h5>
+                        <button type="button" class="btn-close" onclick="this.closest('.modal').parentElement.remove()"></button>
+                    </div>
+                    <div class="modal-body">
+                        ${content}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').parentElement.remove()">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="this.closest('.modal').parentElement.remove()">Got it</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+// Enhanced Edit and New Mockup buttons with proper functionality
+document.getElementById('editMockupBtn').addEventListener('click', function() {
+    // Hide results container
+    document.getElementById('resultsContainer').style.display = 'none';
+    
+    // Hide processing message if visible
+    document.getElementById('processingMessage').style.display = 'none';
+    
+    // Hide variations section
+    document.getElementById('variationsSection').style.display = 'none';
+    
+    // Enable the form again
+    const form = document.getElementById('mockupGeneratorForm');
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = false;
+    submitButton.innerHTML = '<i class="fas fa-magic me-2"></i> Generate Mockup';
+    
+    // Keep form data intact - don't reset
+    // User can modify their settings and regenerate
+    
+    // Show edit mode notification
+    const editNotification = document.createElement('div');
+    editNotification.innerHTML = `
+        <div class="alert alert-info alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+            <i class="fas fa-edit me-2"></i>
+            <strong>Edit Mode Active!</strong> Modify your settings and regenerate your mockup.
+            <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(editNotification);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        if (document.body.contains(editNotification)) {
+            document.body.removeChild(editNotification);
+        }
+    }, 3000);
+    
+    // Scroll to form smoothly
+    document.querySelector('.content-card').scrollIntoView({ behavior: 'smooth' });
+});
+
+document.getElementById('newMockupBtn').addEventListener('click', function() {
+    // Reset form completely
+    document.getElementById('mockupGeneratorForm').reset();
+    
+    // Clear all selections
+    document.querySelectorAll('.mockup-type-card').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+    
+    // Reset hidden fields
+    document.getElementById('selectedMockupType').value = '';
+    
+    // Hide template section
+    document.getElementById('templateSection').style.display = 'none';
+    
+    // Hide results and processing
+    document.getElementById('resultsContainer').style.display = 'none';
+    document.getElementById('processingMessage').style.display = 'none';
+    document.getElementById('variationsSection').style.display = 'none';
+    
+    // Reset color picker to default
+    document.getElementById('backgroundColor').value = '#ffffff';
+    document.getElementById('backgroundColorText').value = '#ffffff';
+    
+    // Reset checkboxes to default states
+    document.getElementById('includeReflection').checked = true;
+    document.getElementById('includeBackground').checked = false;
+    document.getElementById('generateVariations').checked = false;
+    
+    // Reset dropdowns to default
+    document.getElementById('shadowIntensity').value = 'medium';
+    document.getElementById('rotation').value = '0';
+    document.getElementById('outputResolution').value = 'web';
+    
+    // Enable the form
+    const form = document.getElementById('mockupGeneratorForm');
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = false;
+    submitButton.innerHTML = '<i class="fas fa-magic me-2"></i> Generate Mockup';
+    
+    // Remove any file upload info
+    const existingFileInfo = document.querySelector('#designUpload').parentNode.querySelector('.bg-light');
+    if (existingFileInfo) {
+        existingFileInfo.remove();
+    }
+    
+    // Show new mockup notification
+    const newNotification = document.createElement('div');
+    newNotification.innerHTML = `
+        <div class="alert alert-success alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+            <i class="fas fa-plus me-2"></i>
+            <strong>New Mockup Started!</strong> Create a fresh mockup from scratch.
+            <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(newNotification);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        if (document.body.contains(newNotification)) {
+            document.body.removeChild(newNotification);
+        }
+    }, 3000);
+    
+    // Scroll to top of form
+    document.querySelector('.content-card').scrollIntoView({ behavior: 'smooth' });
+});
+
+// File upload preview and validation
+document.getElementById('designUpload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        // Validate file
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Please upload a valid image file (JPG, PNG, GIF, WebP) or PDF');
+            this.value = '';
+            return;
+        }
+        
+        const maxSize = 50 * 1024 * 1024; // 50MB
+        if (file.size > maxSize) {
+            alert('File size must be less than 50MB');
+            this.value = '';
+            return;
+        }
+        
+        // Show file info
+        showFileInfo(file);
+    }
+});
+
+function showFileInfo(file) {
+    const fileInfo = document.createElement('div');
+    fileInfo.className = 'mt-2 p-2 bg-light rounded';
+    fileInfo.innerHTML = `
+        <small class="text-success">
+            <i class="fas fa-check-circle me-1"></i>
+            <strong>${file.name}</strong> (${formatFileSize(file.size)}) - Ready for upload
+        </small>
+    `;
+    
+    // Remove any existing file info
+    const existingInfo = document.querySelector('#designUpload').parentNode.querySelector('.bg-light');
+    if (existingInfo) {
+        existingInfo.remove();
+    }
+    
+    // Add new file info
+    document.querySelector('#designUpload').parentNode.appendChild(fileInfo);
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Advanced features toggle
+document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        if (this.checked) {
+            // Show relevant options based on the checkbox
+            showAdvancedOptions(this.id);
+        }
+    });
+});
+
+function showAdvancedOptions(checkboxId) {
+    let message = '';
+    
+    switch(checkboxId) {
+        case 'includeReflection':
+            message = 'Reflection effects will add depth and realism to your mockup';
+            break;
+        case 'includeBackground':
+            message = 'Environment backgrounds will place your mockup in realistic settings';
+            break;
+        case 'generateVariations':
+            message = 'Multiple variations will provide different styling options';
+            break;
+    }
+    
+    if (message) {
+        showTooltip(document.getElementById(checkboxId), message);
+    }
+}
+
+function showTooltip(element, message) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tooltip-custom';
+    tooltip.textContent = message;
+    tooltip.style.cssText = `
+        position: absolute;
+        background: #333;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        z-index: 1000;
+        max-width: 200px;
+        top: ${element.offsetTop + element.offsetHeight + 5}px;
+        left: ${element.offsetLeft}px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+    
+    document.body.appendChild(tooltip);
+    
+    setTimeout(() => {
+        tooltip.style.opacity = '1';
+    }, 100);
+    
+    setTimeout(() => {
+        if (document.body.contains(tooltip)) {
+            tooltip.style.opacity = '0';
+            setTimeout(() => {
+                if (document.body.contains(tooltip)) {
+                    document.body.removeChild(tooltip);
+                }
+            }, 300);
+        }
+    }, 3000);
+}
+
+// Initialize usage tracker
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize usage tracking
+    updateUsageTracker();
+    
+    // Set reset date to first of next month
+    const now = new Date();
+    const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const resetDateElement = document.getElementById('resetDate');
+    if (resetDateElement) {
+        resetDateElement.textContent = nextMonth.toLocaleDateString('en-US', { 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    }
+    
+    // Check for any URL parameters that might indicate successful payment
+    checkPaymentStatus();
+    
+    // Initialize browser support check
+    checkBrowserSupport();
+    
+    // Restore form data if available
+    restoreFormData();
+});
+
+function updateUsageTracker() {
+    // Get usage info from localStorage or API
+    const remainingUses = localStorage.getItem('mockup_remaining_uses') || 5;
+    const usageElement = document.getElementById('remainingUses');
+    if (usageElement) {
+        usageElement.textContent = remainingUses;
+        
+        // Update styling based on remaining uses
+        const tracker = document.getElementById('usageTracker');
+        if (tracker) {
+            if (remainingUses <= 1) {
+                tracker.className = tracker.className.replace('alert-info', 'alert-warning');
+            } else if (remainingUses <= 0) {
+                tracker.className = tracker.className.replace('alert-info', 'alert-danger');
+            }
+        }
+    }
+}
+
+function decrementUsage() {
+    const currentUses = parseInt(localStorage.getItem('mockup_remaining_uses') || '5');
+    if (currentUses > 0) {
+        localStorage.setItem('mockup_remaining_uses', (currentUses - 1).toString());
+        updateUsageTracker();
+        return true;
+    }
+    return false;
+}
+
+function checkPaymentStatus() {
+    // Check URL parameters for payment success
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentSuccess = urlParams.get('payment_success');
+    const tier = urlParams.get('tier');
+    
+    if (paymentSuccess === 'true') {
+        showPaymentSuccessMessage(tier);
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+}
+
+function showPaymentSuccessMessage(tier) {
+    const tierNames = {
+        'pay_as_you_go': 'Pay-As-You-Go Access',
+        '24h_all_access': '24-Hour All Access',
+        'pro': 'Pro Subscription'
+    };
+    
+    const message = `
+        <div class="alert alert-success alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>Payment Successful!</strong> Your ${tierNames[tier] || 'subscription'} is now active.
+            <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', message);
+    
+    // Reset usage if applicable
+    if (tier) {
+        localStorage.setItem('mockup_remaining_uses', '999'); // Essentially unlimited
+        updateUsageTracker();
+    }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + Enter to generate
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        const form = document.getElementById('mockupGeneratorForm');
+        const resultsVisible = document.getElementById('resultsContainer').style.display !== 'none';
+        if (form && !resultsVisible) {
+            form.dispatchEvent(new Event('submit'));
+        }
+    }
+    
+    // Escape to close modals
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal, .tooltip-custom').forEach(element => {
+            if (element.parentElement) {
+                element.parentElement.remove();
+            } else {
+                element.remove();
+            }
+        });
+    }
+    
+    // Ctrl/Cmd + R to reset form (new mockup)
+    if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+        e.preventDefault();
+        const newMockupBtn = document.getElementById('newMockupBtn');
+        if (newMockupBtn) {
+            newMockupBtn.click();
+        }
+    }
+});
+
+// Add loading states for better UX
+function setLoadingState(isLoading) {
+    const submitButton = document.querySelector('#mockupGeneratorForm button[type="submit"]');
+    const processingMessage = document.getElementById('processingMessage');
+    
+    if (isLoading) {
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Generating Mockup...';
+        processingMessage.style.display = 'block';
+        document.querySelector('.loading-spinner').style.display = 'inline-block';
+    } else {
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fas fa-magic me-2"></i> Generate Mockup';
+        processingMessage.style.display = 'none';
+        document.querySelector('.loading-spinner').style.display = 'none';
+    }
+}
+
+// Error handling wrapper
+function handleError(error, context = 'mockup generation') {
+    console.error(`Error in ${context}:`, error);
+    
+    // Hide loading states
+    setLoadingState(false);
+    
+    // Show user-friendly error message
+    const errorMessage = `
+        <div class="alert alert-danger alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Error:</strong> ${error.message || 'An unexpected error occurred during ' + context}
+            <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', errorMessage);
+    
+    // Auto-remove after 8 seconds
+    setTimeout(() => {
+        const errorEl = document.querySelector('.alert-danger');
+        if (errorEl) {
+            errorEl.remove();
+        }
+    }, 8000);
+}
+
+// Progressive enhancement for older browsers
+function checkBrowserSupport() {
+    const features = {
+        fetch: typeof fetch !== 'undefined',
+        fileReader: typeof FileReader !== 'undefined',
+        formData: typeof FormData !== 'undefined'
+    };
+    
+    const unsupported = Object.entries(features)
+        .filter(([key, supported]) => !supported)
+        .map(([key]) => key);
+    
+    if (unsupported.length > 0) {
+        const warningMessage = `
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Browser Compatibility Notice:</strong> 
+                Some features may not work properly in your browser. 
+                Please consider updating to a modern browser for the best experience.
+            </div>
+        `;
+        
+        document.querySelector('.content-card').insertAdjacentHTML('afterbegin', warningMessage);
+    }
+}
+
+// Additional utility functions for better UX
+function resetFormToInitialState() {
+    // Reset all form elements to their initial state
+    const form = document.getElementById('mockupGeneratorForm');
+    form.reset();
+    
+    // Reset custom elements
+    document.querySelectorAll('.mockup-type-card').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+    
+    // Reset hidden inputs
+    document.getElementById('selectedMockupType').value = '';
+    
+    // Hide sections
+    document.getElementById('templateSection').style.display = 'none';
+    document.getElementById('resultsContainer').style.display = 'none';
+    document.getElementById('processingMessage').style.display = 'none';
+    document.getElementById('variationsSection').style.display = 'none';
+    
+    // Reset color picker
+    document.getElementById('backgroundColor').value = '#ffffff';
+    document.getElementById('backgroundColorText').value = '#ffffff';
+    
+    // Remove file info
+    const fileInfo = document.querySelector('#designUpload').parentNode.querySelector('.bg-light');
+    if (fileInfo) {
+        fileInfo.remove();
+    }
+    
+    // Enable form
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = false;
+    submitButton.innerHTML = '<i class="fas fa-magic me-2"></i> Generate Mockup';
+}
+
+// Auto-save form data to localStorage for persistence
+function saveFormData() {
+    const formData = {
+        mockupType: document.getElementById('selectedMockupType').value,
+        backgroundColor: document.getElementById('backgroundColor').value,
+        shadowIntensity: document.getElementById('shadowIntensity').value,
+        rotation: document.getElementById('rotation').value,
+        outputResolution: document.getElementById('outputResolution').value,
+        includeReflection: document.getElementById('includeReflection').checked,
+        includeBackground: document.getElementById('includeBackground').checked,
+        generateVariations: document.getElementById('generateVariations').checked,
+        selectedTemplate: document.querySelector('.template-card.selected')?.dataset.template || null
+    };
+    
+    localStorage.setItem('mockup_form_data', JSON.stringify(formData));
+}
+
+// Restore form data from localStorage
+function restoreFormData() {
+    const savedData = localStorage.getItem('mockup_form_data');
+    if (savedData) {
+        try {
+            const formData = JSON.parse(savedData);
+            
+            // Restore form values
+            if (formData.mockupType) {
+                document.getElementById('selectedMockupType').value = formData.mockupType;
+                // Trigger mockup type selection
+                const mockupCard = document.querySelector(`[data-type="${formData.mockupType}"]`);
+                if (mockupCard) {
+                    mockupCard.click();
+                }
+            }
+            
+            if (formData.backgroundColor) {
+                document.getElementById('backgroundColor').value = formData.backgroundColor;
+                document.getElementById('backgroundColorText').value = formData.backgroundColor;
+            }
+            
+            if (formData.shadowIntensity) {
+                document.getElementById('shadowIntensity').value = formData.shadowIntensity;
+            }
+            
+            if (formData.rotation) {
+                document.getElementById('rotation').value = formData.rotation;
+            }
+            
+            if (formData.outputResolution) {
+                document.getElementById('outputResolution').value = formData.outputResolution;
+            }
+            
+            document.getElementById('includeReflection').checked = formData.includeReflection;
+            document.getElementById('includeBackground').checked = formData.includeBackground;
+            document.getElementById('generateVariations').checked = formData.generateVariations;
+            
+            // Restore template selection after a brief delay
+            if (formData.selectedTemplate) {
+                setTimeout(() => {
+                    const templateCard = document.querySelector(`[data-template="${formData.selectedTemplate}"]`);
+                    if (templateCard) {
+                        templateCard.click();
+                    }
+                }, 100);
+            }
+            
+        } catch (error) {
+            console.error('Error restoring form data:', error);
+        }
+    }
+}
+
+// Auto-save on form changes
+document.addEventListener('change', function(e) {
+    if (e.target.closest('#mockupGeneratorForm')) {
+        saveFormData();
+    }
+});
+
+// Auto-save on template selection
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.template-card') || e.target.closest('.mockup-type-card')) {
+        setTimeout(saveFormData, 100); // Delay to ensure selection is processed
+    }
+});
+
+// Enhanced drag and drop functionality for file upload
+const fileUpload = document.getElementById('designUpload');
+const fileUploadParent = fileUpload.parentNode;
+
+// Add drag and drop visual feedback
+fileUploadParent.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    this.classList.add('drag-over');
+    this.style.backgroundColor = '#f0f8ff';
+    this.style.borderColor = '#14697D';
+});
+
+fileUploadParent.addEventListener('dragleave', function(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    this.style.backgroundColor = '';
+    this.style.borderColor = '';
+});
+
+fileUploadParent.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    this.style.backgroundColor = '';
+    this.style.borderColor = '';
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        fileUpload.files = files;
+        fileUpload.dispatchEvent(new Event('change'));
+    }
+});
+
+// Add smooth transitions for better UX
+function addSmoothTransitions() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .mockup-type-card {
+            transition: all 0.3s ease;
+        }
+        
+        .template-card {
+            transition: all 0.3s ease;
+        }
+        
+        .form-control, .form-select {
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .btn {
+            transition: all 0.3s ease;
+        }
+        
+        .alert {
+            transition: opacity 0.3s ease;
+        }
+        
+        .drag-over {
+            transform: scale(1.02);
+            transition: all 0.3s ease;
+        }
+        
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Initialize smooth transitions
+addSmoothTransitions();
+
+// Add accessibility improvements
+function improveAccessibility() {
+    // Add ARIA labels and roles
+    document.querySelectorAll('.mockup-type-card').forEach(card => {
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', `Select ${card.querySelector('h6').textContent} mockup type`);
+        
+        // Add keyboard navigation
+        card.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+    });
+    
+    // Add proper form labels and descriptions
+    const fileInput = document.getElementById('designUpload');
+    if (fileInput) {
+        fileInput.setAttribute('aria-describedby', 'file-upload-help');
+        
+        // Add help text if it doesn't exist
+        if (!document.getElementById('file-upload-help')) {
+            const helpText = document.createElement('div');
+            helpText.id = 'file-upload-help';
+            helpText.className = 'form-text';
+            helpText.textContent = 'Upload your design file. Supported formats: JPG, PNG, GIF, WebP, PDF up to 50MB';
+            fileInput.parentNode.appendChild(helpText);
+        }
+    }
+    
+    // Improve button accessibility
+    document.querySelectorAll('button').forEach(button => {
+        if (!button.getAttribute('aria-label') && !button.textContent.trim()) {
+            const icon = button.querySelector('i');
+            if (icon) {
+                const iconClass = icon.className;
+                if (iconClass.includes('fa-download')) {
+                    button.setAttribute('aria-label', 'Download mockup');
+                } else if (iconClass.includes('fa-edit')) {
+                    button.setAttribute('aria-label', 'Edit mockup');
+                } else if (iconClass.includes('fa-plus')) {
+                    button.setAttribute('aria-label', 'Create new mockup');
+                }
+            }
+        }
+    });
+}
+
+// Initialize accessibility improvements
+improveAccessibility();
+
+// Add performance optimizations
+function optimizePerformance() {
+    // Debounce form auto-save
+    let saveTimeout;
+    const originalSaveFormData = saveFormData;
+    
+    saveFormData = function() {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(originalSaveFormData, 500);
+    };
+    
+    // Lazy load template images if any
+    const templateCards = document.querySelectorAll('.template-card');
+    if ('IntersectionObserver' in window) {
+        const templateObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    templateObserver.unobserve(entry.target);
+                }
+            });
+        });
+        
+        templateCards.forEach(card => {
+            templateObserver.observe(card);
+        });
+    }
+    
+    // Optimize file reading for large files
+    const originalFileToBase64 = fileToBase64;
+    
+    fileToBase64 = function(file) {
+        return new Promise((resolve, reject) => {
+            // For large files, show progress
+            if (file.size > 5 * 1024 * 1024) { // 5MB
+                const reader = new FileReader();
+                
+                reader.onloadstart = () => {
+                    console.log('Starting file read...');
+                };
+                
+                reader.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        console.log(`File read progress: ${percentComplete.toFixed(1)}%`);
+                    }
+                };
+                
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = (error) => reject(error);
+                reader.readAsDataURL(file);
+            } else {
+                return originalFileToBase64(file);
+            }
+        });
+    };
+}
+
+// Initialize performance optimizations
+optimizePerformance();
+
+// Add error recovery mechanisms
+function addErrorRecovery() {
+    // Global error handler
+    window.addEventListener('error', function(e) {
+        console.error('Global error caught:', e.error);
+        
+        // Show user-friendly error message
+        const errorNotification = document.createElement('div');
+        errorNotification.innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Something went wrong!</strong> Please refresh the page and try again.
+                <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()"></button>
+            </div>
+        `;
+        document.body.appendChild(errorNotification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (document.body.contains(errorNotification)) {
+                document.body.removeChild(errorNotification);
+            }
+        }, 5000);
+    });
+    
+    // API timeout handler
+    const originalFetch = window.fetch;
+    window.fetch = function(...args) {
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Request timeout')), 30000); // 30 second timeout
+        });
+        
+        return Promise.race([
+            originalFetch.apply(this, args),
+            timeoutPromise
+        ]);
+    };
+}
+
+// Initialize error recovery
+addErrorRecovery();
+
+// Add final initialization and cleanup
+function finalInitialization() {
+    // Remove any existing error messages on page load
+    document.querySelectorAll('.alert-danger, .alert-warning').forEach(alert => {
+        if (alert.style.position === 'fixed') {
+            alert.remove();
+        }
+    });
+    
+    // Initialize form state
+    const form = document.getElementById('mockupGeneratorForm');
+    if (form) {
+        form.addEventListener('submit', function() {
+            decrementUsage(); // Track usage
+        });
+    }
+    
+    // Add visual feedback for form interactions
+    document.querySelectorAll('.form-control, .form-select').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentNode.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentNode.classList.remove('focused');
+        });
+    });
+    
+    // Initialize tooltips for better UX
+    const tooltipTriggers = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    if (tooltipTriggers.length > 0 && typeof bootstrap !== 'undefined') {
+        tooltipTriggers.forEach(trigger => {
+            new bootstrap.Tooltip(trigger);
+        });
+    }
+    
+    console.log('Mockup Generator fully initialized and ready!');
+}
+
+// Run final initialization
+document.addEventListener('DOMContentLoaded', finalInitialization);
+
+    </script>
+</body>
+</html>

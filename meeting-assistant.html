@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Assistant | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .meeting-type-card h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .meeting-type-card small {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .meeting-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .meeting-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .meeting-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        p, li, span, div, label, .form-control, .form-select {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .btn {
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+        }
+        
+        .meeting-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .recording-status {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .recording-status.recording {
+            border-color: #dc3545;
+            background-color: #fdf2f2;
+        }
+        
+        .recording-status.processing {
+            border-color: #ffc107;
+            background-color: #fffbf0;
+        }
+        
+        .recording-status.completed {
+            border-color: #28a745;
+            background-color: #f0f9f0;
+        }
+        
+        .copy-btn {
+            background-color: #14697D;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background-color: #0f5566;
+            color: white;
+        }
+        
+        .processing-message {
+            display: none;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .analytics-suggestions {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .transcript-section {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .summary-section {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-item {
+            background: #f8f9fa;
+            border-left: 4px solid #14697D;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .recording-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .record-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .record-btn.start {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .record-btn.stop {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .record-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .upload-area {
+            border: 2px dashed #14697D;
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        .upload-area:hover {
+            background-color: #e9ecef;
+            border-color: #0f5566;
+        }
+
+        .upload-area.dragover {
+            background-color: #fffbf0;
+            border-color: #FFbf23;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+            
+            .recording-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                        
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>Meeting Assistant</h1>
+                        <p class="lead">Record, transcribe, and summarize meetings automatically with AI-powered insights, action items, and smart note-taking to keep your team aligned and productive.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img16.svg" alt="Meeting Assistant" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-microphone" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose meeting type</div>
+                            <div class="mt-2"><span class="step-number">2</span> Record or upload audio</div>
+                            <div class="mt-2"><span class="step-number">3</span> AI transcribes content</div>
+                            <div class="mt-2"><span class="step-number">4</span> Generate smart summary</div>
+                            <div class="mt-2"><span class="step-number">5</span> Export and share!</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-magic" style="color: #FFbf23;"></i> Meeting Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Real-time transcription</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> AI-powered summaries</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Action item extraction</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Speaker identification</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Key insights detection</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Multiple export formats</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-users" style="color: #A82C2C;"></i> Meeting Types</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-handshake" style="color: #14697D;"></i> Team Standup</div>
+                            <div class="mb-2"><i class="fas fa-chart-line" style="color: #14697D;"></i> Strategy Session</div>
+                            <div class="mb-2"><i class="fas fa-user-tie" style="color: #14697D;"></i> Client Meeting</div>
+                            <div class="mb-2"><i class="fas fa-lightbulb" style="color: #14697D;"></i> Brainstorming</div>
+                            <div class="mb-2"><i class="fas fa-tasks" style="color: #14697D;"></i> Project Review</div>
+                            <div class="mb-2"><i class="fas fa-graduation-cap" style="color: #14697D;"></i> Training Session</div>
+                            <div class="mb-2"><i class="fas fa-bullhorn" style="color: #14697D;"></i> All-Hands Meeting</div>
+                            <div><i class="fas fa-phone" style="color: #14697D;"></i> Sales Call</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Start Your Meeting Assistant</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Minutes Remaining:</strong> <span id="remainingMinutes">120</span> / 120 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <form id="meetingAssistantForm">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Meeting Type</label>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="meeting-type-card card h-100" data-type="team_standup">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-handshake mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Team Standup</h6>
+                                                <small class="text-muted">Daily team check-ins</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="meeting-type-card card h-100" data-type="strategy_session">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-chart-line mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Strategy Session</h6>
+                                                <small class="text-muted">Planning and strategy</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="meeting-type-card card h-100" data-type="client_meeting">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-user-tie mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Client Meeting</h6>
+                                                <small class="text-muted">External stakeholders</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="meeting-type-card card h-100" data-type="brainstorming">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-lightbulb mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Brainstorming</h6>
+                                                <small class="text-muted">Creative ideation</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="meeting-type-card card h-100" data-type="project_review">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-tasks mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Project Review</h6>
+                                                <small class="text-muted">Progress updates</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="meeting-type-card card h-100" data-type="sales_call">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-phone mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Sales Call</h6>
+                                                <small class="text-muted">Customer conversations</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="selectedMeetingType" name="meetingType" required>
+
+                            <!-- Meeting Information -->
+                            <div class="mb-4">
+                                <h5>Meeting Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="meetingTitle" class="form-label">Meeting Title</label>
+                                        <input type="text" class="form-control" id="meetingTitle" name="meetingTitle" placeholder="e.g., Weekly Team Standup - Dec 10" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="meetingParticipants" class="form-label">Participants</label>
+                                        <input type="text" class="form-control" id="meetingParticipants" name="meetingParticipants" placeholder="e.g., John, Sarah, Mike">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="meetingDuration" class="form-label">Expected Duration</label>
+                                        <select class="form-select" id="meetingDuration" name="meetingDuration" required>
+                                            <option value="">Select duration</option>
+                                            <option value="15min">15 minutes</option>
+                                            <option value="30min">30 minutes</option>
+                                            <option value="1hour">1 hour</option>
+                                            <option value="2hours">2 hours</option>
+                                            <option value="custom">Custom</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="meetingLanguage" class="form-label">Language</label>
+                                        <select class="form-select" id="meetingLanguage" name="meetingLanguage" required>
+                                            <option value="">Select language</option>
+                                            <option value="english">English</option>
+                                            <option value="spanish">Spanish</option>
+                                            <option value="french">French</option>
+                                            <option value="german">German</option>
+                                            <option value="italian">Italian</option>
+                                            <option value="portuguese">Portuguese</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recording Method -->
+                            <div class="mb-4">
+                                <h5>Recording Method</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="recordingMethod" id="liveRecording" value="live" checked>
+                                            <label class="form-check-label" for="liveRecording">
+                                                <strong>Live Recording</strong><br>
+                                                <small class="text-muted">Record meeting in real-time</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="recordingMethod" id="uploadFile" value="upload">
+                                            <label class="form-check-label" for="uploadFile">
+                                                <strong>Upload Audio</strong><br>
+                                                <small class="text-muted">Upload existing recording</small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Recording Section -->
+                            <div id="liveRecordingSection" class="mb-4">
+                                <h5>Live Recording Controls</h5>
+                                <div class="recording-status" id="recordingStatus">
+                                    <i class="fas fa-circle" style="color: #6c757d;"></i>
+                                    <span class="ms-2">Ready to record</span>
+                                </div>
+                                <div class="recording-controls">
+                                    <button type="button" class="record-btn start" id="startRecording">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                    <button type="button" class="record-btn stop" id="stopRecording" style="display: none;">
+                                        <i class="fas fa-stop"></i>
+                                    </button>
+                                    <div class="ms-3">
+                                        <div class="text-muted">Duration: <span id="recordingDuration">00:00</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Upload Section -->
+                            <div id="uploadSection" class="mb-4" style="display: none;">
+                                <h5>Upload Audio File</h5>
+                                <div class="upload-area" id="uploadArea">
+                                    <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #14697D; margin-bottom: 1rem;"></i>
+                                    <h6>Drag and drop your audio file here</h6>
+                                    <p class="text-muted">Or click to browse files</p>
+                                    <small class="text-muted">Supported formats: MP3, WAV, M4A, FLAC (Max: 100MB)</small>
+                                    <input type="file" id="audioFile" accept=".mp3,.wav,.m4a,.flac" style="display: none;">
+                                </div>
+                            </div>
+
+                            <!-- Meeting Objectives -->
+                            <div class="mb-4">
+                                <h5>Meeting Focus</h5>
+                                <div class="mb-3">
+                                    <label for="meetingObjectives" class="form-label">Main Objectives</label>
+                                    <textarea class="form-control" id="meetingObjectives" name="meetingObjectives" rows="2" placeholder="e.g., Review Q4 goals, discuss new product features, assign action items"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="keyTopics" class="form-label">Key Topics to Track</label>
+                                    <input type="text" class="form-control" id="keyTopics" name="keyTopics" placeholder="e.g., Budget, Timeline, Resources, Decisions">
+                                </div>
+                            </div>
+
+                            <!-- Additional Options -->
+                            <div class="mb-4">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="identifySpeakers" checked>
+                                    <label class="form-check-label" for="identifySpeakers">
+                                        Identify and label different speakers
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="extractActions" checked>
+                                    <label class="form-check-label" for="extractActions">
+                                        Extract action items and assignments
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="generateSummary" checked>
+                                    <label class="form-check-label" for="generateSummary">
+                                        Generate meeting summary and key insights
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="includeTimestamps">
+                                    <label class="form-check-label" for="includeTimestamps">
+                                        Include timestamps in transcript
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-play me-2"></i> Start Meeting Assistant
+                            </button>
+                        </form>
+                        
+                        <!-- Processing Message -->
+                        <div class="processing-message" id="processingMessage">
+                            <div class="loading-spinner d-inline-block me-2"></div>
+                            <h5 class="mb-0">Processing your meeting...</h5>
+                            <p class="text-muted mt-2 mb-0">Transcribing audio and generating insights. This may take a few minutes.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Meeting Results</h4>
+                        
+                        <!-- Meeting Information -->
+                        <div class="mb-4" id="meetingInfoSection">
+                            <h5><i class="fas fa-info-circle me-2"></i>Meeting Overview</h5>
+                            <div id="meetingInfoContainer" class="p-3 bg-light rounded">
+                                <!-- Meeting info will be added dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Meeting Summary -->
+                        <div class="mb-4" id="summarySection">
+                            <h5><i class="fas fa-clipboard-list me-2"></i>Meeting Summary</h5>
+                            <div class="summary-section" id="summaryContent">
+                                <!-- Summary content will be added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Action Items -->
+                        <div class="mb-4" id="actionItemsSection">
+                            <h5><i class="fas fa-tasks me-2"></i>Action Items</h5>
+                            <div id="actionItemsContainer">
+                                <!-- Action items will be added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Transcript -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-file-alt me-2"></i>Full Transcript</h5>
+                            <div class="transcript-section" id="transcriptContent">
+                                <!-- Transcript content will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Analytics Insights -->
+                        <div class="mb-4" id="insightsSection">
+                            <h5><i class="fas fa-chart-bar me-2"></i>Meeting Insights</h5>
+                            <div class="analytics-suggestions" id="insightsContent">
+                                <!-- Insights will be added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="copyTranscript">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Transcript</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                            <div class="export-option" id="downloadTranscript">
+                                <i class="fas fa-download"></i>
+                                <div>Download</div>
+                                <small class="text-muted">As PDF/DOCX</small>
+                            </div>
+                            <div class="export-option" id="exportActions">
+                                <i class="fas fa-tasks"></i>
+                                <div>Export Actions</div>
+                                <small class="text-muted">To task manager</small>
+                            </div>
+                            <div class="export-option" id="shareResults">
+                                <i class="fas fa-share"></i>
+                                <div>Share Results</div>
+                                <small class="text-muted">Send to team</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editResultsBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Results
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newMeetingBtn">
+                                <i class="fas fa-plus me-1"></i> New Meeting
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">revolutionize</span> your meeting productivity?</h2>
+                <p class="lead mb-4">Join thousands of professionals who capture every important detail with Elevify's AI meeting assistant.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div> 
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Meeting type selection
+        document.querySelectorAll('.meeting-type-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.meeting-type-card').forEach(c => c.classList.remove('selected'));
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                // Set hidden input value
+                document.getElementById('selectedMeetingType').value = this.dataset.type;
+            });
+        });
+
+        // Recording method toggle
+        document.querySelectorAll('input[name="recordingMethod"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const liveSection = document.getElementById('liveRecordingSection');
+                const uploadSection = document.getElementById('uploadSection');
+                
+                if (this.value === 'live') {
+                    liveSection.style.display = 'block';
+                    uploadSection.style.display = 'none';
+                } else {
+                    liveSection.style.display = 'none';
+                    uploadSection.style.display = 'block';
+                }
+            });
+        });
+
+        // Recording controls
+        let isRecording = false;
+        let recordingTimer;
+        let recordingStartTime;
+
+        document.getElementById('startRecording').addEventListener('click', function() {
+            if (!isRecording) {
+                startRecording();
+            }
+        });
+
+        document.getElementById('stopRecording').addEventListener('click', function() {
+            if (isRecording) {
+                stopRecording();
+            }
+        });
+
+        function startRecording() {
+            isRecording = true;
+            recordingStartTime = Date.now();
+            
+            // Update UI
+            document.getElementById('startRecording').style.display = 'none';
+            document.getElementById('stopRecording').style.display = 'inline-block';
+            
+            const status = document.getElementById('recordingStatus');
+            status.className = 'recording-status recording';
+            status.innerHTML = '<i class="fas fa-circle" style="color: #dc3545;"></i><span class="ms-2">Recording in progress...</span>';
+            
+            // Start timer
+            recordingTimer = setInterval(updateRecordingDuration, 1000);
+            
+            // Simulate recording (in real implementation, this would start actual recording)
+            console.log('Recording started');
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            clearInterval(recordingTimer);
+            
+            // Update UI
+            document.getElementById('startRecording').style.display = 'inline-block';
+            document.getElementById('stopRecording').style.display = 'none';
+            
+            const status = document.getElementById('recordingStatus');
+            status.className = 'recording-status completed';
+            status.innerHTML = '<i class="fas fa-check-circle" style="color: #28a745;"></i><span class="ms-2">Recording completed</span>';
+            
+            console.log('Recording stopped');
+        }
+
+        function updateRecordingDuration() {
+            const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('recordingDuration').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('audioFile');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        function handleFileUpload(file) {
+            // Validate file type
+            const allowedTypes = ['audio/mp3', 'audio/wav', 'audio/m4a', 'audio/flac'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Please upload a valid audio file (MP3, WAV, M4A, or FLAC)');
+                return;
+            }
+            
+            // Validate file size (100MB max)
+            if (file.size > 100 * 1024 * 1024) {
+                alert('File size must be less than 100MB');
+                return;
+            }
+            
+            // Update upload area
+            uploadArea.innerHTML = `
+                <i class="fas fa-file-audio" style="font-size: 3rem; color: #28a745; margin-bottom: 1rem;"></i>
+                <h6>${file.name}</h6>
+                <p class="text-muted">File size: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearUpload()">Change File</button>
+            `;
+        }
+
+        function clearUpload() {
+            fileInput.value = '';
+            uploadArea.innerHTML = `
+                <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #14697D; margin-bottom: 1rem;"></i>
+                <h6>Drag and drop your audio file here</h6>
+                <p class="text-muted">Or click to browse files</p>
+                <small class="text-muted">Supported formats: MP3, WAV, M4A, FLAC (Max: 100MB)</small>
+            `;
+        }
+
+        // Form submission
+        document.getElementById('meetingAssistantForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate required fields
+            const meetingType = document.getElementById('selectedMeetingType').value;
+            const meetingTitle = document.getElementById('meetingTitle').value;
+            const duration = document.getElementById('meetingDuration').value;
+            const language = document.getElementById('meetingLanguage').value;
+            
+            if (!meetingType || !meetingTitle || !duration || !language) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Show processing message
+            document.getElementById('processingMessage').style.display = 'block';
+            this.style.display = 'none';
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                showMeetingResults();
+            }, 3000);
+        });
+
+        function showMeetingResults() {
+            // Hide processing message
+            document.getElementById('processingMessage').style.display = 'none';
+            
+            // Show results
+            document.getElementById('resultsContainer').style.display = 'block';
+            
+            // Populate sample results
+            populateSampleResults();
+            
+            // Scroll to results
+            document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function populateSampleResults() {
+            const meetingType = document.getElementById('selectedMeetingType').value;
+            const meetingTitle = document.getElementById('meetingTitle').value;
+            const participants = document.getElementById('meetingParticipants').value || 'Unknown participants';
+            
+            // Meeting info
+            document.getElementById('meetingInfoContainer').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Title:</strong> ${meetingTitle}<br>
+                        <strong>Type:</strong> ${meetingType.replace('_', ' ').toUpperCase()}<br>
+                        <strong>Duration:</strong> 45:23
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Participants:</strong> ${participants}<br>
+                        <strong>Date:</strong> ${new Date().toLocaleDateString()}<br>
+                        <strong>Language:</strong> English
+                    </div>
+                </div>
+            `;
+            
+            // Summary
+            document.getElementById('summaryContent').innerHTML = `
+                <h6>Key Discussion Points:</h6>
+                <ul>
+                    <li>Reviewed Q4 performance metrics and exceeded targets by 15%</li>
+                    <li>Discussed upcoming product launch timeline for Q1 2025</li>
+                    <li>Addressed team resource allocation for new projects</li>
+                    <li>Reviewed budget considerations for next quarter</li>
+                </ul>
+                <h6>Decisions Made:</h6>
+                <ul>
+                    <li>Approved additional budget for marketing campaign</li>
+                    <li>Set launch date for February 15th, 2025</li>
+                    <li>Agreed to hire two additional team members</li>
+                </ul>
+            `;
+            
+            // Action items
+            document.getElementById('actionItemsContainer').innerHTML = `
+                <div class="action-item">
+                    <strong>Sarah Johnson:</strong> Prepare marketing budget proposal by December 15th
+                </div>
+                <div class="action-item">
+                    <strong>Mike Chen:</strong> Finalize product specifications and share with team by December 12th
+                </div>
+                <div class="action-item">
+                    <strong>Team:</strong> Review and provide feedback on launch timeline by December 18th
+                </div>
+                <div class="action-item">
+                    <strong>HR Department:</strong> Begin recruitment process for new team members
+                </div>
+            `;
+            
+            // Transcript
+            document.getElementById('transcriptContent').innerHTML = `
+                <div class="mb-3">
+                    <strong>[00:00:15] John Smith:</strong> Good morning everyone, let's start with our Q4 review. Sarah, could you walk us through the performance metrics?
+                </div>
+                <div class="mb-3">
+                    <strong>[00:00:32] Sarah Johnson:</strong> Absolutely. I'm pleased to report that we've exceeded our Q4 targets by 15%. Our revenue came in at $2.3 million, which is above our projected $2 million goal.
+                </div>
+                <div class="mb-3">
+                    <strong>[00:01:15] Mike Chen:</strong> That's fantastic news! This puts us in a great position for the Q1 product launch. I've been working on the final specifications and timeline.
+                </div>
+                <div class="mb-3">
+                    <strong>[00:01:45] John Smith:</strong> Perfect timing, Mike. Let's discuss the launch strategy. What's our target date?
+                </div>
+                <div class="mb-3">
+                    <strong>[00:02:00] Mike Chen:</strong> Based on development progress and market analysis, I'm proposing February 15th, 2025. This gives us adequate time for testing and marketing preparation.
+                </div>
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> Showing first 5 minutes of transcript. 
+                        <button class="copy-btn ms-2">View Full Transcript</button>
+                    </small>
+                </div>
+            `;
+            
+            // Insights
+            document.getElementById('insightsContent').innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-clock me-2"></i>Meeting Efficiency</h6>
+                        <ul class="list-unstyled">
+                            <li>• Total speaking time: 45 minutes</li>
+                            <li>• Average response time: 8 seconds</li>
+                            <li>• Decision-making efficiency: High</li>
+                            <li>• Off-topic discussions: 5%</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-users me-2"></i>Participation Analysis</h6>
+                        <ul class="list-unstyled">
+                            <li>• Most active: Sarah Johnson (35%)</li>
+                            <li>• Balanced participation: Yes</li>
+                            <li>• Questions asked: 12</li>
+                            <li>• Interruptions: 2 (minimal)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <h6><i class="fas fa-lightbulb me-2"></i>Recommendations</h6>
+                    <ul>
+                        <li>Consider shorter weekly check-ins to maintain momentum</li>
+                        <li>Create a shared document for tracking action items</li>
+                        <li>Schedule follow-up in 2 weeks to review progress</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        // Export functions
+        document.getElementById('copyTranscript').addEventListener('click', function() {
+            // Simulate copying to clipboard
+            alert('Transcript copied to clipboard!');
+        });
+
+        document.getElementById('downloadTranscript').addEventListener('click', function() {
+            // Simulate download
+            alert('Download started! Check your downloads folder.');
+        });
+
+        document.getElementById('exportActions').addEventListener('click', function() {
+            // Simulate export to task manager
+            alert('Action items exported to your task manager!');
+        });
+
+        document.getElementById('shareResults').addEventListener('click', function() {
+            // Simulate sharing
+            alert('Meeting results shared with team members!');
+        });
+
+        // Edit and new meeting buttons
+        document.getElementById('editResultsBtn').addEventListener('click', function() {
+            alert('Edit mode activated! You can now modify the results.');
+        });
+
+        document.getElementById('newMeetingBtn').addEventListener('click', function() {
+            // Reset form and hide results
+            document.getElementById('meetingAssistantForm').reset();
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('meetingAssistantForm').style.display = 'block';
+            document.querySelectorAll('.meeting-type-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('selectedMeetingType').value = '';
+            
+            // Reset recording status
+            const status = document.getElementById('recordingStatus');
+            status.className = 'recording-status';
+            status.innerHTML = '<i class="fas fa-circle" style="color: #6c757d;"></i><span class="ms-2">Ready to record</span>';
+            
+            // Clear upload area
+            clearUpload();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

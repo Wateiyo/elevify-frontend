@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Builder | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .survey-type-card h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .survey-type-card small {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .survey-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .survey-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .survey-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        p, li, span, div, label, .form-control, .form-select {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .btn {
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+        }
+        
+        .survey-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .question-option {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .question-option:hover {
+            border-color: #14697D;
+            box-shadow: 0 2px 10px rgba(20, 105, 125, 0.15);
+        }
+        
+        .question-option.selected {
+            border-color: #FFbf23;
+            background-color: #fffbf0;
+        }
+        
+        .copy-btn {
+            background-color: #14697D;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background-color: #0f5566;
+            color: white;
+        }
+        
+        .processing-message {
+            display: none;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .analytics-suggestions {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .question-preview {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .question-type-badge {
+            background-color: #14697D;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                       
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>Survey Builder</h1>
+                        <p class="lead">Create professional surveys with AI-generated questions, smart logic, and insightful analytics to gather meaningful feedback from your audience.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img12.svg" alt="Survey Builder" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-poll" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose survey type</div>
+                            <div class="mt-2"><span class="step-number">2</span> Define your goals</div>
+                            <div class="mt-2"><span class="step-number">3</span> Set preferences</div>
+                            <div class="mt-2"><span class="step-number">4</span> AI generates questions</div>
+                            <div class="mt-2"><span class="step-number">5</span> Export and deploy!</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-magic" style="color: #FFbf23;"></i> Survey Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Smart question generation</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Multiple question types</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Logic branching</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Response validation</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Analytics insights</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Multiple export formats</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-chart-bar" style="color: #A82C2C;"></i> Survey Types</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-users" style="color: #14697D;"></i> Customer Satisfaction</div>
+                            <div class="mb-2"><i class="fas fa-briefcase" style="color: #14697D;"></i> Employee Engagement</div>
+                            <div class="mb-2"><i class="fas fa-lightbulb" style="color: #14697D;"></i> Product Feedback</div>
+                            <div class="mb-2"><i class="fas fa-graduation-cap" style="color: #14697D;"></i> Educational Assessment</div>
+                            <div class="mb-2"><i class="fas fa-search" style="color: #14697D;"></i> Market Research</div>
+                            <div class="mb-2"><i class="fas fa-calendar-check" style="color: #14697D;"></i> Event Feedback</div>
+                            <div class="mb-2"><i class="fas fa-bullseye" style="color: #14697D;"></i> Lead Generation</div>
+                            <div><i class="fas fa-clipboard-list" style="color: #14697D;"></i> Registration Forms</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Create Your Survey</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <form id="surveyBuilderForm">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Survey Type</label>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="survey-type-card card h-100" data-type="customer_satisfaction">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-users mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Customer Satisfaction</h6>
+                                                <small class="text-muted">Measure customer happiness</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="survey-type-card card h-100" data-type="employee_engagement">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-briefcase mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Employee Engagement</h6>
+                                                <small class="text-muted">Team satisfaction surveys</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="survey-type-card card h-100" data-type="product_feedback">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-lightbulb mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Product Feedback</h6>
+                                                <small class="text-muted">Improve your offerings</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="survey-type-card card h-100" data-type="market_research">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-search mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Market Research</h6>
+                                                <small class="text-muted">Understand your market</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="survey-type-card card h-100" data-type="event_feedback">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-calendar-check mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Event Feedback</h6>
+                                                <small class="text-muted">Post-event insights</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="survey-type-card card h-100" data-type="lead_generation">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-bullseye mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Lead Generation</h6>
+                                                <small class="text-muted">Capture prospects</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="selectedSurveyType" name="surveyType" required>
+
+                            <!-- Basic Information -->
+                            <div class="mb-4">
+                                <h5>Survey Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="surveyTitle" class="form-label">Survey Title</label>
+                                        <input type="text" class="form-control" id="surveyTitle" name="surveyTitle" placeholder="e.g., Q4 Customer Satisfaction Survey" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="targetAudience" class="form-label">Target Audience</label>
+                                        <input type="text" class="form-control" id="targetAudience" name="targetAudience" placeholder="e.g., Existing customers, Employees">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="surveyLength" class="form-label">Preferred Length</label>
+                                        <select class="form-select" id="surveyLength" name="surveyLength" required>
+                                            <option value="">Select length</option>
+                                            <option value="short">Short (5-7 questions)</option>
+                                            <option value="medium">Medium (8-12 questions)</option>
+                                            <option value="long">Long (13+ questions)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="surveyTone" class="form-label">Survey Tone</label>
+                                        <select class="form-select" id="surveyTone" name="surveyTone" required>
+                                            <option value="">Select tone</option>
+                                            <option value="professional">Professional</option>
+                                            <option value="friendly">Friendly</option>
+                                            <option value="casual">Casual</option>
+                                            <option value="formal">Formal</option>
+                                            <option value="conversational">Conversational</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Content -->
+                            <div class="mb-4">
+                                <h5>Survey Objectives</h5>
+                                <div class="mb-3">
+                                    <label for="surveyPurpose" class="form-label">Primary Goal</label>
+                                    <textarea class="form-control" id="surveyPurpose" name="surveyPurpose" rows="2" placeholder="e.g., Measure customer satisfaction with our support team and identify areas for improvement" required></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="keyMetrics" class="form-label">Key Metrics to Measure</label>
+                                        <input type="text" class="form-control" id="keyMetrics" name="keyMetrics" placeholder="e.g., NPS, Satisfaction score, Usage frequency">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="completionTime" class="form-label">Target Completion Time</label>
+                                        <select class="form-select" id="completionTime" name="completionTime">
+                                            <option value="">Select time</option>
+                                            <option value="2-3 minutes">2-3 minutes</option>
+                                            <option value="5-7 minutes">5-7 minutes</option>
+                                            <option value="10-15 minutes">10-15 minutes</option>
+                                            <option value="15+ minutes">15+ minutes</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="specificTopics" class="form-label">Specific Topics to Cover</label>
+                                    <textarea class="form-control" id="specificTopics" name="specificTopics" rows="3" placeholder="Enter specific areas you want to explore (separate with line breaks)"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Additional Options -->
+                            <div class="mb-4">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeLogic" checked>
+                                    <label class="form-check-label" for="includeLogic">
+                                        Include branching logic and skip patterns
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeAnalytics">
+                                    <label class="form-check-label" for="includeAnalytics">
+                                        Generate analytics and reporting suggestions
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="includeValidation">
+                                    <label class="form-check-label" for="includeValidation">
+                                        Add response validation rules
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-poll me-2"></i> Generate Survey
+                            </button>
+                        </form>
+                        
+                        <!-- Processing Message -->
+                        <div class="processing-message" id="processingMessage">
+                            <div class="loading-spinner d-inline-block me-2"></div>
+                            <h5 class="mb-0">Building your perfect survey...</h5>
+                            <p class="text-muted mt-2 mb-0">This may take up to 30 seconds while our AI creates your questions.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Survey</h4>
+                        
+                        <!-- Survey Information -->
+                        <div class="mb-4" id="surveyInfoSection">
+                            <h5><i class="fas fa-info-circle me-2"></i>Survey Overview</h5>
+                            <div id="surveyInfoContainer" class="p-3 bg-light rounded">
+                                <!-- Survey info will be added dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Survey Preview -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-eye me-2"></i>Survey Preview</h5>
+                            <div class="survey-preview" id="surveyPreview">
+                                <!-- Survey content will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Analytics Suggestions -->
+                        <div class="mb-4" id="analyticsSection" style="display: none;">
+                            <h5><i class="fas fa-chart-bar me-2"></i>Analytics & Reporting Suggestions</h5>
+                            <div class="analytics-suggestions" id="analyticsContent">
+                                <!-- Analytics suggestions will be added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="copySurvey">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Survey</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                            <div class="export-option" id="downloadSurvey">
+                                <i class="fas fa-download"></i>
+                                <div>Download</div>
+                                <small class="text-muted">As JSON file</small>
+                            </div>
+                            <div class="export-option" id="exportCSV">
+                                <i class="fas fa-file-csv"></i>
+                                <div>Export CSV</div>
+                                <small class="text-muted">Response template</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editSurveyBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Survey
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newSurveyBtn">
+                                <i class="fas fa-plus me-1"></i> Create New Survey
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">unlock</span> powerful insights?</h2>
+                <p class="lead mb-4">Join thousands of professionals who gather better insights with Elevify's AI survey tools.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div> 
+        </footer> 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+   // ============================================================================
+// SURVEY BUILDER JAVASCRIPT - FIXED VERSION
+// ============================================================================
+
+class SurveyBuilder {
+    constructor() {
+        this.currentSurvey = null;
+        this.responses = [];
+        
+        // Set backend URL based on environment
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            this.apiBaseUrl = 'http://localhost:5000';
+        } else {
+            // Replace with your actual Render backend URL
+            this.apiBaseUrl = 'https://elevify.onrender.com';
+        }
+        
+        console.log('Using API Base URL:', this.apiBaseUrl);
+        this.init();
+    }
+
+    init() {
+        this.initializeUsageTracker();
+        this.setupSurveyTypeSelection();
+        this.bindEventListeners();
+    }
+
+    bindEventListeners() {
+        // Form submission
+        const form = document.getElementById('surveyBuilderForm');
+        if (form) {
+            form.addEventListener('submit', (e) => this.handleFormSubmit(e));
+        }
+
+        // Export options
+        const copyBtn = document.getElementById('copySurvey');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => this.copySurvey());
+        }
+
+        const downloadBtn = document.getElementById('downloadSurvey');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => this.downloadSurvey());
+        }
+
+        const exportBtn = document.getElementById('exportCSV');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => this.exportCSV());
+        }
+
+        // Action buttons
+        const editBtn = document.getElementById('editSurveyBtn');
+        if (editBtn) {
+            editBtn.addEventListener('click', () => this.editSurvey());
+        }
+
+        const newBtn = document.getElementById('newSurveyBtn');
+        if (newBtn) {
+            newBtn.addEventListener('click', () => this.createNewSurvey());
+        }
+    }
+
+    initializeUsageTracker() {
+        // Initialize with 5 free uses
+        const usageKey = 'survey_builder_usage';
+        const resetKey = 'survey_builder_reset';
+        
+        const now = new Date();
+        const stored = localStorage.getItem(usageKey);
+        const resetDate = localStorage.getItem(resetKey);
+        
+        // Check if we need to reset monthly usage
+        if (!resetDate || new Date(resetDate) < now) {
+            const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+            localStorage.setItem(resetKey, nextMonth.toISOString());
+            localStorage.setItem(usageKey, '5');
+        }
+        
+        this.updateUsageDisplay();
+    }
+
+    updateUsageDisplay() {
+        const remaining = localStorage.getItem('survey_builder_usage') || '5';
+        const resetDate = localStorage.getItem('survey_builder_reset');
+        
+        const remainingElement = document.getElementById('remainingUses');
+        if (remainingElement) {
+            remainingElement.textContent = remaining;
+        }
+        
+        if (resetDate) {
+            const resetDateObj = new Date(resetDate);
+            const resetElement = document.getElementById('resetDate');
+            if (resetElement) {
+                resetElement.textContent = resetDateObj.toLocaleDateString('en-US', { 
+                    month: 'long', 
+                    day: 'numeric',
+                    year: 'numeric' 
+                });
+            }
+        }
+    }
+
+    canUseService() {
+        const remaining = parseInt(localStorage.getItem('survey_builder_usage') || '5');
+        return remaining > 0;
+    }
+
+    decrementUsage() {
+        const remaining = parseInt(localStorage.getItem('survey_builder_usage') || '5');
+        if (remaining > 0) {
+            localStorage.setItem('survey_builder_usage', (remaining - 1).toString());
+            this.updateUsageDisplay();
+        }
+    }
+
+    setupSurveyTypeSelection() {
+        const hiddenInput = document.getElementById('selectedSurveyType');
+        const cards = document.querySelectorAll('.survey-type-card');
+        
+        console.log('Setting up survey type selection. Found cards:', cards.length);
+        
+        cards.forEach((card, index) => {
+            console.log(`Setting up card ${index}:`, card.dataset.type);
+            
+            // Remove any existing event listeners by cloning the element
+            const newCard = card.cloneNode(true);
+            card.parentNode.replaceChild(newCard, card);
+            
+            // Add the event listener to the new element
+            newCard.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Card clicked:', newCard.dataset.type);
+                
+                // Remove selection from all cards
+                document.querySelectorAll('.survey-type-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                
+                // Add selection to clicked card
+                newCard.classList.add('selected');
+                
+                // Update hidden input
+                const surveyType = newCard.dataset.type;
+                if (hiddenInput) {
+                    hiddenInput.value = surveyType;
+                    console.log('Hidden input updated to:', surveyType);
+                } else {
+                    console.error('Hidden input not found');
+                }
+                
+                // Update form based on selection
+                this.updateFormForSurveyType(surveyType);
+            });
+        });
+    }
+
+    updateFormForSurveyType(surveyType) {
+        console.log('Updating form for survey type:', surveyType);
+        
+        const typeSpecificHelp = {
+            'customer_satisfaction': 'Focus on service quality, product satisfaction, and overall experience',
+            'employee_engagement': 'Measure job satisfaction, workplace culture, and team dynamics',
+            'product_feedback': 'Gather insights on features, usability, and improvement suggestions',
+            'market_research': 'Understand target audience, preferences, and market opportunities',
+            'event_feedback': 'Collect attendee experience, content quality, and event improvements',
+            'lead_generation': 'Capture prospect information while providing value'
+        };
+
+        const helpText = typeSpecificHelp[surveyType] || 'Create a comprehensive survey for your specific needs';
+        
+        // Update placeholder text
+        const purposeField = document.getElementById('surveyPurpose');
+        if (purposeField) {
+            purposeField.placeholder = helpText;
+        }
+
+        // Update survey title placeholder based on type
+        const titleField = document.getElementById('surveyTitle');
+        if (titleField && !titleField.value) {
+            const typeFormatted = this.formatSurveyType(surveyType);
+            titleField.placeholder = `e.g., Q4 ${typeFormatted} Survey`;
+        }
+    }
+
+    async handleFormSubmit(e) {
+        e.preventDefault();
+        
+        if (!this.canUseService()) {
+            this.showMessage('You have reached your free usage limit. Please upgrade to continue.', 'error');
+            return;
+        }
+
+        const formData = this.collectFormData();
+        if (!this.validateFormData(formData)) {
+            return;
+        }
+
+        try {
+            this.showProcessing();
+            const survey = await this.generateSurvey(formData);
+            this.decrementUsage();
+            this.displaySurvey(survey);
+            this.showMessage('Survey generated successfully!', 'success');
+        } catch (error) {
+            console.error('Survey generation error:', error);
+            this.showMessage(error.message || 'Failed to generate survey. Please try again.', 'error');
+        } finally {
+            this.hideProcessing();
+        }
+    }
+
+    collectFormData() {
+        const getElementValue = (id) => {
+            const element = document.getElementById(id);
+            return element ? element.value : '';
+        };
+
+        const getElementChecked = (id) => {
+            const element = document.getElementById(id);
+            return element ? element.checked : false;
+        };
+
+        const formData = {
+            surveyType: getElementValue('selectedSurveyType'),
+            surveyTitle: getElementValue('surveyTitle'),
+            targetAudience: getElementValue('targetAudience'),
+            surveyLength: getElementValue('surveyLength'),
+            surveyTone: getElementValue('surveyTone'),
+            surveyPurpose: getElementValue('surveyPurpose'),
+            keyMetrics: getElementValue('keyMetrics'),
+            completionTime: getElementValue('completionTime'),
+            specificTopics: getElementValue('specificTopics'),
+            includeLogic: getElementChecked('includeLogic'),
+            includeAnalytics: getElementChecked('includeAnalytics'),
+            includeValidation: getElementChecked('includeValidation')
+        };
+
+        console.log('Collected form data:', formData);
+        return formData;
+    }
+
+    validateFormData(data) {
+        if (!data.surveyType) {
+            this.showMessage('Please select a survey type', 'error');
+            return false;
+        }
+        
+        if (!data.surveyTitle.trim()) {
+            this.showMessage('Survey title is required', 'error');
+            return false;
+        }
+        
+        if (!data.surveyLength) {
+            this.showMessage('Please select a survey length', 'error');
+            return false;
+        }
+        
+        if (!data.surveyTone) {
+            this.showMessage('Please select a survey tone', 'error');
+            return false;
+        }
+        
+        if (!data.surveyPurpose.trim()) {
+            this.showMessage('Survey purpose is required', 'error');
+            return false;
+        }
+        
+        return true;
+    }
+
+    async generateSurvey(formData) {
+        try {
+            console.log('Making API call to generate survey...');
+            console.log('Form data:', formData);
+            
+            const requestBody = {
+                action: 'generate',
+                surveyType: formData.surveyType,
+                surveyTitle: formData.surveyTitle,
+                targetAudience: formData.targetAudience,
+                surveyLength: formData.surveyLength,
+                surveyTone: formData.surveyTone,
+                surveyPurpose: formData.surveyPurpose,
+                keyMetrics: formData.keyMetrics,
+                completionTime: formData.completionTime,
+                specificTopics: formData.specificTopics,
+                includeLogic: formData.includeLogic,
+                includeAnalytics: formData.includeAnalytics,
+                includeValidation: formData.includeValidation
+            };
+            
+            console.log('Request body:', requestBody);
+            console.log('API URL:', `${this.apiBaseUrl}/api/survey-builder`);
+            
+            const response = await fetch(`${this.apiBaseUrl}/api/survey-builder`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('API Error Response:', errorText);
+                throw new Error(`API Error (${response.status}): ${errorText || 'Unknown error'}`);
+            }
+
+            const data = await response.json();
+            console.log('API Response:', data);
+            
+            if (!data.success) {
+                throw new Error(data.error || 'Survey generation failed');
+            }
+
+            return data;
+        } catch (error) {
+            console.error('API call failed:', error);
+            
+            // Enhanced error handling
+            if (error.message.includes('404')) {
+                throw new Error('Survey generation service is not available. Please check your API endpoint configuration.');
+            } else if (error.message.includes('500')) {
+                throw new Error('Server error occurred. Please try again later.');
+            } else if (error.message.includes('Failed to fetch')) {
+                throw new Error('Network error. Please check your connection and try again.');
+            } else {
+                throw new Error(`Failed to generate survey: ${error.message}`);
+            }
+        }
+    }
+
+    displaySurvey(surveyData) {
+        console.log('Displaying survey:', surveyData);
+        this.currentSurvey = surveyData;
+        
+        // Hide form and show results
+        const form = document.getElementById('surveyBuilderForm');
+        const results = document.getElementById('resultsContainer');
+        
+        if (form) form.style.display = 'none';
+        if (results) results.style.display = 'block';
+        
+        // Display survey info
+        this.displaySurveyInfo(surveyData);
+        
+        // Display survey content
+        this.displaySurveyContent(surveyData);
+        
+        // Display analytics if included
+        if (surveyData.analytics) {
+            this.displayAnalytics(surveyData.analytics);
+        }
+        
+        // Scroll to results
+        if (results) {
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    displaySurveyInfo(surveyData) {
+        const infoContainer = document.getElementById('surveyInfoContainer');
+        if (!infoContainer) return;
+
+        const metadata = surveyData.metadata || {};
+        
+        infoContainer.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><i class="fas fa-info-circle me-2"></i>Survey Details</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>Title:</strong> ${metadata.title || surveyData.survey_title || 'Untitled Survey'}</li>
+                        <li><strong>Type:</strong> ${this.formatSurveyType(metadata.type || surveyData.survey_type || '')}</li>
+                        <li><strong>Target Audience:</strong> ${metadata.audience || surveyData.target_audience || 'General'}</li>
+                        <li><strong>Length:</strong> ${metadata.length || surveyData.survey_length || 'Medium'}</li>
+                        <li><strong>Tone:</strong> ${metadata.tone || surveyData.survey_tone || 'Professional'}</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6><i class="fas fa-chart-line me-2"></i>Survey Metrics</h6>
+                    <ul class="list-unstyled">
+                        <li><strong>Questions:</strong> ${metadata.question_count || this.countQuestions(surveyData.survey || surveyData.content || '')}</li>
+                        <li><strong>Estimated Time:</strong> ${metadata.completion_time || surveyData.completion_time || 'N/A'}</li>
+                        <li><strong>Logic Branching:</strong> ${metadata.includes_logic || surveyData.include_logic ? 'Yes' : 'No'}</li>
+                        <li><strong>Response Validation:</strong> ${metadata.includes_validation || surveyData.include_validation ? 'Yes' : 'No'}</li>
+                        <li><strong>Generated:</strong> ${new Date().toLocaleString()}</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+
+    countQuestions(content) {
+        if (!content) return 0;
+        const lines = content.split('\n');
+        let count = 0;
+        for (let line of lines) {
+            if (line.trim().match(/^\d+[\.\)]\s*|^Q\d+[\.\)]\s*|^Question\s*\d+[\.\)]\s*/i)) {
+                count++;
+            }
+        }
+        return count || 'Multiple';
+    }
+
+    displaySurveyContent(surveyData) {
+        const previewContainer = document.getElementById('surveyPreview');
+        if (!previewContainer) return;
+
+        const surveyContent = surveyData.survey || surveyData.content || surveyData.questions || 'No content available';
+        
+        // Format the survey content for better display
+        const formattedContent = this.formatSurveyContent(surveyContent);
+        
+        previewContainer.innerHTML = formattedContent;
+    }
+
+    formatSurveyContent(content) {
+        if (!content) return '<p>No survey content available</p>';
+        
+        // Handle different content formats
+        if (typeof content === 'object') {
+            // If content is an object/array, try to format it
+            if (Array.isArray(content)) {
+                return content.map((item, index) => {
+                    if (typeof item === 'object') {
+                        return `<div class="question-option mb-3">
+                            <h6>Question ${index + 1}: ${item.question || item.text || 'No question text'}</h6>
+                            ${item.options ? `<div class="ms-3">${item.options.map(opt => `<div class="mb-1">• ${opt}</div>`).join('')}</div>` : ''}
+                        </div>`;
+                    }
+                    return `<div class="question-option mb-3"><h6>Question ${index + 1}: ${item}</h6></div>`;
+                }).join('');
+            } else {
+                // Convert object to readable format
+                content = JSON.stringify(content, null, 2);
+            }
+        }
+        
+        // Format the survey content for better display
+        const lines = content.split('\n');
+        let formattedHTML = '';
+        let inQuestion = false;
+        
+        for (let line of lines) {
+            line = line.trim();
+            if (!line) continue;
+            
+            // Check if this is a question
+            if (line.match(/^\d+[\.\)]\s*|^Q\d+[\.\)]\s*|^Question\s*\d+[\.\)]\s*/i)) {
+                if (inQuestion) {
+                    formattedHTML += '</div>';
+                }
+                formattedHTML += `<div class="question-option mb-3"><h6>${line}</h6>`;
+                inQuestion = true;
+            } else if (line.startsWith('•') || line.startsWith('-') || line.startsWith('a)') || line.startsWith('A)')) {
+                // Format options
+                formattedHTML += `<div class="ms-3 mb-1">${line}</div>`;
+            } else if (line.includes(':') && line.length < 100) {
+                // Format section headers
+                formattedHTML += `<h5 class="mt-4 mb-2">${line}</h5>`;
+            } else {
+                // Regular text
+                formattedHTML += `<p>${line}</p>`;
+            }
+        }
+        
+        if (inQuestion) {
+            formattedHTML += '</div>';
+        }
+        
+        return formattedHTML || `<div class="p-3"><pre>${content}</pre></div>`;
+    }
+
+    displayAnalytics(analytics) {
+        const analyticsSection = document.getElementById('analyticsSection');
+        const analyticsContent = document.getElementById('analyticsContent');
+        
+        if (!analyticsSection || !analyticsContent) return;
+
+        analyticsSection.style.display = 'block';
+        analyticsContent.innerHTML = `
+            <h6><i class="fas fa-lightbulb me-2"></i>Analytics Recommendations</h6>
+            <div class="mt-3" style="white-space: pre-wrap; line-height: 1.6;">${analytics}</div>
+        `;
+    }
+
+    // Export Functions
+    copySurvey() {
+        if (!this.currentSurvey) {
+            this.showMessage('No survey to copy', 'error');
+            return;
+        }
+
+        const surveyText = this.currentSurvey.survey || this.currentSurvey.content || this.currentSurvey.questions || 'No survey content';
+        const textToCopy = typeof surveyText === 'object' ? JSON.stringify(surveyText, null, 2) : surveyText;
+        
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                this.showMessage('Survey copied to clipboard!', 'success');
+            }).catch(() => {
+                this.fallbackCopy(textToCopy);
+            });
+        } else {
+            this.fallbackCopy(textToCopy);
+        }
+    }
+
+    fallbackCopy(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            this.showMessage('Survey copied to clipboard!', 'success');
+        } catch (err) {
+            this.showMessage('Failed to copy survey', 'error');
+        }
+        
+        document.body.removeChild(textArea);
+    }
+
+    downloadSurvey() {
+        if (!this.currentSurvey) {
+            this.showMessage('No survey to download', 'error');
+            return;
+        }
+
+        const surveyData = {
+            metadata: this.currentSurvey.metadata || {},
+            survey: this.currentSurvey.survey || this.currentSurvey.content || this.currentSurvey.questions,
+            analytics: this.currentSurvey.analytics,
+            generated_at: new Date().toISOString()
+        };
+
+        const dataStr = JSON.stringify(surveyData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `survey_${this.formatFilename(surveyData.metadata?.title || 'survey')}_${Date.now()}.json`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        URL.revokeObjectURL(url);
+        this.showMessage('Survey downloaded successfully!', 'success');
+    }
+
+    exportCSV() {
+        if (!this.currentSurvey) {
+            this.showMessage('No survey to export', 'error');
+            return;
+        }
+
+        // Generate CSV template for responses
+        const surveyContent = this.currentSurvey.survey || this.currentSurvey.content || this.currentSurvey.questions || '';
+        const questions = this.extractQuestions(surveyContent);
+        
+        let csvContent = 'Respondent ID,Timestamp,';
+        csvContent += questions.map((q, index) => `"Question ${index + 1}"`).join(',') + '\n';
+        
+        // Add example row
+        csvContent += '1,' + new Date().toISOString() + ',';
+        csvContent += questions.map(() => '"Sample Response"').join(',') + '\n';
+
+        const csvBlob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(csvBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `survey_responses_template_${Date.now()}.csv`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        URL.revokeObjectURL(url);
+        this.showMessage('CSV template downloaded!', 'success');
+    }
+
+    extractQuestions(content) {
+        if (!content) return [];
+        
+        const questions = [];
+        const contentStr = typeof content === 'object' ? JSON.stringify(content) : content;
+        const lines = contentStr.split('\n');
+        
+        for (let line of lines) {
+            line = line.trim();
+            if (line.match(/^\d+[\.\)]\s*|^Q\d+[\.\)]\s*|^Question\s*\d+[\.\)]\s*/i)) {
+                questions.push(line);
+            }
+        }
+        
+        return questions;
+    }
+
+    // Utility Functions
+    showProcessing() {
+        const processingDiv = document.getElementById('processingMessage');
+        if (processingDiv) {
+            processingDiv.style.display = 'block';
+        }
+        
+        const spinner = document.querySelector('.loading-spinner');
+        if (spinner) {
+            spinner.style.display = 'inline-block';
+        }
+    }
+
+    hideProcessing() {
+        const processingDiv = document.getElementById('processingMessage');
+        if (processingDiv) {
+            processingDiv.style.display = 'none';
+        }
+        
+        const spinner = document.querySelector('.loading-spinner');
+        if (spinner) {
+            spinner.style.display = 'none';
+        }
+    }
+
+    showMessage(message, type = 'info') {
+        // Enhanced message display
+        if (type === 'error') {
+            console.error('Survey Builder:', message);
+        } else if (type === 'success') {
+            console.log('Survey Builder Success:', message);
+        } else {
+            console.info('Survey Builder:', message);
+        }
+        
+        // Create a better notification system
+        const notificationId = 'survey-notification-' + Date.now();
+        const notification = document.createElement('div');
+        notification.id = notificationId;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            z-index: 9999;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 300px;
+            font-family: 'Quicksand', sans-serif;
+        `;
+
+        if (type === 'error') {
+            notification.style.backgroundColor = '#f8d7da';
+            notification.style.color = '#721c24';
+            notification.style.border = '1px solid #f5c6cb';
+        } else if (type === 'success') {
+            notification.style.backgroundColor = '#d4edda';
+            notification.style.color = '#155724';
+            notification.style.border = '1px solid #c3e6cb';
+        } else {
+            notification.style.backgroundColor = '#d1ecf1';
+            notification.style.color = '#0c5460';
+            notification.style.border = '1px solid #bee5eb';
+        }
+
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            const element = document.getElementById(notificationId);
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+        }, 4000);
+    }
+
+    formatSurveyType(type) {
+        return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    formatFilename(title) {
+        return title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    }
+
+    editSurvey() {
+        const results = document.getElementById('resultsContainer');
+        const form = document.getElementById('surveyBuilderForm');
+        
+        if (results) results.style.display = 'none';
+        if (form) {
+            form.style.display = 'block';
+            form.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    createNewSurvey() {
+        // Reset form
+        const form = document.getElementById('surveyBuilderForm');
+        if (form) {
+            form.reset();
+        }
+        
+        const hiddenInput = document.getElementById('selectedSurveyType');
+        if (hiddenInput) {
+            hiddenInput.value = '';
+        }
+        
+        document.querySelectorAll('.survey-type-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        // Hide results and show form
+        const results = document.getElementById('resultsContainer');
+        if (results) results.style.display = 'none';
+        if (form) {
+            form.style.display = 'block';
+            form.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Reset current survey
+        this.currentSurvey = null;
+        this.responses = [];
+    }
+}
+
+// Initialize the Survey Builder when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    window.surveyBuilder = new SurveyBuilder();
+});
+
+// Export for potential external use
+window.SurveyBuilder = SurveyBuilder;
+</script>
+</body>
+</html> 
+        

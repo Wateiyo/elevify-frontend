@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialBoost - Social Media Assistant | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .content-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .content-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .content-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .platform-option {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .platform-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .platform-option.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+        }
+        
+        .content-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Quicksand', sans-serif;
+            line-height: 1.8;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .disclaimer {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .tool-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-radius: 30px 30px 0 0;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-tab:hover {
+            color: #333;
+            background-color: #f0f0f0;
+        }
+        
+        .tool-tab.active {
+            background-color: #14697D;
+            color: white;
+        }
+
+        .tool-tabs {
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .custom-fields {
+            display: none;
+        }
+
+        .post-preview {
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+        }
+
+        .hashtag {
+            color: #1DA1F2;
+            font-weight: 500;
+        }
+
+        .tone-selector {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .tone-option {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .tone-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+
+        .tone-option.selected {
+            border-color: #FFbf23;
+            background-color: #fffbf0;
+        }
+
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+
+/* Modal container and layout */
+.modal-xl {
+    max-width: 1000px;
+}
+
+@media (max-width: 992px) {
+    .modal-xl {
+        max-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-xl {
+        margin: 1rem;
+    }
+}
+
+/* Modal content styling */
+#upgradeModal .modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+#upgradeModal .modal-header {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1.5rem 2rem 1rem;
+}
+
+#upgradeModal .modal-title {
+    font-family: 'Antic Slab', serif;
+    color: #14697D;
+    font-weight: 400;
+    font-size: 1.5rem;
+}
+
+#upgradeModal .modal-body {
+    padding: 2rem;
+}
+
+#upgradeModal .modal-body p {
+    font-family: 'Quicksand', sans-serif;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* ===== PRICING TIER CARDS ===== */
+
+/* Base card styling */
+.pricing-tier-card {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+    background: #f8f9fa;
+    position: relative;
+    overflow: visible;
+    border-radius: 15px;
+}
+
+/* Card body styling */
+.pricing-tier-card .card-body {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+/* Icon styling */
+.pricing-tier-card i {
+    color: #14697D;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Card title styling */
+.pricing-tier-card h6 {
+    font-family: 'Antic Slab', serif;
+    font-weight: 400;
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+/* Card description */
+.pricing-tier-card small {
+    font-family: 'Quicksand', sans-serif;
+    color: #666;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Price display styling */
+.price-display {
+    font-family: 'Sora', sans-serif;
+    margin-bottom: 1.5rem;
+}
+
+.price-display span {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #14697D;
+}
+
+.price-display small {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: normal;
+}
+
+/* Features list styling */
+.features-list {
+    min-height: 80px;
+    width: 100%;
+    text-align: left;
+    margin-top: auto;
+}
+
+.features-list div {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.features-list small {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.features-list i {
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    width: 12px;
+}
+
+/* Badge styling */
+.pricing-tier-card .badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    z-index: 5;
+}
+
+/* ===== HOVER EFFECTS ===== */
+.pricing-tier-card:hover {
+    border-color: #14697D;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(20, 105, 125, 0.2);
+    background-color: #ffffff;
+}
+
+.pricing-tier-card:hover i {
+    color: #0f5566;
+}
+
+/* ===== SELECTED STATE (YELLOW HIGHLIGHT) ===== */
+.pricing-tier-card.selected {
+    border-color: #FFbf23 !important;
+    background-color: #fffbf0 !important;
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    z-index: 10;
+}
+
+.pricing-tier-card.selected h6 {
+    color: #14697D;
+}
+
+.pricing-tier-card.selected i {
+    color: #FFbf23;
+    transform: scale(1.1);
+}
+
+.pricing-tier-card.selected .price-display span {
+    color: #FFbf23;
+}
+
+/* ===== GET SELECTED PLAN BUTTON ===== */
+#getSelectedPlan {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    border: none;
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
+#getSelectedPlan:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#getSelectedPlan:enabled {
+    background-color: #14697D;
+    border-color: #14697D;
+    color: white;
+}
+
+#getSelectedPlan:enabled:hover {
+    background-color: #0f5566;
+    border-color: #0f5566;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(20, 105, 125, 0.3);
+}
+
+#getSelectedPlan:enabled:active {
+    transform: translateY(0);
+}
+
+/* Button icon */
+#getSelectedPlan i {
+    margin-right: 0.5rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet and below */
+@media (max-width: 992px) {
+    .pricing-tier-card .card-body {
+        padding: 1.5rem 1rem;
+    }
+    
+    .pricing-tier-card i {
+        font-size: 2rem;
+    }
+    
+    .price-display span {
+        font-size: 1.8rem;
+    }
+    
+    .features-list {
+        min-height: 70px;
+    }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+    #upgradeModal .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .pricing-tier-card {
+        margin-bottom: 1rem;
+    }
+    
+    .pricing-tier-card.selected {
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 8px 25px rgba(255, 191, 35, 0.3);
+    }
+    
+    .pricing-tier-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    #getSelectedPlan {
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 576px) {
+    #upgradeModal .modal-body {
+        padding: 1rem;
+    }
+    
+    .price-display span {
+        font-size: 1.6rem !important;
+    }
+    
+    .features-list {
+        text-align: center !important;
+        min-height: 60px;
+    }
+    
+    .pricing-tier-card h6 {
+        font-size: 1.1rem;
+    }
+    
+    .pricing-tier-card i {
+        font-size: 1.8rem;
+    }
+    
+    .pricing-tier-card .badge {
+        font-size: 0.6rem;
+        padding: 0.3rem 0.5rem;
+    }
+}
+
+/* ===== ANIMATION ENHANCEMENTS ===== */
+
+/* Smooth transitions for all interactive elements */
+.pricing-tier-card,
+.pricing-tier-card i,
+.pricing-tier-card h6,
+.pricing-tier-card .price-display span,
+#getSelectedPlan {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Subtle pulse animation for selected state */
+.pricing-tier-card.selected {
+    animation: selectedPulse 0.6s ease-out;
+}
+
+@keyframes selectedPulse {
+    0% {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    }
+    50% {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 0 15px 40px rgba(255, 191, 35, 0.5);
+    }
+    100% {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    }
+}
+
+/* Modal entrance animation */
+#upgradeModal.fade .modal-dialog {
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+#upgradeModal.fade:not(.show) .modal-dialog {
+    transform: translate(0, -25px) scale(0.95);
+    opacity: 0;
+}
+
+#upgradeModal.fade.show .modal-dialog {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+}
+
+/* ===== ACCESSIBILITY ===== */
+
+/* Focus states for keyboard navigation */
+.pricing-tier-card:focus {
+    outline: 3px solid rgba(255, 191, 35, 0.5);
+    outline-offset: 2px;
+}
+
+#getSelectedPlan:focus {
+    outline: 3px solid rgba(20, 105, 125, 0.5);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .pricing-tier-card {
+        border-width: 3px;
+    }
+    
+    .pricing-tier-card.selected {
+        border-width: 4px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .pricing-tier-card,
+    .pricing-tier-card i,
+    .pricing-tier-card h6,
+    .pricing-tier-card .price-display span,
+    #getSelectedPlan {
+        transition: none;
+    }
+    
+    .pricing-tier-card:hover,
+    .pricing-tier-card.selected {
+        transform: none;
+    }
+    
+    .selectedPulse {
+        animation: none;
+    }
+}
+/* Rich text editor styles */
+.rich-text-editor {
+    transition: all 0.3s ease;
+}
+
+.rich-text-editor:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.editing-toolbar .btn.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.editing-toolbar .btn:hover {
+    background-color: #e9ecef;
+}
+
+/* Copy success message animation */
+.alert.position-fixed {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                        
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>SocialBoost - AI Social Media Assistant</h1>
+                        <p class="lead">Create engaging content, schedule posts, and analyze performance with AI-powered social media management.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img4.svg" alt="Social Media" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-share-alt" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose content type</div>
+                            <div class="mt-2"><span class="step-number">2</span> Select platform & tone</div>
+                            <div class="mt-2"><span class="step-number">3</span> AI creates your post</div>
+                            <div class="mt-2"><span class="step-number">4</span> Review & customize</div>
+                            <div class="mt-2"><span class="step-number">5</span> Schedule or publish</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-rocket" style="color: #FFbf23;"></i> Social Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Multi-platform optimization</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Hashtag generation</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Tone personalization</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Content scheduling</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Performance insights</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Brand voice matching</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-pen-fancy" style="color: #A82C2C;"></i> Content Types</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-bullhorn" style="color: #14697D;"></i> Promotional Posts</div>
+                            <div class="mb-2"><i class="fas fa-lightbulb" style="color: #14697D;"></i> Educational Content</div>
+                            <div class="mb-2"><i class="fas fa-heart" style="color: #14697D;"></i> Engagement Posts</div>
+                            <div class="mb-2"><i class="fas fa-quote-right" style="color: #14697D;"></i> Inspirational Quotes</div>
+                            <div class="mb-2"><i class="fas fa-question-circle" style="color: #14697D;"></i> Poll & Questions</div>
+                            <div class="mb-2"><i class="fas fa-eye" style="color: #14697D;"></i> Behind-the-Scenes</div>
+                            <div class="mb-2"><i class="fas fa-gift" style="color: #14697D;"></i> Contest & Giveaways</div>
+                            <div><i class="fas fa-plus" style="color: #14697D;"></i> Custom Content</div>
+                        </div>
+                    </div>
+
+                    <div class="disclaimer">
+                        <h6><i class="fas fa-info-circle me-2" style="color: #856404;"></i>Content Guidelines</h6>
+                        <p class="small mb-0">Always review AI-generated content before publishing. Ensure it aligns with your brand voice and platform guidelines. SocialBoost provides suggestions, not guarantees.</p>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Create Your Social Media Content</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <div>
+                            <button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade</button>
+                        </div>
+                        </div>
+
+                        <!-- Tool Tabs -->
+                        <div class="tool-tabs mb-4">
+                            <button class="tool-tab active" data-tab="create">Create Content</button>
+                            <button class="tool-tab" data-tab="schedule">Schedule Posts</button>
+                            <button class="tool-tab" data-tab="analyze">Analyze Performance</button>
+                        </div>
+
+                        <!-- Create Content Section -->
+                        <div id="createSection" class="tab-content active">
+                            <form id="socialContentForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Content Type</label>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="content-type-card card h-100" data-type="promotional">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-bullhorn mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Promotional</h6>
+                                                    <small class="text-muted">Product/service promotion</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="content-type-card card h-100" data-type="educational">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-lightbulb mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Educational</h6>
+                                                    <small class="text-muted">Tips & tutorials</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="content-type-card card h-100" data-type="engagement">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-heart mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Engagement</h6>
+                                                    <small class="text-muted">Questions & polls</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="content-type-card card h-100" data-type="inspirational">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-quote-right mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Inspirational</h6>
+                                                    <small class="text-muted">Quotes & motivation</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="content-type-card card h-100" data-type="behind_scenes">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-eye mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Behind-the-Scenes</h6>
+                                                    <small class="text-muted">Company culture</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="content-type-card card h-100" data-type="contest">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-gift mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Contest</h6>
+                                                    <small class="text-muted">Giveaways & contests</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedContentType" name="contentType" required>
+
+                                <!-- Platform Selection -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Target Platform</label>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <div class="platform-option" data-platform="instagram" data-name="Instagram">
+                                                <i class="fab fa-instagram mb-2" style="color: #E4405F; font-size: 2rem;"></i>
+                                                <div>Instagram</div>
+                                                <small class="text-muted">Visual content</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="platform-option" data-platform="twitter" data-name="Twitter/X">
+                                                <i class="fab fa-twitter mb-2" style="color: #1DA1F2; font-size: 2rem;"></i>
+                                                <div>Twitter/X</div>
+                                                <small class="text-muted">Short & snappy</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="platform-option" data-platform="facebook" data-name="Facebook">
+                                                <i class="fab fa-facebook mb-2" style="color: #1877F2; font-size: 2rem;"></i>
+                                                <div>Facebook</div>
+                                                <small class="text-muted">Community focused</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="platform-option" data-platform="linkedin" data-name="LinkedIn">
+                                                <i class="fab fa-linkedin mb-2" style="color: #0A66C2; font-size: 2rem;"></i>
+                                                <div>LinkedIn</div>
+                                                <small class="text-muted">Professional</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="platform-option" data-platform="tiktok" data-name="TikTok">
+                                                <i class="fab fa-tiktok mb-2" style="color: #000000; font-size: 2rem;"></i>
+                                                <div>TikTok</div>
+                                                <small class="text-muted">Creative & viral</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="platform-option" data-platform="youtube" data-name="YouTube">
+                                                <i class="fab fa-youtube mb-2" style="color: #FF0000; font-size: 2rem;"></i>
+                                                <div>YouTube</div>
+                                                <small class="text-muted">Video content</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="platform-option" data-platform="pinterest" data-name="Pinterest">
+                                                <i class="fab fa-pinterest mb-2" style="color: #BD081C; font-size: 2rem;"></i>
+                                                <div>Pinterest</div>
+                                                <small class="text-muted">Visual discovery</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="platform-option" data-platform="snapchat" data-name="Snapchat">
+                                                <i class="fab fa-snapchat mb-2" style="color: #FFFC00; font-size: 2rem;"></i>
+                                                <div>Snapchat</div>
+                                                <small class="text-muted">Stories & AR</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedPlatform" name="platform" required>
+
+                                <!-- Basic Information -->
+                                <div class="mb-4">
+                                    <h5>Content Details</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="brandName" class="form-label">Brand/Business Name</label>
+                                            <input type="text" class="form-control" id="brandName" name="brandName" placeholder="Your brand or business name" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="industry" class="form-label">Industry/Niche</label>
+                                            <select class="form-select" id="industry" name="industry" required>
+                                                <option value="">Select industry</option>
+                                                <option value="technology">Technology</option>
+                                                <option value="fashion">Fashion & Beauty</option>
+                                                <option value="food">Food & Beverage</option>
+                                                <option value="fitness">Health & Fitness</option>
+                                                <option value="business">Business & Finance</option>
+                                                <option value="education">Education</option>
+                                                <option value="travel">Travel & Tourism</option>
+                                                <option value="entertainment">Entertainment</option>
+                                                <option value="healthcare">Healthcare</option>
+                                                <option value="real_estate">Real Estate</option>
+                                                <option value="automotive">Automotive</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tone Selection -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Content Tone</label>
+                                    <div class="tone-selector">
+                                        <div class="tone-option" data-tone="professional">Professional</div>
+                                        <div class="tone-option" data-tone="casual">Casual</div>
+                                        <div class="tone-option" data-tone="friendly">Friendly</div>
+                                        <div class="tone-option" data-tone="humorous">Humorous</div>
+                                        <div class="tone-option" data-tone="inspirational">Inspirational</div>
+                                        <div class="tone-option" data-tone="urgent">Urgent</div>
+                                        <div class="tone-option" data-tone="educational">Educational</div>
+                                        <div class="tone-option" data-tone="conversational">Conversational</div>
+                                    </div>
+                                    <input type="hidden" id="selectedTone" name="tone" value="friendly">
+                                </div>
+
+                                <!-- Content-Specific Fields -->
+                                <div id="specificFields" class="mb-4">
+                                    <!-- Dynamic fields will be inserted here based on content type -->
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-magic me-2"></i> Generate Social Media Content
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Schedule Posts Section -->
+                        <div id="scheduleSection" class="tab-content" style="display: none;">
+                            <div class="text-center py-5">
+                                <i class="fas fa-calendar-alt" style="font-size: 4rem; color: #14697D; margin-bottom: 1rem;"></i>
+                                <h5>Post Scheduling</h5>
+                                <p class="text-muted">Schedule your generated content across multiple platforms.</p>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Scheduling feature coming soon! For now, copy your generated content and schedule manually on your preferred platforms.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analyze Performance Section -->
+                        <div id="analyzeSection" class="tab-content" style="display: none;">
+                            <div class="text-center py-5">
+                                <i class="fas fa-chart-line" style="font-size: 4rem; color: #14697D; margin-bottom: 1rem;"></i>
+                                <h5>Performance Analytics</h5>
+                                <p class="text-muted">Track your social media performance with detailed insights.</p>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Analytics feature coming soon! Connect your social media accounts to track engagement, reach, and growth metrics.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Container -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Social Media Content</h4>
+                        
+                        <!-- Content Preview -->
+                        <div class="content-preview mb-4" id="contentPreview">
+                            <!-- Generated content will appear here -->
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="copyContent">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Text</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                            <div class="export-option" id="downloadContent">
+                                <i class="fas fa-download"></i>
+                                <div>Download</div>
+                                <small class="text-muted">Save content</small>
+                            </div>
+                            <div class="export-option" id="shareContent">
+                                <i class="fas fa-share-alt"></i>
+                                <div>Share</div>
+                                <small class="text-muted">To platform</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editContentBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Content
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newContentBtn">
+                                <i class="fas fa-plus me-1"></i> Create New Content
+                            </button>
+                            <button class="btn btn-outline-success" id="generateVariationsBtn">
+                                <i class="fas fa-sync-alt me-1"></i> Generate Variations
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading Spinner -->
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                </div>
+            </div>
+        </div>
+         <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">dominate</span> social media?</h2>
+                <p class="lead mb-4">Join thousands of professionals who gather better insights with Elevify's AI tools.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Upgrade Modal -->
+<div class="modal fade" id="upgradeModal" tabindex="-1" aria-labelledby="upgradeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content" style="border-radius: 20px; border: none;">
+            <div class="modal-header" style="border-bottom: 1px solid #e0e0e0; flex-direction: column; align-items: center; text-align: center;">
+                <h5 class="modal-title" id="upgradeModalLabel" style="font-family: 'Antic Slab', serif; color: #14697D;">
+                    <i class="fas fa-crown me-2" style="color: #FFbf23;"></i>Upgrade for Unlimited Access
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-center mb-4" style="font-family: 'Quicksand', sans-serif; color: #666;">
+                    Choose the plan that works best for you and unlock unlimited access.
+                </p>
+                
+                <!-- Pricing Cards Container -->
+                <div class="row g-3 mb-4">
+                    <!-- Pay As You Go -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="payasyougo" data-url="https://elevify.net?wanted=https://elevify.net/writesuite">
+                            <div class="card-body text-center p-3">
+                                <i class="fas fa-gift mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>Pay As You Go </h6>
+                                <small class="text-muted mb-3 d-block">24 Hour Access for WriterSuite</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$1</span>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>24-hour unlimited access to WriteSuite</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>All writing tools included (Write, Edit, Proofread, Summarize, Rewrite)</small></div>
+                                    <div class="mb-1"><i class="fas fa-times text-muted me-2"></i><small>No monthly commitment - pay only when you need it</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 24 Hour Pass -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="24hourpass" data-url="https://elevify.gumroad.com/l/hngcmx?wanted=https://elevify.net/writesuite">
+                            <div class="card-body text-center p-3 position-relative">
+                                <span class="badge position-absolute" style="top: 10px; right: 10px; background-color: #FFbf23; color: #000; font-size: 0.7rem;">Popular</span>
+                                <i class="fas fa-clock mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>24-Hour Pass</h6>
+                                <small class="text-muted mb-3 d-block">All tools unlimited for 24 hours</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$2</span>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Unlimited access to ALL Elevify tools for 24 hours</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>No daily limits - generate as much as you need</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Batch processing - work on multiple projects</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pro Tier -->
+                    <div class="col-12 col-md-12 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="pro" data-url="https://elevify.gumroad.com/l/flbal?wanted=https://elevify.net/writesuite">
+                            <div class="card-body text-center p-3 position-relative">
+                                <span class="badge position-absolute" style="top: 10px; right: 10px; background-color: #14697D; color: white; font-size: 0.7rem;">Best Value</span>
+                                <i class="fas fa-crown mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>Pro Monthly</h6>
+                                <small class="text-muted mb-3 d-block">Full unlimited access</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$15</span>
+                                    <small class="text-muted">/month</small>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Unlimited monthly usage across all tools</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Brand consistency tools - maintain your voice across all content</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Bulk operations - process multiple documents at once</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hidden input to track selection -->
+                <input type="hidden" id="selectedPricingTier" name="pricingTier" required>
+                
+                <!-- Get Button -->
+                <button type="button" class="btn btn-primary btn-lg w-100" id="getSelectedPlan" disabled>
+                    <i class="fas fa-shopping-cart me-2"></i>Get Selected Plan
+                </button>
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">Secure payment powered by Gumroad</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+   <script>
+    // REPLACE THE ENTIRE <script> SECTION (starting from line ~1100) WITH THIS FIXED VERSION:
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('SocialBoost initialized');
+    
+    // Get elements that definitely exist
+    const form = document.getElementById('socialContentForm');
+    const contentTypeCards = document.querySelectorAll('.content-type-card');
+    const platformOptions = document.querySelectorAll('.platform-option');
+    const toneOptions = document.querySelectorAll('.tone-option');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const contentPreview = document.getElementById('contentPreview');
+    
+    // Store selections directly in variables
+    let selectedContentType = '';
+    let selectedPlatform = '';
+    let selectedTone = 'friendly'; // default
+    let currentContent = null;
+    
+    // Tab switching functionality - FIX #1
+    document.querySelectorAll('.tool-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tool-tab').forEach(t => t.classList.remove('active'));
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Show selected tab content
+            const targetTab = this.dataset.tab;
+            const targetSection = document.getElementById(targetTab + 'Section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+        });
+    });
+    
+    // Content type selection
+    contentTypeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            contentTypeCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedContentType = this.dataset.type;
+            console.log('Content type selected:', selectedContentType);
+            
+            // Update specific fields based on content type - FIX #2
+            updateSpecificFields(selectedContentType);
+        });
+    });
+    
+    // Platform selection
+    platformOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            platformOptions.forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedPlatform = this.dataset.platform;
+            console.log('Platform selected:', selectedPlatform);
+        });
+    });
+    
+    // Tone selection
+    toneOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            toneOptions.forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedTone = this.dataset.tone;
+            console.log('Tone selected:', selectedTone);
+        });
+    });
+    
+    // FIX #2: Dynamic fields based on content type
+    function updateSpecificFields(contentType) {
+        const specificFields = document.getElementById('specificFields');
+        if (!specificFields) return;
+        
+        let fieldsHTML = '';
+        
+        switch(contentType) {
+            case 'promotional':
+                fieldsHTML = `
+                    <h6><i class="fas fa-bullhorn me-2"></i>Promotional Content Details</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="productName" class="form-label">Product/Service Name</label>
+                            <input type="text" class="form-control" id="productName" placeholder="What are you promoting?">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="keyBenefit" class="form-label">Key Benefit</label>
+                            <input type="text" class="form-control" id="keyBenefit" placeholder="Main benefit or value proposition">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="targetAudience" class="form-label">Target Audience</label>
+                            <input type="text" class="form-control" id="targetAudience" placeholder="Who is this for?">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="callToAction" class="form-label">Call to Action</label>
+                            <select class="form-select" id="callToAction">
+                                <option value="buy_now">Buy Now</option>
+                                <option value="learn_more">Learn More</option>
+                                <option value="sign_up">Sign Up</option>
+                                <option value="visit_website">Visit Website</option>
+                                <option value="contact_us">Contact Us</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'educational':
+                fieldsHTML = `
+                    <h6><i class="fas fa-lightbulb me-2"></i>Educational Content Details</h6>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="topic" class="form-label">Topic/Subject</label>
+                            <input type="text" class="form-control" id="topic" placeholder="What will you teach about?">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="skillLevel" class="form-label">Skill Level</label>
+                            <select class="form-select" id="skillLevel">
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="keyTakeaway" class="form-label">Key Takeaway</label>
+                            <input type="text" class="form-control" id="keyTakeaway" placeholder="Main learning point">
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'engagement':
+                fieldsHTML = `
+                    <h6><i class="fas fa-heart me-2"></i>Engagement Content Details</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="questionType" class="form-label">Question Type</label>
+                            <select class="form-select" id="questionType">
+                                <option value="poll">Poll Question</option>
+                                <option value="opinion">Opinion Question</option>
+                                <option value="experience">Experience Sharing</option>
+                                <option value="preference">Preference Question</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="engagementTopic" class="form-label">Topic</label>
+                            <input type="text" class="form-control" id="engagementTopic" placeholder="What to ask about?">
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'inspirational':
+                fieldsHTML = `
+                    <h6><i class="fas fa-quote-right me-2"></i>Inspirational Content Details</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="theme" class="form-label">Theme</label>
+                            <select class="form-select" id="theme">
+                                <option value="motivation">Motivation</option>
+                                <option value="success">Success</option>
+                                <option value="perseverance">Perseverance</option>
+                                <option value="growth">Personal Growth</option>
+                                <option value="achievement">Achievement</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="message" class="form-label">Key Message</label>
+                            <input type="text" class="form-control" id="message" placeholder="Inspirational message theme">
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'behind_scenes':
+                fieldsHTML = `
+                    <h6><i class="fas fa-eye me-2"></i>Behind-the-Scenes Details</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="processType" class="form-label">What to Show</label>
+                            <select class="form-select" id="processType">
+                                <option value="work_process">Work Process</option>
+                                <option value="team_culture">Team Culture</option>
+                                <option value="office_life">Office Life</option>
+                                <option value="creation_process">Creation Process</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="behindScenesDetail" class="form-label">Specific Detail</label>
+                            <input type="text" class="form-control" id="behindScenesDetail" placeholder="What specific aspect to highlight?">
+                        </div>
+                    </div>
+                `;
+                break;
+            case 'contest':
+                fieldsHTML = `
+                    <h6><i class="fas fa-gift me-2"></i>Contest/Giveaway Details</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="prize" class="form-label">Prize</label>
+                            <input type="text" class="form-control" id="prize" placeholder="What are you giving away?">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="duration" class="form-label">Duration</label>
+                            <select class="form-select" id="duration">
+                                <option value="3_days">3 Days</option>
+                                <option value="1_week">1 Week</option>
+                                <option value="2_weeks">2 Weeks</option>
+                                <option value="1_month">1 Month</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="entryMethod" class="form-label">How to Enter</label>
+                            <select class="form-select" id="entryMethod">
+                                <option value="like_follow">Like & Follow</option>
+                                <option value="comment_tag">Comment & Tag Friends</option>
+                                <option value="share_story">Share to Story</option>
+                                <option value="user_generated">Post User-Generated Content</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+                break;
+            default:
+                fieldsHTML = `
+                    <div class="mb-3">
+                        <label for="customTopic" class="form-label">Content Topic/Theme</label>
+                        <input type="text" class="form-control" id="customTopic" placeholder="What should the content be about?">
+                    </div>
+                    <div class="mb-3">
+                        <label for="customMessage" class="form-label">Key Message</label>
+                        <textarea class="form-control" id="customMessage" rows="3" placeholder="What's the main message you want to convey?"></textarea>
+                    </div>
+                `;
+        }
+        
+        specificFields.innerHTML = fieldsHTML;
+    }
+    
+    // Form submission with enhanced data collection - FIX #3
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('🚀 Form submitted!');
+            
+            // Show loading
+            if (loadingSpinner) loadingSpinner.style.display = 'block';
+            if (resultsContainer) resultsContainer.style.display = 'none';
+            
+            try {
+                // Get basic form data
+                const brandNameEl = document.getElementById('brandName');
+                const industryEl = document.getElementById('industry');
+                
+                // Collect dynamic field data based on content type
+                const specificData = collectSpecificFieldData(selectedContentType);
+                
+                const data = {
+                    contentType: selectedContentType,
+                    platform: selectedPlatform,
+                    brandName: brandNameEl ? brandNameEl.value : '',
+                    industry: industryEl ? industryEl.value : '',
+                    tone: selectedTone,
+                    ...specificData // Merge specific fields
+                };
+                
+                console.log('📋 Enhanced form data:', data);
+                
+                // Validate
+                if (!data.contentType) {
+                    alert('Please select a content type');
+                    return;
+                }
+                if (!data.platform) {
+                    alert('Please select a platform');
+                    return;
+                }
+                if (!data.brandName.trim()) {
+                    alert('Please enter your brand name');
+                    return;
+                }
+                if (!data.industry) {
+                    alert('Please select an industry');
+                    return;
+                }
+                
+                console.log('📡 Making API call...');
+                
+                // Make API call
+                const response = await fetch('https://elevify.onrender.com/api/socialboost/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                console.log('📡 Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ API Error:', errorText);
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('✅ API Success:', result);
+                
+                if (result.success && result.data) {
+                    displayContent(result.data);
+                    showNotification('✅ Content generated successfully!', 'success');
+                } else {
+                    throw new Error(result.error || 'Failed to generate content');
+                }
+                
+            } catch (error) {
+                console.error('💥 Error:', error);
+                showNotification(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
+            }
+        });
+    }
+    
+    // FIX #3: Function to collect specific field data
+    function collectSpecificFieldData(contentType) {
+        const data = {};
+        
+        switch(contentType) {
+            case 'promotional':
+                data.productName = getElementValue('productName');
+                data.keyBenefit = getElementValue('keyBenefit');
+                data.targetAudience = getElementValue('targetAudience');
+                data.callToAction = getElementValue('callToAction');
+                break;
+            case 'educational':
+                data.topic = getElementValue('topic');
+                data.skillLevel = getElementValue('skillLevel');
+                data.keyTakeaway = getElementValue('keyTakeaway');
+                break;
+            case 'engagement':
+                data.questionType = getElementValue('questionType');
+                data.engagementTopic = getElementValue('engagementTopic');
+                break;
+            case 'inspirational':
+                data.theme = getElementValue('theme');
+                data.message = getElementValue('message');
+                break;
+            case 'behind_scenes':
+                data.processType = getElementValue('processType');
+                data.behindScenesDetail = getElementValue('behindScenesDetail');
+                break;
+            case 'contest':
+                data.prize = getElementValue('prize');
+                data.duration = getElementValue('duration');
+                data.entryMethod = getElementValue('entryMethod');
+                break;
+            default:
+                data.customTopic = getElementValue('customTopic');
+                data.customMessage = getElementValue('customMessage');
+        }
+        
+        return data;
+    }
+    
+    function getElementValue(id) {
+        const element = document.getElementById(id);
+        return element ? element.value : '';
+    }
+    
+    // Display content with enhanced editing capabilities - FIX #4
+    function displayContent(contentData) {
+        if (!contentPreview) return;
+        
+        currentContent = contentData;
+        
+        contentPreview.innerHTML = `
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Content Generated!</strong> Ready for ${contentData.platform}
+            </div>
+            
+            <div class="post-preview">
+                <div class="mb-3" style="font-size: 1.1rem; line-height: 1.6;" id="displayContent">
+                    ${(contentData.content || '').replace(/\n/g, '<br>')}
+                </div>
+                
+                <!-- Hidden textarea for editing -->
+                <textarea class="form-control d-none" id="editableContent" rows="8" style="font-size: 1.1rem; line-height: 1.6;">${contentData.content || ''}</textarea>
+                
+                ${contentData.hashtags ? `
+                    <div class="mt-3">
+                        <span class="hashtag">${contentData.hashtags}</span>
+                    </div>
+                ` : ''}
+                
+                <div class="mt-2 small">
+                    <span class="text-success">
+                        Characters: <span id="charCount">${contentData.character_count || contentData.content?.length || 0}</span>
+                    </span>
+                </div>
+            </div>
+        `;
+        
+        if (resultsContainer) {
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+    
+    // Notification function
+    function showNotification(message, type) {
+        const alertClass = type === 'success' ? 'alert-success' : type === 'error' ? 'alert-danger' : 'alert-info';
+        const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+        
+        const toast = document.createElement('div');
+        toast.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        toast.innerHTML = `
+            <i class="fas ${icon} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            if (toast.parentNode) toast.remove();
+        }, 5000);
+    }
+    
+    // FIX #4: Export options with correct button IDs
+    const copyBtn = document.getElementById('copyContent');
+    const downloadBtn = document.getElementById('downloadContent');
+    const shareBtn = document.getElementById('shareContent');
+    const editBtn = document.getElementById('editContentBtn');
+    const generateNewBtn = document.getElementById('newContentBtn');
+    const variationsBtn = document.getElementById('generateVariationsBtn');
+    
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+            if (currentContent && currentContent.content) {
+                const contentToCopy = currentContent.content + (currentContent.hashtags ? '\n\n' + currentContent.hashtags : '');
+                navigator.clipboard.writeText(contentToCopy).then(() => {
+                    showNotification('Content copied to clipboard!', 'success');
+                }).catch(() => {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = contentToCopy;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showNotification('Content copied to clipboard!', 'success');
+                });
+            }
+        });
+    }
+    
+    // FIX #5: Download functionality
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+            if (currentContent && currentContent.content) {
+                const contentToDownload = `${currentContent.content}\n\n${currentContent.hashtags || ''}`;
+                const blob = new Blob([contentToDownload], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `social-content-${Date.now()}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                showNotification('Content downloaded!', 'success');
+            }
+        });
+    }
+    
+    // FIX #6: Share functionality
+    if (shareBtn) {
+        shareBtn.addEventListener('click', function() {
+            if (currentContent && currentContent.content) {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Social Media Content',
+                        text: currentContent.content
+                    }).then(() => {
+                        showNotification('Content shared!', 'success');
+                    }).catch(() => {
+                        showNotification('Share cancelled', 'info');
+                    });
+                } else {
+                    // Fallback - copy to clipboard
+                    navigator.clipboard.writeText(currentContent.content);
+                    showNotification('Content copied to clipboard for sharing!', 'success');
+                }
+            }
+        });
+    }
+    
+    // FIX #7: Edit functionality
+    if (editBtn) {
+        editBtn.addEventListener('click', function() {
+            const displayContent = document.getElementById('displayContent');
+            const editableContent = document.getElementById('editableContent');
+            
+            if (displayContent && editableContent) {
+                if (editableContent.classList.contains('d-none')) {
+                    // Switch to edit mode
+                    displayContent.classList.add('d-none');
+                    editableContent.classList.remove('d-none');
+                    editBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Changes';
+                    editBtn.classList.remove('btn-outline-primary');
+                    editBtn.classList.add('btn-success');
+                } else {
+                    // Save changes
+                    const newContent = editableContent.value;
+                    displayContent.innerHTML = newContent.replace(/\n/g, '<br>');
+                    displayContent.classList.remove('d-none');
+                    editableContent.classList.add('d-none');
+                    editBtn.innerHTML = '<i class="fas fa-edit me-1"></i> Edit Content';
+                    editBtn.classList.remove('btn-success');
+                    editBtn.classList.add('btn-outline-primary');
+                    
+                    // Update current content
+                    if (currentContent) {
+                        currentContent.content = newContent;
+                        currentContent.character_count = newContent.length;
+                        
+                        // Update character count
+                        const charCount = document.getElementById('charCount');
+                        if (charCount) charCount.textContent = newContent.length;
+                    }
+                    
+                    showNotification('Content updated!', 'success');
+                }
+            }
+        });
+    }
+    
+    // FIX #8: New content functionality
+    if (generateNewBtn) {
+        generateNewBtn.addEventListener('click', function() {
+            if (resultsContainer) resultsContainer.style.display = 'none';
+            currentContent = null;
+            
+            // Reset form
+            contentTypeCards.forEach(c => c.classList.remove('selected'));
+            platformOptions.forEach(o => o.classList.remove('selected'));
+            toneOptions.forEach(o => o.classList.remove('selected'));
+            
+            // Reset to default tone
+            const defaultTone = document.querySelector('.tone-option[data-tone="friendly"]');
+            if (defaultTone) defaultTone.classList.add('selected');
+            selectedTone = 'friendly';
+            
+            // Clear form fields
+            if (form) form.reset();
+            
+            // Clear specific fields
+            const specificFields = document.getElementById('specificFields');
+            if (specificFields) specificFields.innerHTML = '';
+            
+            showNotification('Ready to create new content!', 'info');
+        });
+    }
+    
+    // FIX #9: Generate variations functionality
+    if (variationsBtn) {
+        variationsBtn.addEventListener('click', async function() {
+            if (!currentContent) {
+                showNotification('No content to create variations from!', 'error');
+                return;
+            }
+            
+            // Show loading
+            if (loadingSpinner) loadingSpinner.style.display = 'block';
+            
+            try {
+                // Use the same data but request variations
+                const brandNameEl = document.getElementById('brandName');
+                const industryEl = document.getElementById('industry');
+                const specificData = collectSpecificFieldData(selectedContentType);
+                
+                const data = {
+                    contentType: selectedContentType,
+                    platform: selectedPlatform,
+                    brandName: brandNameEl ? brandNameEl.value : '',
+                    industry: industryEl ? industryEl.value : '',
+                    tone: selectedTone,
+                    generateVariations: true,
+                    originalContent: currentContent.content,
+                    ...specificData
+                };
+                
+                const response = await fetch('https://elevify.onrender.com/api/socialboost/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    displayContent(result.data);
+                    showNotification('✅ New variation generated!', 'success');
+                } else {
+                    throw new Error(result.error || 'Failed to generate variation');
+                }
+                
+            } catch (error) {
+                console.error('💥 Error generating variation:', error);
+                showNotification(`❌ Error: ${error.message}`, 'error');
+            } finally {
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
+            }
+        });
+    }
+});
+// Pricing tier selection with enhanced animation
+document.addEventListener('DOMContentLoaded', function() {
+    // Pricing card selection in modal
+    document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove selected class from all pricing cards with animation
+            document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(c => {
+                c.classList.remove('selected');
+                c.style.zIndex = '1';
+            });
+            
+            // Add selected class to clicked card with enhanced animation
+            this.classList.add('selected');
+            this.style.zIndex = '10';
+            
+            // Update hidden input
+            document.getElementById('selectedPricingTier').value = this.dataset.tier;
+            
+            // Enable the Get button with animation
+            const getButton = document.getElementById('getSelectedPlan');
+            getButton.disabled = false;
+            
+            // Update button text based on selection
+            const tier = this.dataset.tier;
+            const tierNames = {
+                'payasyougo': 'Get Pay-As-You-Go - $1',
+                '24hourpass': 'Get 24-Hour Pass - $2',
+                'pro': 'Get Pro Monthly - $15'
+            };
+            
+            // Animate button text change
+            getButton.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                getButton.innerHTML = `<i class="fas fa-shopping-cart me-2"></i>${tierNames[tier]}`;
+                getButton.style.transform = 'scale(1)';
+            }, 100);
+        });
+        
+        // Add subtle hover effect enhancement
+        card.addEventListener('mouseenter', function() {
+            if (!this.classList.contains('selected')) {
+                this.style.transform = 'translateY(-3px)';
+            }
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            if (!this.classList.contains('selected')) {
+                this.style.transform = 'translateY(0)';
+            }
+        });
+    });
+});
+
+// Handle Get Selected Plan button click
+document.getElementById('getSelectedPlan').addEventListener('click', function() {
+    const selectedCard = document.querySelector('#upgradeModal .pricing-tier-card.selected');
+    
+    if (selectedCard) {
+        const url = selectedCard.dataset.url;
+        
+        // Add click animation
+        this.style.transform = 'scale(0.98)';
+        
+        setTimeout(() => {
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('upgradeModal'));
+            modal.hide();
+            
+            // Redirect to Gumroad
+            window.open(url, '_blank');
+        }, 150);
+    }
+});
+
+// Show upgrade modal function
+function showUpgradeModal() {
+    const upgradeModal = new bootstrap.Modal(document.getElementById('upgradeModal'));
+    upgradeModal.show();
+}
+
+// Reset modal state when closed
+document.getElementById('upgradeModal').addEventListener('hidden.bs.modal', function() {
+    // Remove all selections with reset animation
+    document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(c => {
+        c.classList.remove('selected');
+        c.style.zIndex = '1';
+        c.style.transform = '';
+    });
+    
+    // Clear hidden input
+    document.getElementById('selectedPricingTier').value = '';
+    
+    // Disable and reset the Get button
+    const getButton = document.getElementById('getSelectedPlan');
+    getButton.disabled = true;
+    getButton.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>Get Selected Plan';
+    getButton.style.transform = '';
+});
+
+// Add CSS for suggestion animations and enhanced styling
+const suggestionCSS = `
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}
+
+.suggestion-item {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.suggestion-item:hover {
+    background-color: #f8f9fa;
+    border-color: #14697D;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(20, 105, 125, 0.15);
+}
+
+.suggestion-item:hover::before {
+    content: "Click for more info";
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 0.7rem;
+    color: #14697D;
+    background: #f0f8ff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.suggestion-item strong {
+    color: #14697D;
+    font-weight: 600;
+}
+
+.suggestions-list {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.suggestions-list h6 {
+    color: #14697D;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.rich-text-editor {
+    transition: all 0.3s ease;
+}
+
+.rich-text-editor:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.editing-toolbar .btn.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.editing-toolbar .btn:hover {
+    background-color: #e9ecef;
+}
+
+.alert.position-fixed {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+`;
+
+// Add the CSS to your document
+const style = document.createElement('style');
+style.textContent = suggestionCSS;
+document.head.appendChild(style);
+   </script>
+    
+</body>
+</html>

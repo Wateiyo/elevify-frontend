@@ -1,0 +1,2389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Generator | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .style-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .style-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .style-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .color-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 auto 0.5rem;
+        }
+        
+        .color-option.selected {
+            border-color: #FFbf23;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.4);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+        }
+        
+        .portfolio-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .processing-message {
+            display: none;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .experience-entry, .education-entry, .project-entry {
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+        }
+
+        .generate-bullets-btn {
+            background-color: #FFbf23;
+            color: #333;
+            border: none;
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .generate-bullets-btn:hover {
+            background-color: #333;
+            color: white;
+        }
+
+        .bullet-point {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            background-color: #14697D;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                        
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>Portfolio Generator</h1>
+                        <p class="lead">Create a professional portfolio website with AI-enhanced content and design suggestions that showcase your skills and experience.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                         <img src="/img/img9.svg" alt="portfolio-generator" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-user" style="color: #14697D;"></i> How It Works</h5>
+                        <div class="mt-3">
+                            <div><span class="step-number">1</span> Enter your information</div>
+                            <div class="mt-2"><span class="step-number">2</span> Choose design style</div>
+                            <div class="mt-2"><span class="step-number">3</span> AI enhances content</div>
+                            <div class="mt-2"><span class="step-number">4</span> Preview your portfolio</div>
+                            <div class="mt-2"><span class="step-number">5</span> Download & deploy!</div>
+                        </div>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-palette" style="color: #FFbf23;"></i> Portfolio Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Professional design templates</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> AI-enhanced content writing</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Responsive layouts</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> SEO-optimized structure</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Custom color schemes</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Ready-to-deploy code</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-briefcase" style="color: #A82C2C;"></i> Portfolio Sections</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-user-circle" style="color: #14697D;"></i> About Me</div>
+                            <div class="mb-2"><i class="fas fa-cogs" style="color: #14697D;"></i> Skills & Technologies</div>
+                            <div class="mb-2"><i class="fas fa-building" style="color: #14697D;"></i> Work Experience</div>
+                            <div class="mb-2"><i class="fas fa-graduation-cap" style="color: #14697D;"></i> Education</div>
+                            <div class="mb-2"><i class="fas fa-project-diagram" style="color: #14697D;"></i> Projects</div>
+                            <div class="mb-2"><i class="fas fa-award" style="color: #14697D;"></i> Achievements</div>
+                            <div class="mb-2"><i class="fas fa-envelope" style="color: #14697D;"></i> Contact Information</div>
+                            <div><i class="fas fa-download" style="color: #14697D;"></i> Resume Download</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Build Your Portfolio</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <form id="portfolioForm">
+                            <!-- Personal Information -->
+                            <div class="mb-4">
+                                <h5>Personal Information</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fullName" class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" id="fullName" name="fullName" placeholder="e.g., John Smith" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="profession" class="form-label">Profession/Title</label>
+                                        <input type="text" class="form-control" id="profession" name="profession" placeholder="e.g., Software Developer" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="e.g., john@example.com">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="phone" class="form-label">Phone (Optional)</label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="e.g., (555) 123-4567">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="aboutMe" class="form-label">About Me</label>
+                                    <textarea class="form-control" id="aboutMe" name="aboutMe" rows="3" placeholder="Write a brief description about yourself, your passions, and career goals..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Skills -->
+                            <div class="mb-4">
+                                <h5>Skills & Technologies</h5>
+                                <div class="mb-3">
+                                    <label for="skills" class="form-label">Skills (comma-separated)</label>
+                                    <input type="text" class="form-control" id="skills" name="skills" placeholder="e.g., JavaScript, Python, React, Node.js, SQL">
+                                </div>
+                            </div>
+
+                            <!-- Experience -->
+                            <div class="mb-4">
+                                <h5>Work Experience</h5>
+                                <div id="experienceContainer">
+                                    <div class="experience-entry">
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" name="jobTitle[]" placeholder="Job Title" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" name="company[]" placeholder="Company Name" required>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" name="startDate[]" placeholder="Start Date (MM/YYYY)">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" name="endDate[]" placeholder="End Date (MM/YYYY or Present)">
+                                            </div>
+                                        </div>
+                                        <textarea class="form-control mb-2" name="jobDescription[]" rows="2" placeholder="Describe your responsibilities and achievements..."></textarea>
+                                        <div class="bullet-points-container" style="display: none;">
+                                            <p class="mb-2 small text-muted">AI-Enhanced Bullet Points:</p>
+                                            <div class="bullet-points"></div>
+                                        </div>
+                                        <button type="button" class="btn btn-sm generate-bullets-btn">
+                                            <i class="fas fa-magic me-1"></i> Enhance with AI
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="addExperience">
+                                    <i class="fas fa-plus me-1"></i> Add More Experience
+                                </button>
+                            </div>
+
+                            <!-- Education -->
+                            <div class="mb-4">
+                                <h5>Education</h5>
+                                <div id="educationContainer">
+                                    <div class="education-entry">
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" name="degree[]" placeholder="Degree/Certificate">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" name="institution[]" placeholder="Institution Name">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" name="graduationYear[]" placeholder="Graduation Year">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="addEducation">
+                                    <i class="fas fa-plus me-1"></i> Add More Education
+                                </button>
+                            </div>
+
+                            <!-- Projects -->
+                            <div class="mb-4">
+                                <h5>Projects (Optional)</h5>
+                                <div id="projectsContainer">
+                                    <div class="project-entry">
+                                        <div class="row mb-2">
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" name="projectName[]" placeholder="Project Name">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" name="projectUrl[]" placeholder="Project URL (Optional)">
+                                            </div>
+                                        </div>
+                                        <textarea class="form-control mb-2" name="projectDescription[]" rows="2" placeholder="Describe the project and technologies used..."></textarea>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-secondary btn-sm mt-2" id="addProject">
+                                    <i class="fas fa-plus me-1"></i> Add More Projects
+                                </button>
+                            </div>
+
+                            <!-- Design Preferences -->
+                            <div class="mb-4">
+                                <h5>Design Style</h5>
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <div class="style-card selected" data-style="minimal">
+                                            <i class="fas fa-minus-circle mb-2" style="font-size: 2rem; color: #14697D;"></i>
+                                            <h6>Minimal</h6>
+                                            <small class="text-muted">Clean & simple</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="style-card" data-style="creative">
+                                            <i class="fas fa-palette mb-2" style="font-size: 2rem; color: #14697D;"></i>
+                                            <h6>Creative</h6>
+                                            <small class="text-muted">Bold & artistic</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="style-card" data-style="professional">
+                                            <i class="fas fa-briefcase mb-2" style="font-size: 2rem; color: #14697D;"></i>
+                                            <h6>Professional</h6>
+                                            <small class="text-muted">Corporate & formal</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="style-card" data-style="modern">
+                                            <i class="fas fa-rocket mb-2" style="font-size: 2rem; color: #14697D;"></i>
+                                            <h6>Modern</h6>
+                                            <small class="text-muted">Trendy & dynamic</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="selectedStyle" name="portfolioStyle" value="minimal">
+                            </div>
+
+                            <!-- Color Scheme -->
+                            <div class="mb-4">
+                                <h5>Color Scheme</h5>
+                                <div class="row text-center">
+                                    <div class="col-2 mb-3">
+                                        <div class="color-option selected" data-color="blue" style="background-color: #3498db;"></div>
+                                        <small>Blue</small>
+                                    </div>
+                                    <div class="col-2 mb-3">
+                                        <div class="color-option" data-color="green" style="background-color: #2ecc71;"></div>
+                                        <small>Green</small>
+                                    </div>
+                                    <div class="col-2 mb-3">
+                                        <div class="color-option" data-color="purple" style="background-color: #9b59b6;"></div>
+                                        <small>Purple</small>
+                                    </div>
+                                    <div class="col-2 mb-3">
+                                        <div class="color-option" data-color="orange" style="background-color: #e67e22;"></div>
+                                        <small>Orange</small>
+                                    </div>
+                                    <div class="col-2 mb-3">
+                                        <div class="color-option" data-color="red" style="background-color: #e74c3c;"></div>
+                                        <small>Red</small>
+                                    </div>
+                                    <div class="col-2 mb-3">
+                                        <div class="color-option" data-color="dark" style="background-color: #34495e;"></div>
+                                        <small>Dark</small>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="selectedColor" name="colorScheme" value="blue">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-magic me-2"></i> Generate Portfolio
+                            </button>
+                        </form>
+                        
+                        <!-- Processing Message -->
+                        <div class="processing-message" id="processingMessage">
+                            <div class="loading-spinner d-inline-block me-2"></div>
+                            <h5 class="mb-0">Building your portfolio...</h5>
+                            <p class="text-muted mt-2 mb-0">Our AI is enhancing your content and creating a beautiful design.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Portfolio Preview</h4>
+                        
+                        <!-- Portfolio Preview -->
+                        <div class="mb-4">
+                            <div class="portfolio-preview" id="portfolioPreview">
+                                <!-- Portfolio preview will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="downloadPortfolio">
+                                <i class="fas fa-download"></i>
+                                <div>Download</div>
+                                <small class="text-muted">Complete website</small>
+                            </div>
+                            <div class="export-option" id="copyCode">
+                                <i class="fas fa-code"></i>
+                                <div>Copy Code</div>
+                                <small class="text-muted">HTML/CSS</small>
+                            </div>
+                            <div class="export-option" id="previewLive">
+                                <i class="fas fa-eye"></i>
+                                <div>Live Preview</div>
+                                <small class="text-muted">Full screen</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editPortfolioBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Portfolio
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newPortfolioBtn">
+                                <i class="fas fa-plus me-1"></i> Create New Portfolio
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">showcase</span> your professional story?</h2>
+                <p class="lead mb-4">Join thousands of professionals who've created stunning portfolios with Elevify's AI-powered generator.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Building
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+       // ============================================================================
+// SECTION 1: INITIALIZATION AND USAGE TRACKING
+// ============================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Portfolio Generator initialized');
+    
+    const TOOL_ID = 'portfolio_generator';
+    const API_BASE_URL = 'https://your-backend.render.com/api'; // Replace with your actual Render URL
+    
+    // Global state
+    let portfolioData = {
+        personal: {},
+        experience: [],
+        education: [],
+        projects: [],
+        skills: [],
+        preferences: {
+            style: 'minimal',
+            color: 'blue'
+        }
+    };
+    
+    let uploadedImages = new Map(); // Store uploaded images with preview URLs
+    let generatedPortfolio = null; // Store the generated portfolio data
+    
+    // Initialize the application
+    initializeUsageTracking();
+    setupEventListeners();
+    setupImageUpload();
+    setupFormValidation();
+    setupStyleAndColorSelection();
+    setupFormHandlers();
+    setupExportOptions();
+    
+    function initializeUsageTracking() {
+        let usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        
+        if (!usageData[TOOL_ID]) {
+            usageData[TOOL_ID] = {
+                count: 0,
+                lastReset: new Date().toISOString(),
+                month: new Date().getMonth(),
+                year: new Date().getFullYear()
+            };
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+        }
+        
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        
+        if (usageData[TOOL_ID].month !== currentMonth || usageData[TOOL_ID].year !== currentYear) {
+            usageData[TOOL_ID] = {
+                count: 0,
+                lastReset: new Date().toISOString(),
+                month: currentMonth,
+                year: currentYear
+            };
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+        }
+        
+        updateUsageDisplay(usageData[TOOL_ID].count);
+        
+        const nextMonth = new Date();
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        nextMonth.setDate(1);
+        const resetDateEl = document.getElementById('resetDate');
+        if (resetDateEl) {
+            resetDateEl.textContent = nextMonth.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        }
+    }
+    
+    function updateUsageDisplay(usedCount) {
+        const remaining = Math.max(0, 5 - usedCount);
+        const remainingUsesEl = document.getElementById('remainingUses');
+        if (remainingUsesEl) {
+            remainingUsesEl.textContent = remaining;
+        }
+        
+        const usageTracker = document.getElementById('usageTracker');
+        if (usageTracker) {
+            usageTracker.classList.remove('alert-info', 'alert-warning', 'alert-danger');
+            
+            if (remaining === 0) {
+                usageTracker.classList.add('alert-danger');
+                usageTracker.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i><div class="flex-grow-1"><strong>No free uses remaining!</strong><div class="small mt-1">Upgrade to continue using this tool</div></div><a href="/#pricing" class="btn btn-sm btn-warning ms-3">Upgrade Now</a>';
+            } else if (remaining <= 2) {
+                usageTracker.classList.add('alert-warning');
+            } else {
+                usageTracker.classList.add('alert-info');
+            }
+        }
+    }
+    
+    function checkUsageLimit() {
+        const usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        const toolUsage = usageData[TOOL_ID] || { count: 0 };
+        return toolUsage.count < 5;
+    }
+    
+    function incrementUsage() {
+        let usageData = JSON.parse(localStorage.getItem('elevify_usage') || '{}');
+        if (usageData[TOOL_ID]) {
+            usageData[TOOL_ID].count++;
+            localStorage.setItem('elevify_usage', JSON.stringify(usageData));
+            updateUsageDisplay(usageData[TOOL_ID].count);
+        }
+    }
+// ============================================================================
+// SECTION 2: EVENT LISTENERS AND UI SETUP
+// ============================================================================
+
+    function setupEventListeners() {
+        // Scroll effect for header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (header) {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            }
+        });
+        
+        // Real-time form updates
+        const form = document.getElementById('portfolioForm');
+        if (form) {
+            form.addEventListener('input', debounce(updatePortfolioData, 300));
+            form.addEventListener('change', updatePortfolioData);
+        }
+    }
+    
+    function setupStyleAndColorSelection() {
+        const styleCards = document.querySelectorAll('.style-card');
+        const selectedStyleInput = document.getElementById('selectedStyle');
+        
+        styleCards.forEach(card => {
+            card.addEventListener('click', function() {
+                styleCards.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                const style = this.getAttribute('data-style');
+                if (selectedStyleInput) {
+                    selectedStyleInput.value = style;
+                }
+                
+                portfolioData.preferences.style = style;
+                console.log('Selected style:', style);
+                
+                // Update preview if portfolio is generated
+                if (generatedPortfolio) {
+                    updatePortfolioPreview();
+                }
+            });
+        });
+        
+        const colorOptions = document.querySelectorAll('.color-option');
+        const selectedColorInput = document.getElementById('selectedColor');
+        
+        colorOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                colorOptions.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                const color = this.getAttribute('data-color');
+                if (selectedColorInput) {
+                    selectedColorInput.value = color;
+                }
+                
+                portfolioData.preferences.color = color;
+                console.log('Selected color:', color);
+                
+                // Update preview if portfolio is generated
+                if (generatedPortfolio) {
+                    updatePortfolioPreview();
+                }
+            });
+        });
+    }
+    
+    function setupFormHandlers() {
+        // Add Experience button
+        const addExperienceBtn = document.getElementById('addExperience');
+        if (addExperienceBtn) {
+            addExperienceBtn.addEventListener('click', function() {
+                addExperienceEntry();
+            });
+        }
+        
+        // Add Education button
+        const addEducationBtn = document.getElementById('addEducation');
+        if (addEducationBtn) {
+            addEducationBtn.addEventListener('click', function() {
+                addEducationEntry();
+            });
+        }
+        
+        // Add Project button
+        const addProjectBtn = document.getElementById('addProject');
+        if (addProjectBtn) {
+            addProjectBtn.addEventListener('click', function() {
+                addProjectEntry();
+            });
+        }
+        
+        // Portfolio form submission
+        const portfolioForm = document.getElementById('portfolioForm');
+        if (portfolioForm) {
+            portfolioForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handlePortfolioGeneration();
+            });
+        }
+        
+        // Edit and New buttons
+        const editBtn = document.getElementById('editPortfolioBtn');
+        const newBtn = document.getElementById('newPortfolioBtn');
+        
+        if (editBtn) {
+            editBtn.addEventListener('click', function() {
+                document.getElementById('resultsContainer').style.display = 'none';
+                document.querySelector('.content-card').scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+        
+        if (newBtn) {
+            newBtn.addEventListener('click', function() {
+                resetForm();
+            });
+        }
+        
+        // AI Enhancement setup
+        setupAIEnhancement();
+    }
+    
+    function setupAIEnhancement() {
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.generate-bullets-btn')) {
+                handleAIEnhancement(e.target.closest('.generate-bullets-btn'));
+            }
+        });
+    }
+    
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    // ============================================================================
+// SECTION 3: IMAGE UPLOAD AND FILE HANDLING
+// ============================================================================
+
+    function setupImageUpload() {
+        // Create image upload areas for projects
+        addImageUploadToProjects();
+        
+        // Setup drag and drop functionality
+        setupDragAndDrop();
+    }
+    
+    function addImageUploadToProjects() {
+        const projectEntries = document.querySelectorAll('.project-entry');
+        projectEntries.forEach(entry => {
+            addImageUploadToProjectEntry(entry);
+        });
+    }
+    
+    function addImageUploadToProjectEntry(projectEntry) {
+        const existingUpload = projectEntry.querySelector('.image-upload-area');
+        if (existingUpload) return; // Already has upload area
+        
+        const imageUploadHTML = `
+            <div class="image-upload-area" style="margin-top: 1rem;">
+                <div class="image-upload-zone" style="border: 2px dashed #ddd; border-radius: 10px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s ease;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #14697D; margin-bottom: 1rem;"></i>
+                    <p style="margin: 0; color: #666;">Click to upload project images or drag & drop</p>
+                    <small style="color: #999;">Supports: JPG, PNG, GIF (Max 5MB each)</small>
+                    <input type="file" class="image-input" multiple accept="image/*" style="display: none;">
+                </div>
+                <div class="uploaded-images" style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;"></div>
+            </div>
+        `;
+        
+        projectEntry.insertAdjacentHTML('beforeend', imageUploadHTML);
+        
+        const uploadZone = projectEntry.querySelector('.image-upload-zone');
+        const fileInput = projectEntry.querySelector('.image-input');
+        const uploadedImagesContainer = projectEntry.querySelector('.uploaded-images');
+        
+        // Click to upload
+        uploadZone.addEventListener('click', () => fileInput.click());
+        
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            handleImageFiles(e.target.files, uploadedImagesContainer, projectEntry);
+        });
+        
+        // Drag and drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.style.borderColor = '#14697D';
+            uploadZone.style.backgroundColor = '#f9f9f9';
+        });
+        
+        uploadZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadZone.style.borderColor = '#ddd';
+            uploadZone.style.backgroundColor = 'transparent';
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.style.borderColor = '#ddd';
+            uploadZone.style.backgroundColor = 'transparent';
+            
+            const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+            handleImageFiles(files, uploadedImagesContainer, projectEntry);
+        });
+    }
+    
+    function handleImageFiles(files, container, projectEntry) {
+        Array.from(files).forEach(file => {
+            if (!file.type.startsWith('image/')) {
+                showNotification('Please upload only image files.', 'error');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                showNotification('Image size should be less than 5MB.', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageId = generateImageId();
+                const imageData = {
+                    id: imageId,
+                    file: file,
+                    dataUrl: e.target.result,
+                    name: file.name
+                };
+                
+                uploadedImages.set(imageId, imageData);
+                
+                // Create image preview
+                const imagePreview = createImagePreview(imageData, container, projectEntry);
+                container.appendChild(imagePreview);
+                
+                // Update portfolio data
+                updatePortfolioData();
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    function createImagePreview(imageData, container, projectEntry) {
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'image-preview';
+        imageDiv.style.cssText = `
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        `;
+        
+        imageDiv.innerHTML = `
+            <img src="${imageData.dataUrl}" alt="${imageData.name}" style="width: 100%; height: 100%; object-fit: cover;">
+            <div class="image-overlay" style="position: absolute; top: 0; right: 0; padding: 0.5rem;">
+                <button type="button" class="btn btn-sm btn-danger remove-image-btn" data-image-id="${imageData.id}" style="border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; padding: 0;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="image-name" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 0.25rem; font-size: 0.7rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                ${imageData.name}
+            </div>
+        `;
+        
+        // Add remove functionality
+        const removeBtn = imageDiv.querySelector('.remove-image-btn');
+        removeBtn.addEventListener('click', () => {
+            uploadedImages.delete(imageData.id);
+            imageDiv.remove();
+            updatePortfolioData();
+        });
+        
+        return imageDiv;
+    }
+    
+    function setupDragAndDrop() {
+        // Prevent default drag behaviors on document
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            document.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    }
+    
+    function generateImageId() {
+        return 'img_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'error' ? 'danger' : type} notification`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+        `;
+        notification.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                <div>${message}</div>
+                <button type="button" class="btn-close ms-auto" aria-label="Close"></button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 3000);
+        
+        // Manual close
+        notification.querySelector('.btn-close').addEventListener('click', () => {
+            notification.remove();
+        });
+    }
+    // ============================================================================
+// SECTION 4: FORM VALIDATION AND DATA MANAGEMENT
+// ============================================================================
+
+    function setupFormValidation() {
+        const form = document.getElementById('portfolioForm');
+        if (!form) return;
+        
+        // Add real-time validation
+        const inputs = form.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            input.addEventListener('blur', validateField);
+            input.addEventListener('input', clearFieldError);
+        });
+    }
+    
+    function validateField(e) {
+        const field = e.target;
+        const value = field.value.trim();
+        const fieldName = field.name || field.id;
+        
+        clearFieldError(e);
+        
+        // Required field validation
+        if (field.hasAttribute('required') && !value) {
+            showFieldError(field, 'This field is required');
+            return false;
+        }
+        
+        // Email validation
+        if (field.type === 'email' && value) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+                showFieldError(field, 'Please enter a valid email address');
+                return false;
+            }
+        }
+        
+        // Phone validation
+        if (field.type === 'tel' && value) {
+            const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/;
+            if (!phoneRegex.test(value)) {
+                showFieldError(field, 'Please enter a valid phone number');
+                return false;
+            }
+        }
+        
+        // URL validation for project URLs
+        if (fieldName === 'projectUrl[]' && value) {
+            try {
+                new URL(value);
+            } catch {
+                showFieldError(field, 'Please enter a valid URL (include http:// or https://)');
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    function clearFieldError(e) {
+        const field = e.target;
+        const errorElement = field.parentNode.querySelector('.field-error');
+        if (errorElement) {
+            errorElement.remove();
+        }
+        field.classList.remove('is-invalid');
+    }
+    
+    function showFieldError(field, message) {
+        field.classList.add('is-invalid');
+        
+        const errorElement = document.createElement('div');
+        errorElement.className = 'field-error text-danger small mt-1';
+        errorElement.textContent = message;
+        
+        field.parentNode.appendChild(errorElement);
+    }
+    
+    function validateForm() {
+        const form = document.getElementById('portfolioForm');
+        if (!form) return false;
+        
+        let isValid = true;
+        const requiredFields = form.querySelectorAll('[required]');
+        
+        // Clear previous errors
+        form.querySelectorAll('.field-error').forEach(error => error.remove());
+        form.querySelectorAll('.is-invalid').forEach(field => field.classList.remove('is-invalid'));
+        
+        // Validate required fields
+        requiredFields.forEach(field => {
+            if (!validateField({ target: field })) {
+                isValid = false;
+            }
+        });
+        
+        // Validate that at least one experience or project is provided
+        const hasExperience = form.querySelectorAll('input[name="jobTitle[]"]').length > 0 && 
+                             form.querySelector('input[name="jobTitle[]"]').value.trim();
+        const hasProjects = form.querySelectorAll('input[name="projectName[]"]').length > 0 && 
+                           form.querySelector('input[name="projectName[]"]').value.trim();
+        
+        if (!hasExperience && !hasProjects) {
+            showNotification('Please add at least one work experience or project to generate a meaningful portfolio.', 'error');
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+    
+    function updatePortfolioData() {
+        const form = document.getElementById('portfolioForm');
+        if (!form) return;
+        
+        // Personal information
+        portfolioData.personal = {
+            fullName: form.querySelector('#fullName')?.value || '',
+            profession: form.querySelector('#profession')?.value || '',
+            email: form.querySelector('#email')?.value || '',
+            phone: form.querySelector('#phone')?.value || '',
+            aboutMe: form.querySelector('#aboutMe')?.value || ''
+        };
+        
+        // Skills
+        const skillsInput = form.querySelector('#skills')?.value || '';
+        portfolioData.skills = skillsInput.split(',').map(s => s.trim()).filter(s => s);
+        
+        // Experience
+        portfolioData.experience = [];
+        const jobTitles = form.querySelectorAll('input[name="jobTitle[]"]');
+        jobTitles.forEach((titleInput, index) => {
+            const title = titleInput.value.trim();
+            if (title) {
+                const experience = {
+                    jobTitle: title,
+                    company: form.querySelectorAll('input[name="company[]"]')[index]?.value || '',
+                    startDate: form.querySelectorAll('input[name="startDate[]"]')[index]?.value || '',
+                    endDate: form.querySelectorAll('input[name="endDate[]"]')[index]?.value || '',
+                    description: form.querySelectorAll('textarea[name="jobDescription[]"]')[index]?.value || '',
+                    enhancedBullets: getEnhancedBullets(titleInput.closest('.experience-entry'))
+                };
+                portfolioData.experience.push(experience);
+            }
+        });
+        
+        // Education
+        portfolioData.education = [];
+        const degrees = form.querySelectorAll('input[name="degree[]"]');
+        degrees.forEach((degreeInput, index) => {
+            const degree = degreeInput.value.trim();
+            if (degree) {
+                const education = {
+                    degree: degree,
+                    institution: form.querySelectorAll('input[name="institution[]"]')[index]?.value || '',
+                    graduationYear: form.querySelectorAll('input[name="graduationYear[]"]')[index]?.value || ''
+                };
+                portfolioData.education.push(education);
+            }
+        });
+        
+        // Projects
+        portfolioData.projects = [];
+        const projectNames = form.querySelectorAll('input[name="projectName[]"]');
+        projectNames.forEach((nameInput, index) => {
+            const name = nameInput.value.trim();
+            if (name) {
+                const projectEntry = nameInput.closest('.project-entry');
+                const project = {
+                    name: name,
+                    url: form.querySelectorAll('input[name="projectUrl[]"]')[index]?.value || '',
+                    description: form.querySelectorAll('textarea[name="projectDescription[]"]')[index]?.value || '',
+                    images: getProjectImages(projectEntry)
+                };
+                portfolioData.projects.push(project);
+            }
+        });
+        
+        // Preferences
+        portfolioData.preferences = {
+            style: form.querySelector('#selectedStyle')?.value || 'minimal',
+            color: form.querySelector('#selectedColor')?.value || 'blue'
+        };
+    }
+    
+    function getEnhancedBullets(experienceEntry) {
+        const bulletsContainer = experienceEntry.querySelector('.bullet-points');
+        if (!bulletsContainer) return [];
+        
+        const bulletElements = bulletsContainer.querySelectorAll('.bullet-point');
+        return Array.from(bulletElements).map(bullet => bullet.textContent.trim());
+    }
+    
+    function getProjectImages(projectEntry) {
+        const imageElements = projectEntry.querySelectorAll('.image-preview img');
+        return Array.from(imageElements).map(img => {
+            const imageId = img.closest('.image-preview').querySelector('.remove-image-btn').dataset.imageId;
+            const imageData = uploadedImages.get(imageId);
+            return {
+                id: imageId,
+                url: img.src,
+                name: imageData?.name || 'image',
+                dataUrl: imageData?.dataUrl
+            };
+        });
+    }
+    
+    function resetForm() {
+        const form = document.getElementById('portfolioForm');
+        if (form) {
+            form.reset();
+        }
+        
+        // Clear uploaded images
+        uploadedImages.clear();
+        
+        // Reset portfolio data
+        portfolioData = {
+            personal: {},
+            experience: [],
+            education: [],
+            projects: [],
+            skills: [],
+            preferences: {
+                style: 'minimal',
+                color: 'blue'
+            }
+        };
+        
+        // Reset UI selections
+        document.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
+        document.querySelector('[data-style="minimal"]')?.classList.add('selected');
+        document.getElementById('selectedStyle').value = 'minimal';
+        
+        document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+        document.querySelector('[data-color="blue"]')?.classList.add('selected');
+        document.getElementById('selectedColor').value = 'blue';
+        
+        // Hide results
+        document.getElementById('resultsContainer').style.display = 'none';
+        generatedPortfolio = null;
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    // ============================================================================
+// SECTION 5: DYNAMIC FORM MANAGEMENT AND AI ENHANCEMENT
+// ============================================================================
+
+    function addExperienceEntry() {
+        const container = document.getElementById('experienceContainer');
+        const newEntry = document.createElement('div');
+        newEntry.className = 'experience-entry';
+        newEntry.innerHTML = `
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="jobTitle[]" placeholder="Job Title" required>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="company[]" placeholder="Company Name" required>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="startDate[]" placeholder="Start Date (MM/YYYY)">
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="endDate[]" placeholder="End Date (MM/YYYY or Present)">
+                </div>
+            </div>
+            <textarea class="form-control mb-2" name="jobDescription[]" rows="2" placeholder="Describe your responsibilities and achievements..."></textarea>
+            <div class="bullet-points-container" style="display: none;">
+                <p class="mb-2 small text-muted">AI-Enhanced Bullet Points:</p>
+                <div class="bullet-points"></div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm generate-bullets-btn">
+                    <i class="fas fa-magic me-1"></i> Enhance with AI
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-entry">
+                    <i class="fas fa-trash me-1"></i> Remove
+                </button>
+            </div>
+        `;
+        container.appendChild(newEntry);
+        
+        // Add event listeners
+        setupNewEntryListeners(newEntry);
+        
+        // Animate in
+        newEntry.style.opacity = '0';
+        newEntry.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            newEntry.style.transition = 'all 0.3s ease';
+            newEntry.style.opacity = '1';
+            newEntry.style.transform = 'translateY(0)';
+        }, 10);
+    }
+    
+    function addEducationEntry() {
+        const container = document.getElementById('educationContainer');
+        const newEntry = document.createElement('div');
+        newEntry.className = 'education-entry';
+        newEntry.innerHTML = `
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="degree[]" placeholder="Degree/Certificate">
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="institution[]" placeholder="Institution Name">
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="graduationYear[]" placeholder="Graduation Year">
+                </div>
+                <div class="col-md-6 d-flex align-items-center">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-entry">
+                        <i class="fas fa-trash me-1"></i> Remove
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(newEntry);
+        
+        // Add event listeners
+        setupNewEntryListeners(newEntry);
+        
+        // Animate in
+        animateEntryIn(newEntry);
+    }
+    
+    function addProjectEntry() {
+        const container = document.getElementById('projectsContainer');
+        const newEntry = document.createElement('div');
+        newEntry.className = 'project-entry';
+        newEntry.innerHTML = `
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="projectName[]" placeholder="Project Name">
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="projectUrl[]" placeholder="Project URL (Optional)">
+                </div>
+            </div>
+            <textarea class="form-control mb-2" name="projectDescription[]" rows="2" placeholder="Describe the project and technologies used..."></textarea>
+            <button type="button" class="btn btn-sm btn-outline-danger remove-entry">
+                <i class="fas fa-trash me-1"></i> Remove
+            </button>
+        `;
+        container.appendChild(newEntry);
+        
+        // Add image upload functionality
+        addImageUploadToProjectEntry(newEntry);
+        
+        // Add event listeners
+        setupNewEntryListeners(newEntry);
+        
+        // Animate in
+        animateEntryIn(newEntry);
+    }
+    
+    function setupNewEntryListeners(entry) {
+        // Remove button
+        const removeBtn = entry.querySelector('.remove-entry');
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function() {
+                removeEntry(entry);
+            });
+        }
+        
+        // Form validation
+        const inputs = entry.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('blur', validateField);
+            input.addEventListener('input', clearFieldError);
+        });
+        
+        // AI enhancement button (for experience entries)
+        const enhanceBtn = entry.querySelector('.generate-bullets-btn');
+        if (enhanceBtn) {
+            enhanceBtn.addEventListener('click', function() {
+                handleAIEnhancement(this);
+            });
+        }
+    }
+    
+    function removeEntry(entry) {
+        entry.style.transition = 'all 0.3s ease';
+        entry.style.opacity = '0';
+        entry.style.transform = 'translateX(-100%)';
+        
+        setTimeout(() => {
+            entry.remove();
+            updatePortfolioData();
+        }, 300);
+    }
+    
+    function animateEntryIn(entry) {
+        entry.style.opacity = '0';
+        entry.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            entry.style.transition = 'all 0.3s ease';
+            entry.style.opacity = '1';
+            entry.style.transform = 'translateY(0)';
+        }, 10);
+    }
+    
+    function handleAIEnhancement(button) {
+        const entry = button.closest('.experience-entry');
+        const jobTitle = entry.querySelector('input[name="jobTitle[]"]').value.trim();
+        const company = entry.querySelector('input[name="company[]"]').value.trim();
+        const description = entry.querySelector('textarea[name="jobDescription[]"]').value.trim();
+        
+        if (!jobTitle || !description) {
+            showNotification('Please enter job title and description first.', 'error');
+            return;
+        }
+        
+        const container = entry.querySelector('.bullet-points-container');
+        const pointsDiv = container.querySelector('.bullet-points');
+        
+        // Show loading state
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Enhancing...';
+        button.disabled = true;
+        
+        // Prepare data for AI enhancement
+        const enhancementData = {
+            jobTitle: jobTitle,
+            company: company,
+            description: description
+        };
+        
+        // Call AI enhancement API
+        enhanceJobDescription(enhancementData)
+            .then(enhancedBullets => {
+                pointsDiv.innerHTML = enhancedBullets.map(bullet => 
+                    `<div class="bullet-point">${bullet}</div>`
+                ).join('');
+                
+                container.style.display = 'block';
+                
+                button.innerHTML = '<i class="fas fa-check me-1"></i> Enhanced!';
+                button.classList.remove('generate-bullets-btn');
+                button.classList.add('btn-success');
+                
+                // Update portfolio data
+                updatePortfolioData();
+                
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fas fa-magic me-1"></i> Enhance with AI';
+                    button.classList.remove('btn-success');
+                    button.classList.add('generate-bullets-btn');
+                    button.disabled = false;
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('AI enhancement failed:', error);
+                showNotification('AI enhancement failed. Please try again.', 'error');
+                
+                button.innerHTML = '<i class="fas fa-magic me-1"></i> Enhance with AI';
+                button.disabled = false;
+            });
+    }
+    
+    async function enhanceJobDescription(data) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/enhance-description`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (!response.ok) {
+                throw new Error('API request failed');
+            }
+            
+            const result = await response.json();
+            return result.enhancedBullets || generateFallbackBullets(data);
+        } catch (error) {
+            console.error('API call failed:', error);
+            return generateFallbackBullets(data);
+        }
+    }
+    
+    function generateFallbackBullets(data) {
+        const { jobTitle, company } = data;
+        
+        const bulletTemplates = [
+            `Delivered high-quality results in ${jobTitle} role at ${company}`,
+            'Collaborated effectively with cross-functional teams to achieve project goals',
+            'Implemented best practices and innovative solutions to improve efficiency',
+            'Contributed to team success through strong communication and technical skills',
+            'Maintained high standards of quality and attention to detail in all work'
+        ];
+        
+        return bulletTemplates.slice(0, 3); // Return first 3 bullets
+    }
+    // ============================================================================
+// SECTION 6: PORTFOLIO GENERATION AND API INTEGRATION
+// ============================================================================
+
+    async function handlePortfolioGeneration() {
+        if (!checkUsageLimit()) {
+            showNotification('You have reached your free usage limit for this tool. Please upgrade to continue.', 'error');
+            return;
+        }
+        
+        if (!validateForm()) {
+            return;
+        }
+        
+        updatePortfolioData();
+        
+        showProcessing();
+        
+        try {
+            // Prepare data for API
+            const portfolioPayload = await preparePortfolioData();
+            
+            // Call portfolio generation API
+            const generatedData = await generatePortfolioAPI(portfolioPayload);
+            
+            hideProcessing();
+            incrementUsage();
+            
+            // Store generated portfolio
+            generatedPortfolio = generatedData;
+            
+            // Display the portfolio
+            displayPortfolio(generatedData);
+            
+        } catch (error) {
+            console.error('Portfolio generation failed:', error);
+            hideProcessing();
+            showNotification('Portfolio generation failed. Please try again.', 'error');
+        }
+    }
+    
+    async function preparePortfolioData() {
+        const payload = {
+            ...portfolioData,
+            timestamp: new Date().toISOString(),
+            version: '1.0'
+        };
+        
+        // Convert uploaded images to base64 for API
+        for (const project of payload.projects) {
+            if (project.images && project.images.length > 0) {
+                project.images = await Promise.all(
+                    project.images.map(async (img) => {
+                        const imageData = uploadedImages.get(img.id);
+                        return {
+                            id: img.id,
+                            name: img.name,
+                            dataUrl: imageData?.dataUrl || img.dataUrl,
+                            file: imageData?.file ? await fileToBase64(imageData.file) : null
+                        };
+                    })
+                );
+            }
+        }
+        
+        return payload;
+    }
+    
+    function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+    
+    async function generatePortfolioAPI(portfolioData) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/generate-portfolio`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(portfolioData)
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            return result;
+            
+        } catch (error) {
+            console.error('API call failed:', error);
+            
+            // Fallback to local generation if API fails
+            showNotification('Using offline generation due to API issues.', 'warning');
+            return generatePortfolioLocally(portfolioData);
+        }
+    }
+    
+    function generatePortfolioLocally(data) {
+        // Fallback portfolio generation
+        const templates = getPortfolioTemplates();
+        const selectedTemplate = templates[data.preferences.style] || templates.minimal;
+        
+        const portfolioHtml = selectedTemplate(data);
+        
+        return {
+            html: portfolioHtml,
+            css: generateCompleteCSS(data.preferences.color, data.preferences.style),
+            data: data,
+            timestamp: new Date().toISOString(),
+            source: 'local'
+        };
+    }
+    
+    function getPortfolioTemplates() {
+        return {
+            minimal: generateMinimalTemplate,
+            creative: generateCreativeTemplate,
+            professional: generateProfessionalTemplate,
+            modern: generateModernTemplate
+        };
+    }
+    
+    function generateMinimalTemplate(data) {
+        const { personal, experience, education, projects, skills } = data;
+        
+        return `
+            <div class="portfolio-container minimal-style">
+                <header class="portfolio-header">
+                    <h1>${personal.fullName}</h1>
+                    <h2>${personal.profession}</h2>
+                    <div class="contact-info">
+                        ${personal.email ? `<span><i class="fas fa-envelope"></i> ${personal.email}</span>` : ''}
+                        ${personal.phone ? `<span><i class="fas fa-phone"></i> ${personal.phone}</span>` : ''}
+                    </div>
+                </header>
+                
+                ${personal.aboutMe ? `
+                <section class="about-section">
+                    <h3>About</h3>
+                    <p>${personal.aboutMe}</p>
+                </section>
+                ` : ''}
+                
+                ${skills.length > 0 ? `
+                <section class="skills-section">
+                    <h3>Skills</h3>
+                    <div class="skills-grid">
+                        ${skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                    </div>
+                </section>
+                ` : ''}
+                
+                ${experience.length > 0 ? `
+                <section class="experience-section">
+                    <h3>Experience</h3>
+                    ${experience.map(exp => `
+                        <div class="experience-item">
+                            <h4>${exp.jobTitle}</h4>
+                            <p class="company-info">${exp.company} • ${exp.startDate} - ${exp.endDate}</p>
+                            ${exp.description ? `<p class="description">${exp.description}</p>` : ''}
+                            ${exp.enhancedBullets && exp.enhancedBullets.length > 0 ? `
+                                <ul class="achievements">
+                                    ${exp.enhancedBullets.map(bullet => `<li>${bullet}</li>`).join('')}
+                                </ul>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </section>
+                ` : ''}
+                
+                ${projects.length > 0 ? `
+                <section class="projects-section">
+                    <h3>Projects</h3>
+                    <div class="projects-grid">
+                        ${projects.map(project => `
+                            <div class="project-item">
+                                ${project.images && project.images.length > 0 ? `
+                                    <div class="project-images">
+                                        ${project.images.slice(0, 1).map(img => `
+                                            <img src="${img.dataUrl}" alt="${project.name}" class="project-image">
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                                <h4>${project.name}</h4>
+                                ${project.url ? `<a href="${project.url}" target="_blank" rel="noopener">View Project <i class="fas fa-external-link-alt"></i></a>` : ''}
+                                ${project.description ? `<p>${project.description}</p>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+                ` : ''}
+                
+                ${education.length > 0 ? `
+                <section class="education-section">
+                    <h3>Education</h3>
+                    ${education.map(edu => `
+                        <div class="education-item">
+                            <h4>${edu.degree}</h4>
+                            <p>${edu.institution} • ${edu.graduationYear}</p>
+                        </div>
+                    `).join('')}
+                </section>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    function generateCreativeTemplate(data) {
+        const { personal, experience, education, projects, skills } = data;
+        
+        return `
+            <div class="portfolio-container creative-style">
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <h1 class="hero-name">${personal.fullName}</h1>
+                        <h2 class="hero-title">${personal.profession}</h2>
+                        ${personal.aboutMe ? `<p class="hero-description">${personal.aboutMe}</p>` : ''}
+                        <div class="hero-contact">
+                            ${personal.email ? `<a href="mailto:${personal.email}" class="contact-link"><i class="fas fa-envelope"></i></a>` : ''}
+                            ${personal.phone ? `<a href="tel:${personal.phone}" class="contact-link"><i class="fas fa-phone"></i></a>` : ''}
+                        </div>
+                    </div>
+                </div>
+                
+                ${skills.length > 0 ? `
+                <section class="skills-showcase">
+                    <h3>Expertise</h3>
+                    <div class="skills-cloud">
+                        ${skills.map((skill, index) => `
+                            <span class="skill-bubble" style="animation-delay: ${index * 0.1}s">${skill}</span>
+                        `).join('')}
+                    </div>
+                </section>
+                ` : ''}
+                
+                ${projects.length > 0 ? `
+                <section class="featured-projects">
+                    <h3>Featured Work</h3>
+                    <div class="projects-masonry">
+                        ${projects.map(project => `
+                            <div class="project-card">
+                                ${project.images && project.images.length > 0 ? `
+                                    <div class="project-visual">
+                                        <img src="${project.images[0].dataUrl}" alt="${project.name}">
+                                        <div class="project-overlay">
+                                            <h4>${project.name}</h4>
+                                            ${project.url ? `<a href="${project.url}" target="_blank" class="project-link">View Project</a>` : ''}
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <div class="project-text">
+                                        <h4>${project.name}</h4>
+                                        ${project.url ? `<a href="${project.url}" target="_blank" class="project-link">View Project</a>` : ''}
+                                    </div>
+                                `}
+                                ${project.description ? `<p class="project-description">${project.description}</p>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+                ` : ''}
+                
+                ${experience.length > 0 ? `
+                <section class="experience-timeline">
+                    <h3>Journey</h3>
+                    <div class="timeline">
+                        ${experience.map((exp, index) => `
+                            <div class="timeline-item" style="animation-delay: ${index * 0.2}s">
+                                <div class="timeline-content">
+                                    <h4>${exp.jobTitle}</h4>
+                                    <h5>${exp.company}</h5>
+                                    <span class="timeline-date">${exp.startDate} - ${exp.endDate}</span>
+                                    ${exp.description ? `<p>${exp.description}</p>` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    function generateProfessionalTemplate(data) {
+        return generateMinimalTemplate(data).replace('minimal-style', 'professional-style');
+    }
+    
+    function generateModernTemplate(data) {
+        return generateCreativeTemplate(data).replace('creative-style', 'modern-style');
+    }
+    
+    function showProcessing() {
+        document.getElementById('processingMessage').style.display = 'block';
+        document.querySelector('.loading-spinner').style.display = 'inline-block';
+    }
+    
+    function hideProcessing() {
+        document.getElementById('processingMessage').style.display = 'none';
+    }
+    
+    function displayPortfolio(portfolioData) {
+        const preview = document.getElementById('portfolioPreview');
+        const resultsContainer = document.getElementById('resultsContainer');
+        
+        if (preview && resultsContainer) {
+            // Insert the generated HTML
+            preview.innerHTML = portfolioData.html;
+            
+            // Add the CSS styles
+            if (portfolioData.css) {
+                addPortfolioStyles(portfolioData.css);
+            }
+            
+            // Show results container
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+            
+            showNotification('Portfolio generated successfully!', 'success');
+        }
+    }
+    
+    function addPortfolioStyles(css) {
+        // Remove existing portfolio styles
+        const existingStyle = document.getElementById('portfolio-dynamic-styles');
+        if (existingStyle) {
+            existingStyle.remove();
+        }
+        
+        // Add new styles
+        const styleElement = document.createElement('style');
+        styleElement.id = 'portfolio-dynamic-styles';
+        styleElement.textContent = css;
+        document.head.appendChild(styleElement);
+    }
+    // ============================================================================
+// SECTION 7: EXPORT OPTIONS AND PORTFOLIO STYLING (SIMPLIFIED)
+// ============================================================================
+
+    function setupExportOptions() {
+        const downloadBtn = document.getElementById('downloadPortfolio');
+        const copyBtn = document.getElementById('copyCode');
+        const previewBtn = document.getElementById('previewLive');
+        
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function() {
+                downloadPortfolio();
+            });
+        }
+        
+        if (copyBtn) {
+            copyBtn.addEventListener('click', function() {
+                copyPortfolioCode();
+            });
+        }
+        
+        if (previewBtn) {
+            previewBtn.addEventListener('click', function() {
+                openLivePreview();
+            });
+        }
+    }
+    
+    async function downloadPortfolio() {
+        if (!generatedPortfolio) {
+            showNotification('Please generate a portfolio first.', 'error');
+            return;
+        }
+        
+        try {
+            // Create a complete website package
+            const portfolioPackage = await createPortfolioPackage();
+            
+            // Download the HTML file
+            downloadHTMLFile(portfolioPackage);
+            
+            showNotification('Portfolio downloaded successfully!', 'success');
+        } catch (error) {
+            console.error('Download failed:', error);
+            showNotification('Download failed. Please try again.', 'error');
+        }
+    }
+    
+    async function createPortfolioPackage() {
+        const { html, data } = generatedPortfolio;
+        
+        // Create a complete HTML file with inline styles
+        const completeHTML = createCompleteHTML(html, data);
+        
+        // README file
+        const readmeContent = generateReadmeFile(data);
+        
+        return {
+            'index.html': completeHTML,
+            'README.md': readmeContent
+        };
+    }
+    
+    function createCompleteHTML(portfolioHTML, data) {
+        const colorScheme = data.preferences.color || 'blue';
+        const colors = getColorScheme(colorScheme);
+        
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${data.personal.fullName} - Portfolio</title>
+    <meta name="description" content="${data.personal.profession} portfolio showcasing projects and experience">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 2rem;
+        }
+        
+        .portfolio-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+        
+        .portfolio-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .portfolio-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: ${colors.primary};
+        }
+        
+        .portfolio-header h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .contact-info span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #555;
+        }
+        
+        section {
+            margin-bottom: 3rem;
+        }
+        
+        section h3 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: ${colors.primary};
+            border-bottom: 3px solid ${colors.accent};
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+        
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .skill-tag {
+            background: ${colors.primary};
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .experience-item {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-radius: 15px;
+            border-left: 4px solid ${colors.accent};
+        }
+        
+        .experience-item h4 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: ${colors.primary};
+            margin-bottom: 0.5rem;
+        }
+        
+        .company-info {
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .achievements {
+            list-style: none;
+            margin-top: 1rem;
+        }
+        
+        .achievements li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .achievements li:before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: ${colors.accent};
+            font-weight: bold;
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .project-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .project-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .project-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .project-item h4 {
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: ${colors.primary};
+        }
+        
+        .project-item p {
+            padding: 0 1rem 1rem;
+            color: #666;
+        }
+        
+        .project-item a {
+            display: inline-block;
+            margin: 0 1rem 1rem;
+            color: ${colors.accent};
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .project-item a:hover {
+            color: ${colors.primary};
+        }
+        
+        .education-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+        
+        .education-item h4 {
+            color: ${colors.primary};
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .portfolio-container {
+                padding: 1rem;
+            }
+            
+            .portfolio-header h1 {
+                font-size: 2rem;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    ${portfolioHTML}
+    
+    <script>
+        console.log('Portfolio loaded successfully');
+    <\/script>
+</body>
+</html>`;
+    }
+    
+    function getColorScheme(scheme) {
+        const colors = {
+            blue: { primary: '#3498db', accent: '#2980b9', light: '#ebf3fd' },
+            green: { primary: '#2ecc71', accent: '#27ae60', light: '#eafaf1' },
+            purple: { primary: '#9b59b6', accent: '#8e44ad', light: '#f4ecf7' },
+            orange: { primary: '#e67e22', accent: '#d35400', light: '#fdf2e9' },
+            red: { primary: '#e74c3c', accent: '#c0392b', light: '#fdedec' },
+            dark: { primary: '#34495e', accent: '#2c3e50', light: '#eaeded' }
+        };
+        
+        return colors[scheme] || colors.blue;
+    }
+    
+    function generateReadmeFile(data) {
+        return `# ${data.personal.fullName} - Portfolio
+
+This is a professional portfolio website generated by Elevify's AI-powered Portfolio Generator.
+
+## About
+${data.personal.aboutMe || 'Professional portfolio showcasing skills, experience, and projects.'}
+
+## Features
+- Responsive design that works on all devices
+- Professional styling with ${data.preferences.style} theme
+- SEO-optimized structure
+- Fast loading and accessible
+
+## Setup
+1. Upload the index.html file to your web hosting service
+2. Your portfolio will be accessible at your domain
+
+## Customization
+- Edit the HTML file to modify content and styling
+- Add your analytics code in the script section
+
+## Contact
+${data.personal.email ? `- Email: ${data.personal.email}` : ''}
+${data.personal.phone ? `- Phone: ${data.personal.phone}` : ''}
+
+Generated with ❤️ by Elevify Portfolio Generator
+`;
+    }
+    
+    function downloadHTMLFile(packageData) {
+        // Download the main HTML file
+        const blob = new Blob([packageData['index.html']], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${portfolioData.personal.fullName.replace(/\s+/g, '_')}_Portfolio.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Also download README
+        const readmeBlob = new Blob([packageData['README.md']], { type: 'text/markdown' });
+        const readmeUrl = URL.createObjectURL(readmeBlob);
+        
+        const readmeA = document.createElement('a');
+        readmeA.href = readmeUrl;
+        readmeA.download = 'README.md';
+        document.body.appendChild(readmeA);
+        readmeA.click();
+        document.body.removeChild(readmeA);
+        URL.revokeObjectURL(readmeUrl);
+    }
+    
+    function copyPortfolioCode() {
+        if (!generatedPortfolio) {
+            showNotification('Please generate a portfolio first.', 'error');
+            return;
+        }
+        
+        const packageData = createPortfolioPackage();
+        const fullCode = packageData['index.html'];
+        
+        navigator.clipboard.writeText(fullCode)
+            .then(() => {
+                showNotification('Portfolio code copied to clipboard!', 'success');
+            })
+            .catch(err => {
+                console.error('Failed to copy: ', err);
+                
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = fullCode;
+                document.body.appendChild(textArea);
+                textArea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    showNotification('Portfolio code copied to clipboard!', 'success');
+                } catch (err) {
+                    showNotification('Failed to copy to clipboard. Please select and copy manually.', 'error');
+                }
+                
+                document.body.removeChild(textArea);
+            });
+    }
+    
+    function openLivePreview() {
+        if (!generatedPortfolio) {
+            showNotification('Please generate a portfolio first.', 'error');
+            return;
+        }
+        
+        const packageData = createPortfolioPackage();
+        const completeHTML = packageData['index.html'];
+        
+        const previewWindow = window.open('', '_blank', 'width=1200,height=800');
+        
+        if (previewWindow) {
+            previewWindow.document.write(completeHTML);
+            previewWindow.document.close();
+        } else {
+            showNotification('Please allow pop-ups to view the live preview.', 'error');
+        }
+    }
+    
+    function updatePortfolioPreview() {
+        if (generatedPortfolio && portfolioData) {
+            // Regenerate with current preferences
+            const templates = getPortfolioTemplates();
+            const selectedTemplate = templates[portfolioData.preferences.style] || templates.minimal;
+            
+            generatedPortfolio.html = selectedTemplate(portfolioData);
+            
+            // Update the preview
+            displayPortfolio(generatedPortfolio);
+        }
+    }
+
+    // Expose key functions to global scope for debugging
+    window.portfolioGenerator = {
+        updatePortfolioData,
+        downloadPortfolio,
+        copyPortfolioCode,
+        openLivePreview
+    };
+
+}); // End of DOMContentLoaded
+    </script>
+</body>
+</html>

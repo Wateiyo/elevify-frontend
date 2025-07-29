@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ContentCraft - AI Content Repurposer | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+       
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .platform-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .platform-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .platform-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .content-format-option {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .content-format-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .content-format-option.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+        }
+        
+        .content-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Quicksand', sans-serif;
+            line-height: 1.8;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .platform-tip {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .content-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-radius: 30px 30px 0 0;
+            transition: all 0.3s ease;
+        }
+        
+        .content-tab:hover {
+            color: #333;
+            background-color: #f0f0f0;
+        }
+        
+        .content-tab.active {
+            background-color: #14697D;
+            color: white;
+        }
+
+        .content-tabs {
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .custom-fields {
+            display: none;
+        }
+
+        .platform-info {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                       
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>ContentCraft - AI Content Repurposer</h1>
+                        <p class="lead">Transform one piece of content into multiple platform-optimized formats with AI-powered intelligence and brand consistency.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img6.svg" alt="Content Repurposer" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-magic" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Input original content</div>
+                            <div class="mt-2"><span class="step-number">2</span> Choose target platforms</div>
+                            <div class="mt-2"><span class="step-number">3</span> Set tone and voice</div>
+                            <div class="mt-2"><span class="step-number">4</span> AI optimizes for each platform</div>
+                            <div class="mt-2"><span class="step-number">5</span> Copy and share!</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-star" style="color: #FFbf23;"></i> Content Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Platform optimization</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Brand voice consistency</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Character limit compliance</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Hashtag suggestions</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> SEO optimization</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Multiple format outputs</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-share-alt" style="color: #A82C2C;"></i> Supported Platforms</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fab fa-linkedin" style="color: #0077b5;"></i> LinkedIn Posts</div>
+                            <div class="mb-2"><i class="fab fa-twitter" style="color: #1DA1F2;"></i> Twitter/X Threads</div>
+                            <div class="mb-2"><i class="fab fa-instagram" style="color: #E4405F;"></i> Instagram Captions</div>
+                            <div class="mb-2"><i class="fab fa-facebook" style="color: #1877f2;"></i> Facebook Posts</div>
+                            <div class="mb-2"><i class="fas fa-envelope" style="color: #14697D;"></i> Email Newsletters</div>
+                            <div class="mb-2"><i class="fas fa-blog" style="color: #A82C2C;"></i> Blog Summaries</div>
+                            <div class="mb-2"><i class="fab fa-youtube" style="color: #FF0000;"></i> YouTube Descriptions</div>
+                            <div><i class="fab fa-tiktok" style="color: #000000;"></i> TikTok Scripts</div>
+                        </div>
+                    </div>
+
+                    <div class="platform-tip">
+                        <h6><i class="fas fa-lightbulb me-2" style="color: #856404;"></i>Pro Tip</h6>
+                        <p class="small mb-0">For best results, provide detailed content with clear value propositions. The AI will maintain your message while optimizing for each platform's unique audience.</p>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Repurpose Your Content</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <!-- Content Tabs -->
+                        <div class="content-tabs mb-4">
+                            <button class="content-tab active" data-tab="repurpose">Repurpose Content</button>
+                            <button class="content-tab" data-tab="bulk">Bulk Optimize</button>
+                        </div>
+
+                        <!-- Repurpose Content Section -->
+                        <div id="repurposeSection" class="tab-content active">
+                            <form id="contentRepurposerForm">
+                                <div class="mb-4">
+                                    <label for="originalContent" class="form-label fw-bold">Original Content</label>
+                                    <textarea class="form-control" id="originalContent" name="originalContent" rows="6" placeholder="Paste your blog post, article, video transcript, or any content you want to repurpose..." required></textarea>
+                                    <div class="form-text">Supports up to 10,000 characters</div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Target Platforms</label>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="platform-type-card card h-100" data-platform="linkedin">
+                                                <div class="card-body text-center">
+                                                    <i class="fab fa-linkedin mb-2" style="color: #0077b5; font-size: 2rem;"></i>
+                                                    <h6>LinkedIn</h6>
+                                                    <small class="text-muted">Professional posts</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="platform-type-card card h-100" data-platform="twitter">
+                                                <div class="card-body text-center">
+                                                    <i class="fab fa-twitter mb-2" style="color: #1DA1F2; font-size: 2rem;"></i>
+                                                    <h6>Twitter/X</h6>
+                                                    <small class="text-muted">Thread format</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="platform-type-card card h-100" data-platform="instagram">
+                                                <div class="card-body text-center">
+                                                    <i class="fab fa-instagram mb-2" style="color: #E4405F; font-size: 2rem;"></i>
+                                                    <h6>Instagram</h6>
+                                                    <small class="text-muted">Visual captions</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="platform-type-card card h-100" data-platform="facebook">
+                                                <div class="card-body text-center">
+                                                    <i class="fab fa-facebook mb-2" style="color: #1877f2; font-size: 2rem;"></i>
+                                                    <h6>Facebook</h6>
+                                                    <small class="text-muted">Community posts</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="platform-type-card card h-100" data-platform="email">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-envelope mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Email</h6>
+                                                    <small class="text-muted">Newsletter format</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="platform-type-card card h-100" data-platform="blog">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-blog mb-2" style="color: #A82C2C; font-size: 2rem;"></i>
+                                                    <h6>Blog</h6>
+                                                    <small class="text-muted">Article summaries</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="platform-type-card card h-100" data-platform="youtube">
+                                                <div class="card-body text-center">
+                                                    <i class="fab fa-youtube mb-2" style="color: #FF0000; font-size: 2rem;"></i>
+                                                    <h6>YouTube</h6>
+                                                    <small class="text-muted">Video descriptions</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="platform-type-card card h-100" data-platform="tiktok">
+                                                <div class="card-body text-center">
+                                                    <i class="fab fa-tiktok mb-2" style="color: #000000; font-size: 2rem;"></i>
+                                                    <h6>TikTok</h6>
+                                                    <small class="text-muted">Short video scripts</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedPlatforms" name="selectedPlatforms">
+
+                                <!-- Content Settings -->
+                                <div class="mb-4">
+                                    <h5>Content Settings</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="contentTone" class="form-label">Content Tone</label>
+                                            <select class="form-select" id="contentTone" name="contentTone" required>
+                                                <option value="">Select tone</option>
+                                                <option value="professional">Professional</option>
+                                                <option value="casual">Casual</option>
+                                                <option value="enthusiastic">Enthusiastic</option>
+                                                <option value="informative">Informative</option>
+                                                <option value="humorous">Humorous</option>
+                                                <option value="inspirational">Inspirational</option>
+                                                <option value="conversational">Conversational</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="targetAudience" class="form-label">Target Audience</label>
+                                            <select class="form-select" id="targetAudience" name="targetAudience">
+                                                <option value="">Select audience</option>
+                                                <option value="business_professionals">Business Professionals</option>
+                                                <option value="entrepreneurs">Entrepreneurs</option>
+                                                <option value="general_consumers">General Consumers</option>
+                                                <option value="students">Students</option>
+                                                <option value="tech_enthusiasts">Tech Enthusiasts</option>
+                                                <option value="creative_professionals">Creative Professionals</option>
+                                                <option value="marketers">Marketers</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Brand Voice -->
+                                <div class="platform-info">
+                                    <h6>Brand Voice & Style</h6>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="brandVoice" class="form-label">Brand Voice (Optional)</label>
+                                            <input type="text" class="form-control" id="brandVoice" name="brandVoice" placeholder="e.g., Friendly, innovative, trustworthy">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="includeHashtags" class="form-label">Hashtag Strategy</label>
+                                            <select class="form-select" id="includeHashtags" name="includeHashtags">
+                                                <option value="yes">Include relevant hashtags</option>
+                                                <option value="minimal">Minimal hashtags</option>
+                                                <option value="no">No hashtags</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Content-Specific Fields -->
+                                <div id="specificFields" class="mb-4">
+                                    <!-- Dynamic fields will be inserted here based on selected platforms -->
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-magic me-2"></i> Repurpose Content
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Bulk Optimize Section -->
+                        <div id="bulkSection" class="tab-content" style="display: none;">
+                            <form id="bulkOptimizeForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Upload Multiple Content Files</label>
+                                    
+                                    <!-- File Upload Option -->
+                                    <div class="mb-3">
+                                        <label for="contentFiles" class="form-label">Upload Files</label>
+                                        <input type="file" class="form-control" id="contentFiles" accept=".txt,.doc,.docx,.md" multiple>
+                                        <div class="form-text">Supported formats: TXT, DOC, DOCX, MD. Max 5 files.</div>
+                                    </div>
+                                </div>
+
+                                <!-- Platform Selection for Bulk -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Default Platforms for All Content</label>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <div class="content-format-option" data-format="linkedin">
+                                                <i class="fab fa-linkedin mb-2" style="color: #0077b5;"></i>
+                                                <div>LinkedIn</div>
+                                                <small class="text-muted">Professional</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="content-format-option" data-format="twitter">
+                                                <i class="fab fa-twitter mb-2" style="color: #1DA1F2;"></i>
+                                                <div>Twitter/X</div>
+                                                <small class="text-muted">Threads</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="content-format-option" data-format="instagram">
+                                                <i class="fab fa-instagram mb-2" style="color: #E4405F;"></i>
+                                                <div>Instagram</div>
+                                                <small class="text-muted">Visual</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="content-format-option" data-format="blog">
+                                                <i class="fas fa-blog mb-2" style="color: #A82C2C;"></i>
+                                                <div>Blog</div>
+                                                <small class="text-muted">Articles</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="content-format-option" data-format="tiktok">
+                                                <i class="fab fa-tiktok mb-2" style="color: #000000;"></i>
+                                                <div>TikTok</div>
+                                                <small class="text-muted">Scripts</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedBulkFormats" name="selectedBulkFormats">
+
+                                <div class="mb-4">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="maintainStyle" checked>
+                                        <label class="form-check-label" for="maintainStyle">
+                                            Maintain consistent style across all content
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="generateSummary">
+                                        <label class="form-check-label" for="generateSummary">
+                                            Generate content summary report
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="optimizePerformance" checked>
+                                        <label class="form-check-label" for="optimizePerformance">
+                                            Optimize for platform-specific performance
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-layer-group me-2"></i> Bulk Optimize Content
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Container -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Repurposed Content</h4>
+                        
+                        <!-- Platform Content Tabs -->
+                        <div class="nav nav-pills mb-4" id="platformResultTabs" role="tablist">
+                            <!-- Tabs will be added dynamically -->
+                        </div>
+                        
+                        <!-- Content Preview -->
+                        <div class="content-preview mb-4" id="contentPreview">
+                            <!-- Generated content will appear here -->
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="copyContent">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Content</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                            <div class="export-option" id="downloadContent">
+                                <i class="fas fa-download"></i>
+                                <div>Download All</div>
+                                <small class="text-muted">As text file</small>
+                            </div>
+                            <div class="export-option" id="shareContent">
+                                <i class="fas fa-share-alt"></i>
+                                <div>Share Link</div>
+                                <small class="text-muted">Generate link</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editContentBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Content
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newContentBtn">
+                                <i class="fas fa-plus me-1"></i> Repurpose New Content
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading Spinner -->
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                </div>
+            </div>
+        </div>
+        <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">multiply</span> your content reach?</h2>
+                <p class="lead mb-4">Join thousands of professionals who save time and get enagaging content with Elevify's content tools.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ... (place this at the bottom of your HTML before </body>) -->
+<script>
+// ================================
+// SECTION 1: DOM ELEMENTS AND INITIAL SETUP
+// Enhanced ContentCraft JavaScript with Real AI Integration
+// ================================
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Core form elements
+    const contentRepurposerForm = document.getElementById('contentRepurposerForm');
+    const bulkOptimizeForm = document.getElementById('bulkOptimizeForm');
+    const selectedPlatformsInput = document.getElementById('selectedPlatforms');
+    const selectedBulkFormatsInput = document.getElementById('selectedBulkFormats');
+    
+    // Input elements
+    const originalContentTextarea = document.getElementById('originalContent');
+    const contentToneSelect = document.getElementById('contentTone');
+    const targetAudienceSelect = document.getElementById('targetAudience');
+    const brandVoiceInput = document.getElementById('brandVoice');
+    const includeHashtagsSelect = document.getElementById('includeHashtags');
+    
+    // Result display elements
+    const resultsContainer = document.getElementById('resultsContainer');
+    const contentPreview = document.getElementById('contentPreview');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const platformResultTabs = document.getElementById('platformResultTabs');
+    
+    // Tab functionality elements
+    const contentTabs = document.querySelectorAll('.content-tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    // Action button elements
+    const copyContentBtn = document.getElementById('copyContent');
+    const downloadContentBtn = document.getElementById('downloadContent');
+    const shareContentBtn = document.getElementById('shareContent');
+    const editContentBtn = document.getElementById('editContentBtn');
+    const newContentBtn = document.getElementById('newContentBtn');
+    
+    // Global variables for state management
+    let selectedPlatforms = [];
+    let selectedBulkFormats = [];
+    let generatedContent = {};
+    let currentActivePlatform = null;
+    let isGenerating = false;
+    
+    // Platform configuration
+    const platformConfigs = {
+        linkedin: {
+            name: 'LinkedIn',
+            icon: 'fab fa-linkedin',
+            color: '#0077b5',
+            description: 'Professional networking posts'
+        },
+        twitter: {
+            name: 'Twitter/X',
+            icon: 'fab fa-twitter',
+            color: '#1DA1F2',
+            description: 'Microblogging content and threads'
+        },
+        instagram: {
+            name: 'Instagram',
+            icon: 'fab fa-instagram',
+            color: '#E4405F',
+            description: 'Visual storytelling captions'
+        },
+        facebook: {
+            name: 'Facebook',
+            icon: 'fab fa-facebook',
+            color: '#1877f2',
+            description: 'Community engagement posts'
+        },
+        email: {
+            name: 'Email Newsletter',
+            icon: 'fas fa-envelope',
+            color: '#14697D',
+            description: 'Email marketing content'
+        },
+        blog: {
+            name: 'Blog Summary',
+            icon: 'fas fa-blog',
+            color: '#A82C2C',
+            description: 'Blog post summaries'
+        },
+        youtube: {
+            name: 'YouTube',
+            icon: 'fab fa-youtube',
+            color: '#FF0000',
+            description: 'Video descriptions and titles'
+        },
+        tiktok: {
+            name: 'TikTok',
+            icon: 'fab fa-tiktok',
+            color: '#000000',
+            description: 'Short-form video scripts'
+        }
+    };
+
+    // Initialize the application
+    initializeEventListeners();
+    initializeTabSystem();
+    updateUsageTracker();
+    
+    console.log('ContentCraft initialized with real AI integration');
+});
+// ================================
+// SECTION 2: EVENT LISTENERS AND PLATFORM SELECTION
+// ================================
+
+function initializeEventListeners() {
+    // Platform selection for main form
+    document.querySelectorAll('.platform-type-card').forEach(card => {
+        card.addEventListener('click', function () {
+            const platform = this.getAttribute('data-platform');
+            togglePlatformSelection(this, platform);
+        });
+    });
+    
+    // Bulk format selection
+    document.querySelectorAll('.content-format-option').forEach(option => {
+        option.addEventListener('click', function () {
+            const format = this.getAttribute('data-format');
+            toggleBulkFormatSelection(this, format);
+        });
+    });
+    
+    // Main form submission
+    if (contentRepurposerForm) {
+        contentRepurposerForm.addEventListener('submit', handleContentRepurposing);
+    }
+    
+    // Bulk form submission
+    if (bulkOptimizeForm) {
+        bulkOptimizeForm.addEventListener('submit', handleBulkOptimization);
+    }
+    
+    // Action button listeners
+    if (copyContentBtn) {
+        copyContentBtn.addEventListener('click', copyCurrentContent);
+    }
+    
+    if (downloadContentBtn) {
+        downloadContentBtn.addEventListener('click', downloadAllContent);
+    }
+    
+    if (shareContentBtn) {
+        shareContentBtn.addEventListener('click', shareContent);
+    }
+    
+    if (editContentBtn) {
+        editContentBtn.addEventListener('click', editContent);
+    }
+    
+    if (newContentBtn) {
+        newContentBtn.addEventListener('click', resetForm);
+    }
+    
+    // File upload handling
+    const contentFiles = document.getElementById('contentFiles');
+    if (contentFiles) {
+        contentFiles.addEventListener('change', handleFileUpload);
+    }
+}
+
+function togglePlatformSelection(card, platform) {
+    card.classList.toggle('selected');
+    
+    if (card.classList.contains('selected')) {
+        if (!selectedPlatforms.includes(platform)) {
+            selectedPlatforms.push(platform);
+        }
+    } else {
+        selectedPlatforms = selectedPlatforms.filter(p => p !== platform);
+    }
+    
+    selectedPlatformsInput.value = selectedPlatforms.join(',');
+    
+    // Update UI feedback
+    updateSelectionFeedback();
+}
+
+function toggleBulkFormatSelection(option, format) {
+    option.classList.toggle('selected');
+    
+    if (option.classList.contains('selected')) {
+        if (!selectedBulkFormats.includes(format)) {
+            selectedBulkFormats.push(format);
+        }
+    } else {
+        selectedBulkFormats = selectedBulkFormats.filter(f => f !== format);
+    }
+    
+    selectedBulkFormatsInput.value = selectedBulkFormats.join(',');
+}
+
+function updateSelectionFeedback() {
+    const selectedCount = selectedPlatforms.length;
+    const feedbackElement = document.getElementById('selectionFeedback');
+    
+    if (feedbackElement) {
+        if (selectedCount === 0) {
+            feedbackElement.textContent = 'Select at least one platform to continue';
+            feedbackElement.className = 'alert alert-warning';
+        } else {
+            feedbackElement.textContent = `${selectedCount} platform${selectedCount > 1 ? 's' : ''} selected`;
+            feedbackElement.className = 'alert alert-success';
+        }
+    }
+}
+
+function initializeTabSystem() {
+    // Tab switching functionality
+    contentTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            switchTab(tabName);
+        });
+    });
+}
+
+function switchTab(tabName) {
+    // Remove active class from all tabs and contents
+    contentTabs.forEach(tab => tab.classList.remove('active'));
+    tabContents.forEach(content => {
+        content.style.display = 'none';
+        content.classList.remove('active');
+    });
+    
+    // Add active class to clicked tab
+    const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+    
+    // Show corresponding content
+    const activeContent = document.getElementById(`${tabName}Section`);
+    if (activeContent) {
+        activeContent.style.display = 'block';
+        activeContent.classList.add('active');
+    }
+}
+// ================================
+// SECTION 3: FORM VALIDATION AND DATA PROCESSING
+// ================================
+
+function validateFormData(formData) {
+    const errors = [];
+    
+    // Validate original content
+    if (!formData.originalContent || formData.originalContent.trim().length < 50) {
+        errors.push('Original content must be at least 50 characters long');
+    }
+    
+    if (formData.originalContent && formData.originalContent.length > 10000) {
+        errors.push('Original content exceeds 10,000 character limit');
+    }
+    
+    // Validate platform selection
+    if (!formData.selectedPlatforms || formData.selectedPlatforms.length === 0) {
+        errors.push('Please select at least one target platform');
+    }
+    
+    // Validate content tone
+    if (!formData.contentTone) {
+        errors.push('Please select a content tone');
+    }
+    
+    // Validate content quality
+    const wordCount = formData.originalContent.trim().split(/\s+/).length;
+    if (wordCount < 10) {
+        errors.push('Content appears too short for meaningful repurposing');
+    }
+    
+    return errors;
+}
+
+function extractFormData() {
+    const formData = {
+        originalContent: originalContentTextarea.value.trim(),
+        selectedPlatforms: selectedPlatforms.filter(Boolean),
+        contentTone: contentToneSelect.value.trim(),
+        targetAudience: targetAudienceSelect ? targetAudienceSelect.value.trim() : 'general_consumers',
+        brandVoice: brandVoiceInput ? brandVoiceInput.value.trim() : '',
+        includeHashtags: includeHashtagsSelect ? includeHashtagsSelect.value : 'yes'
+    };
+    
+    return formData;
+}
+
+function extractBulkData() {
+    const bulkData = {
+        selectedFormats: selectedBulkFormats.filter(Boolean),
+        maintainStyle: document.getElementById('maintainStyle')?.checked || false,
+        generateSummary: document.getElementById('generateSummary')?.checked || false,
+        optimizePerformance: document.getElementById('optimizePerformance')?.checked || true
+    };
+    
+    return bulkData;
+}
+
+function showValidationErrors(errors) {
+    clearValidationErrors();
+    
+    const errorBox = document.createElement('div');
+    errorBox.className = 'alert alert-danger validation-error mb-4';
+    errorBox.innerHTML = `
+        <div class="d-flex align-items-center mb-2">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Please fix the following issues:</strong>
+        </div>
+        <ul class="mb-0">
+            ${errors.map(error => `<li>${error}</li>`).join('')}
+        </ul>
+    `;
+    
+    contentRepurposerForm.prepend(errorBox);
+    errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // Auto-remove after 10 seconds
+    setTimeout(() => {
+        if (errorBox.parentNode) {
+            errorBox.remove();
+        }
+    }, 10000);
+}
+
+function clearValidationErrors() {
+    document.querySelectorAll('.validation-error').forEach(el => el.remove());
+}
+
+function showSuccessMessage(message) {
+    const successBox = document.createElement('div');
+    successBox.className = 'alert alert-success success-message mb-4';
+    successBox.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>${message}</strong>
+        </div>
+    `;
+    
+    resultsContainer.prepend(successBox);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (successBox.parentNode) {
+            successBox.remove();
+        }
+    }, 5000);
+}
+
+function updateUsageTracker() {
+    const remainingUsesElement = document.getElementById('remainingUses');
+    const resetDateElement = document.getElementById('resetDate');
+    
+    if (remainingUsesElement) {
+        // This would normally be fetched from your backend
+        const remainingUses = localStorage.getItem('contentRepurposer_uses') || 5;
+        remainingUsesElement.textContent = remainingUses;
+    }
+    
+    if (resetDateElement) {
+        const nextMonth = new Date();
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        nextMonth.setDate(1);
+        resetDateElement.textContent = nextMonth.toLocaleDateString();
+    }
+}
+
+function decrementUsageCount() {
+    const currentUses = parseInt(localStorage.getItem('contentRepurposer_uses') || '5');
+    if (currentUses > 0) {
+        localStorage.setItem('contentRepurposer_uses', (currentUses - 1).toString());
+        updateUsageTracker();
+    }
+}
+// ================================
+// SECTION 4: AI CONTENT GENERATION AND API COMMUNICATION
+// ================================
+
+async function handleContentRepurposing(e) {
+    e.preventDefault();
+    
+    if (isGenerating) {
+        return; // Prevent duplicate submissions
+    }
+    
+    clearValidationErrors();
+    
+    const formData = extractFormData();
+    const errors = validateFormData(formData);
+    
+    if (errors.length > 0) {
+        showValidationErrors(errors);
+        return;
+    }
+    
+    isGenerating = true;
+    setLoading(true);
+    
+    try {
+        console.log('Starting content repurposing for platforms:', formData.selectedPlatforms);
+        
+        const results = await generateContentForPlatforms(formData);
+        
+        if (Object.keys(results).length > 0) {
+            generatedContent = results;
+            displayResults(results);
+            showSuccessMessage('Content successfully repurposed for all selected platforms!');
+            decrementUsageCount();
+        } else {
+            throw new Error('No content was generated');
+        }
+        
+    } catch (error) {
+        console.error('Content repurposing failed:', error);
+        showValidationErrors([`Failed to generate content: ${error.message}`]);
+    } finally {
+        setLoading(false);
+        isGenerating = false;
+    }
+}
+
+async function generateContentForPlatforms(formData) {
+    const results = {};
+    const errors = [];
+    
+    // Generate content for each platform in parallel for better performance
+    const generationPromises = formData.selectedPlatforms.map(async (platform) => {
+        try {
+            console.log(`Generating content for ${platform}...`);
+            
+            const platformResult = await callContentRepurposerAPI({
+                originalContent: formData.originalContent,
+                targetFormat: platform,
+                targetAudience: formData.targetAudience,
+                contentTone: formData.contentTone,
+                brandVoice: formData.brandVoice,
+                includeHashtags: formData.includeHashtags
+            });
+            
+            if (platformResult.success) {
+                results[platform] = platformResult.repurposed_content;
+                console.log(`✅ Generated content for ${platform}`);
+            } else {
+                throw new Error(platformResult.error || 'Unknown error');
+            }
+            
+        } catch (error) {
+            console.error(`❌ Error generating content for ${platform}:`, error);
+            results[platform] = `Error generating content for ${platform}: ${error.message}`;
+            errors.push(`${platform}: ${error.message}`);
+        }
+    });
+    
+    // Wait for all platforms to complete
+    await Promise.all(generationPromises);
+    
+    // Log summary
+    const successCount = Object.keys(results).length - errors.length;
+    console.log(`Content generation complete: ${successCount}/${formData.selectedPlatforms.length} platforms successful`);
+    
+    if (errors.length > 0) {
+        console.warn('Some platforms failed:', errors);
+    }
+    
+    return results;
+}
+
+async function callContentRepurposerAPI(requestData) {
+    try {
+        console.log('Making API request to /api/content-repurposer with data:', requestData);
+        
+        const response = await fetch('/api/content-repurposer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            let errorMessage;
+            
+            try {
+                const errorData = JSON.parse(errorText);
+                errorMessage = errorData.error || errorData.message || `HTTP ${response.status}`;
+            } catch {
+                errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+            }
+            
+            throw new Error(errorMessage);
+        }
+        
+        const responseData = await response.json();
+        console.log('API response received:', responseData);
+        
+        return responseData;
+        
+    } catch (error) {
+        console.error('API request failed:', error);
+        
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            throw new Error('Network connection failed. Please check your internet connection.');
+        }
+        
+        throw error;
+    }
+}
+
+async function handleBulkOptimization(e) {
+    e.preventDefault();
+    
+    if (isGenerating) {
+        return;
+    }
+    
+    const bulkData = extractBulkData();
+    
+    if (bulkData.selectedFormats.length === 0) {
+        showValidationErrors(['Please select at least one content format for bulk optimization']);
+        return;
+    }
+    
+    isGenerating = true;
+    setLoading(true);
+    
+    try {
+        console.log('Starting bulk optimization for formats:', bulkData.selectedFormats);
+        
+        // This would be implemented based on your specific bulk processing needs
+        const results = await processBulkOptimization(bulkData);
+        
+        generatedContent = results;
+        displayResults(results);
+        showSuccessMessage('Bulk optimization completed successfully!');
+        
+    } catch (error) {
+        console.error('Bulk optimization failed:', error);
+        showValidationErrors([`Bulk optimization failed: ${error.message}`]);
+    } finally {
+        setLoading(false);
+        isGenerating = false;
+    }
+}
+
+async function processBulkOptimization(bulkData) {
+    // Placeholder for bulk processing logic
+    // This would handle file uploads and batch processing
+    const results = {};
+    
+    for (const format of bulkData.selectedFormats) {
+        results[format] = `Bulk optimized content for ${format} format would appear here.`;
+    }
+    
+    return results;
+}
+// ================================
+// SECTION 5: RESULTS DISPLAY AND UI MANAGEMENT
+// ================================
+
+function displayResults(results) {
+    if (!results || Object.keys(results).length === 0) {
+        console.warn('No results to display');
+        return;
+    }
+    
+    // Clear previous results
+    contentPreview.innerHTML = '';
+    platformResultTabs.innerHTML = '';
+    
+    // Create tabs for each platform
+    createPlatformTabs(results);
+    
+    // Display the first platform's content by default
+    const firstPlatform = Object.keys(results)[0];
+    if (firstPlatform) {
+        displayPlatformContent(firstPlatform, results[firstPlatform]);
+        currentActivePlatform = firstPlatform;
+    }
+    
+    // Show results container
+    resultsContainer.style.display = 'block';
+    resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    console.log('Results displayed for platforms:', Object.keys(results));
+}
+
+function createPlatformTabs(results) {
+    platformResultTabs.innerHTML = '';
+    
+    Object.keys(results).forEach((platform, index) => {
+        const config = platformConfigs[platform] || {
+            name: platform,
+            icon: 'fas fa-file-alt',
+            color: '#666'
+        };
+        
+        const tab = document.createElement('button');
+        tab.className = `nav-link platform-result-tab ${index === 0 ? 'active' : ''}`;
+        tab.setAttribute('data-platform', platform);
+        tab.innerHTML = `
+            <i class="${config.icon}" style="color: ${config.color}; margin-right: 8px;"></i>
+            ${config.name}
+        `;
+        
+        tab.addEventListener('click', () => {
+            // Remove active class from all tabs
+            document.querySelectorAll('.platform-result-tab').forEach(t => {
+                t.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            tab.classList.add('active');
+            
+            // Display content for this platform
+            displayPlatformContent(platform, results[platform]);
+            currentActivePlatform = platform;
+        });
+        
+        platformResultTabs.appendChild(tab);
+    });
+}
+
+function displayPlatformContent(platform, content) {
+    const config = platformConfigs[platform] || {
+        name: platform,
+        icon: 'fas fa-file-alt',
+        color: '#666',
+        description: 'Content for this platform'
+    };
+    
+    const wordCount = content.split(/\s+/).length;
+    const charCount = content.length;
+    
+    contentPreview.innerHTML = `
+        <div class="platform-content-header mb-3">
+            <div class="d-flex align-items-center mb-2">
+                <i class="${config.icon}" style="color: ${config.color}; font-size: 1.5rem; margin-right: 12px;"></i>
+                <div>
+                    <h5 class="mb-1">${config.name} Content</h5>
+                    <small class="text-muted">${config.description}</small>
+                </div>
+            </div>
+            <div class="content-stats">
+                <span class="badge bg-light text-dark me-2">
+                    <i class="fas fa-align-left me-1"></i>
+                    ${wordCount} words
+                </span>
+                <span class="badge bg-light text-dark me-2">
+                    <i class="fas fa-keyboard me-1"></i>
+                    ${charCount} characters
+                </span>
+                <span class="badge bg-success">
+                    <i class="fas fa-check me-1"></i>
+                    Ready to use
+                </span>
+            </div>
+        </div>
+        
+        <div class="generated-content">
+            ${formatContentForDisplay(content, platform)}
+        </div>
+        
+        <div class="content-actions mt-3">
+            <button class="btn btn-outline-primary btn-sm" onclick="copyPlatformContent('${platform}')">
+                <i class="fas fa-copy me-1"></i>
+                Copy ${config.name} Content
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="editPlatformContent('${platform}')">
+                <i class="fas fa-edit me-1"></i>
+                Edit Content
+            </button>
+        </div>
+    `;
+}
+
+function formatContentForDisplay(content, platform) {
+    // Handle error messages
+    if (content.startsWith('Error generating content') || content.startsWith('❌')) {
+        return `
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${content}
+            </div>
+        `;
+    }
+    
+    // Format content based on platform
+    let formattedContent = content;
+    
+    // Convert line breaks to HTML
+    formattedContent = formattedContent.replace(/\n/g, '<br>');
+    
+    // Highlight hashtags
+    formattedContent = formattedContent.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
+    
+    // Highlight mentions
+    formattedContent = formattedContent.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
+    
+    // Platform-specific formatting
+    if (platform === 'twitter') {
+        // Highlight thread indicators
+        formattedContent = formattedContent.replace(/(\d+\/\d+)/g, '<span class="thread-indicator">$1</span>');
+    }
+    
+    return `<div class="formatted-content">${formattedContent}</div>`;
+}
+
+function setLoading(isLoading) {
+    if (isLoading) {
+        loadingSpinner.style.display = 'block';
+        resultsContainer.style.display = 'none';
+        
+        // Disable form submission
+        const submitButton = contentRepurposerForm.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Generating Content...';
+        }
+    } else {
+        loadingSpinner.style.display = 'none';
+        
+        // Re-enable form submission
+        const submitButton = contentRepurposerForm.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.innerHTML = '<i class="fas fa-magic me-2"></i> Repurpose Content';
+        }
+    }
+}
+
+function showLoadingProgress(message) {
+    const progressElement = document.getElementById('loadingProgress');
+    if (progressElement) {
+        progressElement.textContent = message;
+    } else {
+        // Create progress element if it doesn't exist
+        const progress = document.createElement('div');
+        progress.id = 'loadingProgress';
+        progress.className = 'text-center mt-2 text-muted';
+        progress.textContent = message;
+        loadingSpinner.appendChild(progress);
+    }
+}
+// ================================
+// SECTION 6: ACTION HANDLERS AND FILE PROCESSING
+// ================================
+
+function copyCurrentContent() {
+    if (!currentActivePlatform || !generatedContent[currentActivePlatform]) {
+        showValidationErrors(['No content selected to copy']);
+        return;
+    }
+    
+    copyPlatformContent(currentActivePlatform);
+}
+
+function copyPlatformContent(platform) {
+    const content = generatedContent[platform];
+    if (!content) {
+        showValidationErrors([`No content available for ${platform}`]);
+        return;
+    }
+    
+    // Remove HTML formatting for clipboard
+    const cleanContent = content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ');
+    
+    navigator.clipboard.writeText(cleanContent).then(() => {
+        const config = platformConfigs[platform] || { name: platform };
+        showTemporaryMessage(`${config.name} content copied to clipboard!`, 'success');
+    }).catch(err => {
+        console.error('Failed to copy content:', err);
+        
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = cleanContent;
+        document.body.appendChild(textArea);
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            const config = platformConfigs[platform] || { name: platform };
+            showTemporaryMessage(`${config.name} content copied to clipboard!`, 'success');
+        } catch (fallbackErr) {
+            showValidationErrors(['Failed to copy content to clipboard']);
+        }
+        
+        document.body.removeChild(textArea);
+    });
+}
+
+function downloadAllContent() {
+    if (!generatedContent || Object.keys(generatedContent).length === 0) {
+        showValidationErrors(['No content available to download']);
+        return;
+    }
+    
+    let downloadText = 'REPURPOSED CONTENT\n';
+    downloadText += '===================\n\n';
+    downloadText += `Generated on: ${new Date().toLocaleString()}\n\n`;
+    
+    Object.entries(generatedContent).forEach(([platform, content]) => {
+        const config = platformConfigs[platform] || { name: platform };
+        downloadText += `${config.name.toUpperCase()}\n`;
+        downloadText += '-'.repeat(config.name.length) + '\n';
+        downloadText += content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ') + '\n\n';
+    });
+    
+    // Create and download file
+    const blob = new Blob([downloadText], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `repurposed-content-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    showTemporaryMessage('Content downloaded successfully!', 'success');
+}
+
+function shareContent() {
+    if (!currentActivePlatform || !generatedContent[currentActivePlatform]) {
+        showValidationErrors(['No content selected to share']);
+        return;
+    }
+    
+    const content = generatedContent[currentActivePlatform];
+    const config = platformConfigs[currentActivePlatform] || { name: currentActivePlatform };
+    
+    if (navigator.share) {
+        navigator.share({
+            title: `${config.name} Content`,
+            text: content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ')
+        }).then(() => {
+            showTemporaryMessage('Content shared successfully!', 'success');
+        }).catch(err => {
+            console.warn('Share failed:', err);
+            fallbackShare(content, config.name);
+        });
+    } else {
+        fallbackShare(content, config.name);
+    }
+}
+
+function fallbackShare(content, platformName) {
+    const cleanContent = content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ');
+    const shareUrl = `mailto:?subject=${encodeURIComponent(`${platformName} Content`)}&body=${encodeURIComponent(cleanContent)}`;
+    window.location.href = shareUrl;
+}
+
+function editContent() {
+    if (!currentActivePlatform || !generatedContent[currentActivePlatform]) {
+        showValidationErrors(['No content selected to edit']);
+        return;
+    }
+    
+    const content = generatedContent[currentActivePlatform];
+    const config = platformConfigs[currentActivePlatform] || { name: currentActivePlatform };
+    
+    // Create editable modal or inline editor
+    const editModal = createEditModal(content, config.name, currentActivePlatform);
+    document.body.appendChild(editModal);
+}
+
+function editPlatformContent(platform) {
+    currentActivePlatform = platform;
+    editContent();
+}
+
+function createEditModal(content, platformName, platform) {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.style.display = 'block';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+    
+    const cleanContent = content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ');
+    
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit ${platformName} Content</h5>
+                    <button type="button" class="btn-close" onclick="this.closest('.modal').remove()"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="editContentTextarea" class="form-control" rows="10" placeholder="Edit your content here...">${cleanContent}</textarea>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            Character count: <span id="editCharCount">${cleanContent.length}</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEditedContent('${platform}')">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add character counter
+    const textarea = modal.querySelector('#editContentTextarea');
+    const charCount = modal.querySelector('#editCharCount');
+    
+    textarea.addEventListener('input', () => {
+        charCount.textContent = textarea.value.length;
+    });
+    
+    return modal;
+}
+
+function saveEditedContent(platform) {
+    const textarea = document.getElementById('editContentTextarea');
+    const newContent = textarea.value.trim();
+    
+    if (newContent) {
+        generatedContent[platform] = newContent;
+        displayPlatformContent(platform, newContent);
+        showTemporaryMessage('Content updated successfully!', 'success');
+    }
+    
+    // Close modal
+    const modal = textarea.closest('.modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function resetForm() {
+    // Clear form inputs
+    if (originalContentTextarea) originalContentTextarea.value = '';
+    if (contentToneSelect) contentToneSelect.value = '';
+    if (targetAudienceSelect) targetAudienceSelect.value = '';
+    if (brandVoiceInput) brandVoiceInput.value = '';
+    if (includeHashtagsSelect) includeHashtagsSelect.value = 'yes';
+    
+    // Clear platform selections
+    selectedPlatforms = [];
+    selectedBulkFormats = [];
+    if (selectedPlatformsInput) selectedPlatformsInput.value = '';
+    if (selectedBulkFormatsInput) selectedBulkFormatsInput.value = '';
+    
+    // Clear UI selections
+    document.querySelectorAll('.platform-type-card.selected').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    document.querySelectorAll('.content-format-option.selected').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Hide results
+    resultsContainer.style.display = 'none';
+    generatedContent = {};
+    currentActivePlatform = null;
+    
+    // Clear validation errors
+    clearValidationErrors();
+    
+    // Scroll to top of form
+    contentRepurposerForm.scrollIntoView({ behavior: 'smooth' });
+    
+    showTemporaryMessage('Form reset successfully!', 'info');
+}
+
+async function handleFileUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    const file = files[0];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    
+    if (file.size > maxSize) {
+        showValidationErrors(['File size exceeds 5MB limit']);
+        return;
+    }
+    
+    const allowedTypes = ['text/plain', 'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowedTypes.includes(file.type)) {
+        showValidationErrors(['File type not supported. Please upload TXT, PDF, or DOCX files.']);
+        return;
+    }
+    
+    try {
+        setLoading(true);
+        showLoadingProgress('Processing uploaded file...');
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await fetch('/api/content-repurposer/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Upload failed: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        if (result.success && result.extracted_text) {
+            originalContentTextarea.value = result.extracted_text;
+            showTemporaryMessage('File processed and content extracted successfully!', 'success');
+        } else {
+            throw new Error(result.error || 'Failed to extract text from file');
+        }
+        
+    } catch (error) {
+        console.error('File upload failed:', error);
+        showValidationErrors([`File upload failed: ${error.message}`]);
+    } finally {
+        setLoading(false);
+    }
+}
+
+function showTemporaryMessage(message, type = 'info') {
+    const alertClass = {
+        'success': 'alert-success',
+        'error': 'alert-danger',
+        'warning': 'alert-warning',
+        'info': 'alert-info'
+    }[type] || 'alert-info';
+    
+    const messageElement = document.createElement('div');
+    messageElement.className = `alert ${alertClass} temporary-message`;
+    messageElement.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+            ${message}
+        </div>
+    `;
+    
+    // Insert at top of form
+    contentRepurposerForm.prepend(messageElement);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        if (messageElement.parentNode) {
+            messageElement.remove();
+        }
+    }, 3000);
+}
+// ================================
+// SECTION 7: UTILITY FUNCTIONS AND GLOBAL HANDLERS
+// ================================
+
+    // Utility function for debouncing
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    
+    // Character count tracker for textareas
+    function initializeCharacterCounters() {
+        const textareas = document.querySelectorAll('textarea[data-char-limit]');
+        textareas.forEach(textarea => {
+            const limit = parseInt(textarea.getAttribute('data-char-limit'));
+            
+            // Create counter element
+            const counter = document.createElement('div');
+            counter.className = 'char-counter text-muted small mt-1';
+            textarea.parentNode.appendChild(counter);
+            
+            const updateCounter = () => {
+                const remaining = limit - textarea.value.length;
+                counter.textContent = `${textarea.value.length}/${limit} characters`;
+                
+                if (remaining < 0) {
+                    counter.className = 'char-counter text-danger small mt-1';
+                } else if (remaining < 50) {
+                    counter.className = 'char-counter text-warning small mt-1';
+                } else {
+                    counter.className = 'char-counter text-muted small mt-1';
+                }
+            };
+            
+            textarea.addEventListener('input', updateCounter);
+            updateCounter(); // Initial count
+        });
+    }
+    
+    // Initialize tooltips and popovers if Bootstrap is available
+    function initializeBootstrapComponents() {
+        if (typeof bootstrap !== 'undefined') {
+            try {
+                // Initialize tooltips
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+                
+                // Initialize popovers
+                const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+                popoverTriggerList.map(function (popoverTriggerEl) {
+                    return new bootstrap.Popover(popoverTriggerEl);
+                });
+            } catch (error) {
+                console.warn('Bootstrap components initialization failed:', error);
+            }
+        }
+    }
+    
+    // Error reporting and analytics
+    function reportError(error, context = '') {
+        console.error('ContentCraft Error:', error, context);
+        
+        // You could send this to an analytics service
+        if (typeof gtag !== 'undefined') {
+            try {
+                gtag('event', 'exception', {
+                    description: `${context}: ${error.message}`,
+                    fatal: false
+                });
+            } catch (e) {
+                console.warn('Analytics tracking failed:', e);
+            }
+        }
+    }
+    
+    // Performance tracking
+    function trackContentGeneration(platforms, startTime) {
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+        
+        console.log(`Content generation completed in ${duration.toFixed(2)}ms for platforms:`, platforms);
+        
+        // Track with analytics if available
+        if (typeof gtag !== 'undefined') {
+            try {
+                gtag('event', 'content_generated', {
+                    platforms: platforms.join(','),
+                    platform_count: platforms.length,
+                    duration_ms: Math.round(duration)
+                });
+            } catch (e) {
+                console.warn('Analytics tracking failed:', e);
+            }
+        }
+    }
+    
+    // Local storage helpers
+    function saveToLocalStorage(key, data) {
+        try {
+            localStorage.setItem(`contentCraft_${key}`, JSON.stringify(data));
+        } catch (error) {
+            console.warn('Failed to save to localStorage:', error);
+        }
+    }
+    
+    function loadFromLocalStorage(key, defaultValue = null) {
+        try {
+            const item = localStorage.getItem(`contentCraft_${key}`);
+            return item ? JSON.parse(item) : defaultValue;
+        } catch (error) {
+            console.warn('Failed to load from localStorage:', error);
+            return defaultValue;
+        }
+    }
+    
+    // Auto-save form data - declare after the functions are defined
+    const autoSaveForm = debounce(() => {
+        if (originalContentTextarea && originalContentTextarea.value.trim()) {
+            const formData = {
+                originalContent: originalContentTextarea.value,
+                contentTone: contentToneSelect?.value || '',
+                targetAudience: targetAudienceSelect?.value || '',
+                brandVoice: brandVoiceInput?.value || '',
+                selectedPlatforms: selectedPlatforms,
+                timestamp: Date.now()
+            };
+            
+            saveToLocalStorage('autoSave', formData);
+        }
+    }, 2000);
+    
+    // Restore auto-saved data
+    function restoreAutoSavedData() {
+        const autoSaved = loadFromLocalStorage('autoSave');
+        
+        if (autoSaved && autoSaved.timestamp > Date.now() - (24 * 60 * 60 * 1000)) { // 24 hours
+            try {
+                const shouldRestore = confirm('We found some unsaved content. Would you like to restore it?');
+                
+                if (shouldRestore) {
+                    if (originalContentTextarea && autoSaved.originalContent) {
+                        originalContentTextarea.value = autoSaved.originalContent;
+                    }
+                    
+                    if (contentToneSelect && autoSaved.contentTone) {
+                        contentToneSelect.value = autoSaved.contentTone;
+                    }
+                    
+                    if (targetAudienceSelect && autoSaved.targetAudience) {
+                        targetAudienceSelect.value = autoSaved.targetAudience;
+                    }
+                    
+                    if (brandVoiceInput && autoSaved.brandVoice) {
+                        brandVoiceInput.value = autoSaved.brandVoice;
+                    }
+                    
+                    // Restore platform selections
+                    if (autoSaved.selectedPlatforms && Array.isArray(autoSaved.selectedPlatforms)) {
+                        selectedPlatforms = autoSaved.selectedPlatforms;
+                        if (selectedPlatformsInput) {
+                            selectedPlatformsInput.value = selectedPlatforms.join(',');
+                        }
+                        
+                        // Update UI
+                        document.querySelectorAll('.platform-type-card').forEach(card => {
+                            const platform = card.getAttribute('data-platform');
+                            if (selectedPlatforms.includes(platform)) {
+                                card.classList.add('selected');
+                            }
+                        });
+                    }
+                    
+                    showTemporaryMessage('Previous content restored successfully!', 'success');
+                }
+            } catch (error) {
+                console.warn('Failed to restore auto-saved data:', error);
+            }
+        }
+    }
+    
+    // Keyboard shortcuts
+    function initializeKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            try {
+                // Ctrl/Cmd + Enter to submit form
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    if (!isGenerating && contentRepurposerForm) {
+                        contentRepurposerForm.dispatchEvent(new Event('submit'));
+                    }
+                }
+                
+                // Escape to close modals
+                if (e.key === 'Escape') {
+                    const modals = document.querySelectorAll('.modal');
+                    modals.forEach(modal => {
+                        if (modal.parentNode) {
+                            modal.remove();
+                        }
+                    });
+                }
+                
+                // Ctrl/Cmd + S to save current content
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    if (currentActivePlatform && generatedContent && generatedContent[currentActivePlatform]) {
+                        window.copyPlatformContent(currentActivePlatform);
+                    }
+                }
+            } catch (error) {
+                console.warn('Keyboard shortcut error:', error);
+            }
+        });
+    }
+    
+    // Window beforeunload handler
+    function initializeBeforeUnloadHandler() {
+        window.addEventListener('beforeunload', (e) => {
+            try {
+                if (isGenerating) {
+                    e.preventDefault();
+                    e.returnValue = 'Content generation is in progress. Are you sure you want to leave?';
+                    return e.returnValue;
+                }
+                
+                if (originalContentTextarea && originalContentTextarea.value.trim() && 
+                    (!generatedContent || Object.keys(generatedContent).length === 0)) {
+                    e.preventDefault();
+                    e.returnValue = 'You have unsaved content. Are you sure you want to leave?';
+                    return e.returnValue;
+                }
+            } catch (error) {
+                console.warn('Beforeunload handler error:', error);
+            }
+        });
+    }
+    
+    // Global error handler
+    window.addEventListener('error', (e) => {
+        reportError(e.error, 'Global error handler');
+    });
+    
+    // Global unhandled promise rejection handler
+    window.addEventListener('unhandledrejection', (e) => {
+        reportError(e.reason, 'Unhandled promise rejection');
+    });
+    
+    // Initialize auto-save listener
+    if (originalContentTextarea) {
+        originalContentTextarea.addEventListener('input', autoSaveForm);
+    }
+    
+    // Initialize other features - call them safely
+    try {
+        initializeCharacterCounters();
+        initializeBootstrapComponents();
+        initializeKeyboardShortcuts();
+        initializeBeforeUnloadHandler();
+        restoreAutoSavedData();
+    } catch (error) {
+        console.warn('Initialization error:', error);
+    }
+    
+    console.log('ContentCraft fully initialized with real AI integration');
+    console.log('Available platforms:', Object.keys(platformConfigs));
+    console.log('Features: Auto-save, keyboard shortcuts, error tracking, performance monitoring');
+
+// ================================
+// GLOBAL FUNCTIONS (Available outside DOMContentLoaded scope)
+// ================================
+
+// Create global variables that need to be accessible from dynamically generated HTML
+let globalGeneratedContent = {};
+let globalPlatformConfigs = {};
+
+// Set up global references after DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Make sure these are accessible globally
+    window.globalGeneratedContent = generatedContent;
+    window.globalPlatformConfigs = platformConfigs;
+});
+
+// Global function for copying platform content
+window.copyPlatformContent = function(platform) {
+    try {
+        const content = window.globalGeneratedContent?.[platform] || globalGeneratedContent[platform];
+        if (!content) {
+            console.warn(`No content available for platform: ${platform}`);
+            return;
+        }
+        
+        const cleanContent = content.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ');
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(cleanContent).then(() => {
+                const config = window.globalPlatformConfigs?.[platform] || globalPlatformConfigs[platform] || { name: platform };
+                showTemporaryMessage(`${config.name} content copied to clipboard!`, 'success');
+            }).catch((error) => {
+                console.warn('Clipboard write failed:', error);
+                fallbackCopyToClipboard(cleanContent, platform);
+            });
+        } else {
+            fallbackCopyToClipboard(cleanContent, platform);
+        }
+    } catch (error) {
+        console.error('Copy platform content error:', error);
+    }
+};
+
+// Fallback copy method for older browsers
+function fallbackCopyToClipboard(text, platform) {
+    try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+            const config = window.globalPlatformConfigs?.[platform] || { name: platform };
+            showTemporaryMessage(`${config.name} content copied to clipboard!`, 'success');
+        } else {
+            throw new Error('Copy command failed');
+        }
+    } catch (error) {
+        console.error('Fallback copy failed:', error);
+        alert('Failed to copy content to clipboard. Please copy manually.');
+    }
+}
+
+// Global function for editing platform content
+window.editPlatformContent = function(platform) {
+    try {
+        // This will be handled by the main script
+        if (typeof editContent === 'function') {
+            currentActivePlatform = platform;
+            editContent();
+        } else {
+            console.warn('Edit function not available');
+        }
+    } catch (error) {
+        console.error('Edit platform content error:', error);
+    }
+};
+
+// Global function for saving edited content
+window.saveEditedContent = function(platform) {
+    try {
+        const textarea = document.getElementById('editContentTextarea');
+        if (!textarea) {
+            console.warn('Edit textarea not found');
+            return;
+        }
+        
+        const newContent = textarea.value.trim();
+        
+        if (newContent) {
+            // Update global content
+            if (window.globalGeneratedContent) {
+                window.globalGeneratedContent[platform] = newContent;
+            }
+            globalGeneratedContent[platform] = newContent;
+            
+            // Update display if function exists
+            if (typeof displayPlatformContent === 'function') {
+                displayPlatformContent(platform, newContent);
+            }
+            
+            if (typeof showTemporaryMessage === 'function') {
+                showTemporaryMessage('Content updated successfully!', 'success');
+            }
+        }
+        
+        // Close modal
+        const modal = textarea.closest('.modal');
+        if (modal && modal.parentNode) {
+            modal.remove();
+        }
+    } catch (error) {
+        console.error('Save edited content error:', error);
+    }
+};
+
+// Export functions for testing or external use
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        copyPlatformContent: window.copyPlatformContent,
+        editPlatformContent: window.editPlatformContent,
+        saveEditedContent: window.saveEditedContent
+    };
+}
+
+console.log('ContentCraft JavaScript loaded successfully - Real AI Integration Ready!');
+</script>
+
+</body>
+</html>

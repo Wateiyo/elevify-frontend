@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Kit Builder | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .brand-type-card h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .brand-type-card small {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .brand-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .brand-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .brand-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        p, li, span, div, label, .form-control, .form-select {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .btn {
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+        }
+        
+        .brand-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .brand-element {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .brand-element:hover {
+            border-color: #14697D;
+            box-shadow: 0 2px 10px rgba(20, 105, 125, 0.15);
+        }
+        
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        
+        .font-preview {
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin: 0.5rem 0;
+        }
+        
+        .copy-btn {
+            background-color: #14697D;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background-color: #0f5566;
+            color: white;
+        }
+        
+        .processing-message {
+            display: none;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .brand-guidelines {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .brand-element-preview {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .brand-category-badge {
+            background-color: #14697D;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                        
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>Brand Kit Builder</h1>
+                        <p class="lead">Create a comprehensive brand identity with AI-generated logos, color palettes, typography, and brand guidelines that reflect your unique vision.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img2.svg" alt="Brand Kit Builder" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-palette" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose brand type</div>
+                            <div class="mt-2"><span class="step-number">2</span> Define your vision</div>
+                            <div class="mt-2"><span class="step-number">3</span> Set preferences</div>
+                            <div class="mt-2"><span class="step-number">4</span> AI creates your kit</div>
+                            <div class="mt-2"><span class="step-number">5</span> Download and use!</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-magic" style="color: #FFbf23;"></i> Brand Kit Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Logo design concepts</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Color palette generation</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Typography recommendations</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Brand voice guidelines</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Visual style guide</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Usage examples</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-building" style="color: #A82C2C;"></i> Brand Categories</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-store" style="color: #14697D;"></i> E-commerce & Retail</div>
+                            <div class="mb-2"><i class="fas fa-laptop-code" style="color: #14697D;"></i> Tech & Software</div>
+                            <div class="mb-2"><i class="fas fa-heartbeat" style="color: #14697D;"></i> Health & Wellness</div>
+                            <div class="mb-2"><i class="fas fa-utensils" style="color: #14697D;"></i> Food & Beverage</div>
+                            <div class="mb-2"><i class="fas fa-briefcase" style="color: #14697D;"></i> Professional Services</div>
+                            <div class="mb-2"><i class="fas fa-gamepad" style="color: #14697D;"></i> Entertainment</div>
+                            <div class="mb-2"><i class="fas fa-graduation-cap" style="color: #14697D;"></i> Education</div>
+                            <div><i class="fas fa-leaf" style="color: #14697D;"></i> Sustainable & Eco</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Create Your Brand Kit</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <form id="brandKitBuilderForm">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Brand Category</label>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="brand-type-card card h-100" data-type="ecommerce">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-store mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>E-commerce & Retail</h6>
+                                                <small class="text-muted">Online and physical stores</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="brand-type-card card h-100" data-type="tech">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-laptop-code mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Tech & Software</h6>
+                                                <small class="text-muted">Digital products & services</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="brand-type-card card h-100" data-type="health">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-heartbeat mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Health & Wellness</h6>
+                                                <small class="text-muted">Healthcare & fitness</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="brand-type-card card h-100" data-type="food">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-utensils mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Food & Beverage</h6>
+                                                <small class="text-muted">Restaurants & food brands</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="brand-type-card card h-100" data-type="professional">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-briefcase mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Professional Services</h6>
+                                                <small class="text-muted">Consulting & business</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="brand-type-card card h-100" data-type="entertainment">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-gamepad mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Entertainment</h6>
+                                                <small class="text-muted">Media & gaming</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="selectedBrandType" name="brandType" required>
+
+                            <!-- Basic Information -->
+                            <div class="mb-4">
+                                <h5>Brand Details</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="brandName" class="form-label">Brand/Company Name</label>
+                                        <input type="text" class="form-control" id="brandName" name="brandName" placeholder="e.g., TechFlow Solutions" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="targetMarket" class="form-label">Target Market</label>
+                                        <input type="text" class="form-control" id="targetMarket" name="targetMarket" placeholder="e.g., Young professionals, Small businesses">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="brandPersonality" class="form-label">Brand Personality</label>
+                                        <select class="form-select" id="brandPersonality" name="brandPersonality" required>
+                                            <option value="">Select personality</option>
+                                            <option value="professional">Professional & Trustworthy</option>
+                                            <option value="creative">Creative & Innovative</option>
+                                            <option value="friendly">Friendly & Approachable</option>
+                                            <option value="luxury">Luxury & Premium</option>
+                                            <option value="playful">Playful & Fun</option>
+                                            <option value="bold">Bold & Edgy</option>
+                                            <option value="minimalist">Minimalist & Clean</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="colorPreference" class="form-label">Color Preference</label>
+                                        <select class="form-select" id="colorPreference" name="colorPreference" required>
+                                            <option value="">Select preference</option>
+                                            <option value="warm">Warm colors (reds, oranges, yellows)</option>
+                                            <option value="cool">Cool colors (blues, greens, purples)</option>
+                                            <option value="neutral">Neutral colors (blacks, whites, grays)</option>
+                                            <option value="vibrant">Vibrant & bright colors</option>
+                                            <option value="pastel">Soft & pastel colors</option>
+                                            <option value="monochrome">Monochrome palette</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Content -->
+                            <div class="mb-4">
+                                <h5>Brand Vision</h5>
+                                <div class="mb-3">
+                                    <label for="brandMission" class="form-label">Brand Mission/Purpose</label>
+                                    <textarea class="form-control" id="brandMission" name="brandMission" rows="2" placeholder="e.g., We help small businesses streamline their operations through innovative software solutions" required></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="keyValues" class="form-label">Core Values</label>
+                                        <input type="text" class="form-control" id="keyValues" name="keyValues" placeholder="e.g., Innovation, Reliability, Customer-first">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="logoStyle" class="form-label">Preferred Logo Style</label>
+                                        <select class="form-select" id="logoStyle" name="logoStyle">
+                                            <option value="">Select style</option>
+                                            <option value="text">Text/Wordmark only</option>
+                                            <option value="icon">Icon/Symbol only</option>
+                                            <option value="combination">Combination mark</option>
+                                            <option value="emblem">Emblem/Badge style</option>
+                                            <option value="abstract">Abstract symbol</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="brandKeywords" class="form-label">Brand Keywords & Inspiration</label>
+                                    <textarea class="form-control" id="brandKeywords" name="brandKeywords" rows="3" placeholder="Enter words that describe your brand, competitors you admire, or visual inspiration (separate with commas)"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Additional Options -->
+                            <div class="mb-4">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeGuidelines" checked>
+                                    <label class="form-check-label" for="includeGuidelines">
+                                        Include detailed brand usage guidelines
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeVoice">
+                                    <label class="form-check-label" for="includeVoice">
+                                        Generate brand voice and messaging guide
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="includeTemplates">
+                                    <label class="form-check-label" for="includeTemplates">
+                                        Create marketing material templates
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-palette me-2"></i> Generate Brand Kit
+                            </button>
+                        </form>
+                        
+                        <!-- Processing Message -->
+                        <div class="processing-message" id="processingMessage">
+                            <div class="loading-spinner d-inline-block me-2"></div>
+                            <h5 class="mb-0">Crafting your brand identity...</h5>
+                            <p class="text-muted mt-2 mb-0">This may take up to 45 seconds while our AI creates your complete brand kit.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Brand Kit</h4>
+                        
+                        <!-- Brand Information -->
+                        <div class="mb-4" id="brandInfoSection">
+                            <h5><i class="fas fa-info-circle me-2"></i>Brand Overview</h5>
+                            <div id="brandInfoContainer" class="p-3 bg-light rounded">
+                                <!-- Brand info will be added dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Brand Preview -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-eye me-2"></i>Brand Identity Preview</h5>
+                            <div class="brand-preview" id="brandPreview">
+                                <!-- Brand content will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Brand Guidelines -->
+                        <div class="mb-4" id="guidelinesSection" style="display: none;">
+                            <h5><i class="fas fa-book me-2"></i>Brand Guidelines & Usage</h5>
+                            <div class="brand-guidelines" id="guidelinesContent">
+                                <!-- Brand guidelines will be added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="copyBrand">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Brand Kit</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                            <div class="export-option" id="downloadBrand">
+                                <i class="fas fa-download"></i>
+                                <div>Download Kit</div>
+                                <small class="text-muted">As PDF file</small>
+                            </div>
+                            <div class="export-option" id="exportAssets">
+                                <i class="fas fa-images"></i>
+                                <div>Export Assets</div>
+                                <small class="text-muted">Logo variations</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editBrandBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Brand Kit
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newBrandBtn">
+                                <i class="fas fa-plus me-1"></i> Create New Brand
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">build</span> your brand identity?</h2>
+                <p class="lead mb-4">Join thousands of entrepreneurs who build stronger brands with Elevify's AI design tools.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div> 
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Brand type selection
+        document.querySelectorAll('.brand-type-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.brand-type-card').forEach(c => c.classList.remove('selected'));
+                
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                // Update hidden input
+                document.getElementById('selectedBrandType').value = this.dataset.type;
+            });
+        });
+
+        // Form submission
+        document.getElementById('brandKitBuilderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Check if brand type is selected
+            if (!document.getElementById('selectedBrandType').value) {
+                alert('Please select a brand category first.');
+                return;
+            }
+            
+            // Show processing message
+            document.getElementById('processingMessage').style.display = 'block';
+            document.querySelector('.loading-spinner').style.display = 'block';
+            this.style.display = 'none';
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                generateBrandKit();
+            }, 3000);
+        });
+
+        function generateBrandKit() {
+            const formData = new FormData(document.getElementById('brandKitBuilderForm'));
+            const brandName = formData.get('brandName');
+            const brandType = formData.get('brandType');
+            const brandPersonality = formData.get('brandPersonality');
+            const colorPreference = formData.get('colorPreference');
+            
+            // Hide processing message
+            document.getElementById('processingMessage').style.display = 'none';
+            
+            // Generate brand info
+            generateBrandInfo(brandName, brandType, brandPersonality);
+            
+            // Generate brand preview
+            generateBrandPreview(brandName, colorPreference, brandPersonality);
+            
+            // Show guidelines if requested
+            if (document.getElementById('includeGuidelines').checked) {
+                generateBrandGuidelines(brandName, brandPersonality);
+            }
+            
+            // Show results
+            document.getElementById('resultsContainer').style.display = 'block';
+            document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth' });
+            
+            // Update usage counter
+            updateUsageCounter();
+        }
+
+        function generateBrandInfo(brandName, brandType, personality) {
+            const infoContainer = document.getElementById('brandInfoContainer');
+            infoContainer.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Brand Name:</strong> ${brandName}<br>
+                        <strong>Category:</strong> ${brandType.replace('_', ' ').toUpperCase()}<br>
+                        <strong>Personality:</strong> ${personality}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Generated Elements:</strong><br>
+                        • Logo concepts<br>
+                        • Color palette<br>
+                        • Typography system<br>
+                        • Brand guidelines
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateBrandPreview(brandName, colorPref, personality) {
+            const colors = generateColorPalette(colorPref);
+            const fonts = generateFontPairings(personality);
+            
+            const previewContainer = document.getElementById('brandPreview');
+            previewContainer.innerHTML = `
+                <div class="brand-element-preview">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6><span class="brand-category-badge">Logo Concepts</span></h6>
+                        <button class="copy-btn" onclick="copyToClipboard('logo-concepts')">Copy</button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 text-center p-3" style="background: ${colors.primary}; color: white; border-radius: 10px; margin-right: 10px;">
+                            <h4 style="font-family: ${fonts.heading}; margin: 0;">${brandName}</h4>
+                            <small>Primary Logo</small>
+                        </div>
+                        <div class="col-md-4 text-center p-3" style="background: white; border: 2px solid ${colors.primary}; color: ${colors.primary}; border-radius: 10px; margin-right: 10px;">
+                            <h4 style="font-family: ${fonts.heading}; margin: 0;">${brandName}</h4>
+                            <small>Secondary Logo</small>
+                        </div>
+                        <div class="col-md-3 text-center p-3" style="background: ${colors.accent}; color: white; border-radius: 10px;">
+                            <h4 style="font-family: ${fonts.heading}; margin: 0;">${brandName.charAt(0)}</h4>
+                            <small>Icon Mark</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="brand-element-preview">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6><span class="brand-category-badge">Color Palette</span></h6>
+                        <button class="copy-btn" onclick="copyToClipboard('color-palette')">Copy</button>
+                    </div>
+                    <div class="d-flex flex-wrap gap-3">
+                        <div class="text-center">
+                            <div class="color-swatch" style="background-color: ${colors.primary};"></div>
+                            <small class="d-block">${colors.primary}</small>
+                            <small class="text-muted">Primary</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch" style="background-color: ${colors.secondary};"></div>
+                            <small class="d-block">${colors.secondary}</small>
+                            <small class="text-muted">Secondary</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch" style="background-color: ${colors.accent};"></div>
+                            <small class="d-block">${colors.accent}</small>
+                            <small class="text-muted">Accent</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch" style="background-color: ${colors.neutral};"></div>
+                            <small class="d-block">${colors.neutral}</small>
+                            <small class="text-muted">Neutral</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="brand-element-preview">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6><span class="brand-category-badge">Typography</span></h6>
+                        <button class="copy-btn" onclick="copyToClipboard('typography')">Copy</button>
+                    </div>
+                    <div class="font-preview" style="font-family: ${fonts.heading}; font-size: 1.5rem; font-weight: bold;">
+                        ${fonts.heading} - Heading Font
+                    </div>
+                    <div class="font-preview" style="font-family: ${fonts.body};">
+                        ${fonts.body} - Body text and general content. This font provides excellent readability and complements the heading font perfectly.
+                    </div>
+                </div>
+
+                <div class="brand-element-preview">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6><span class="brand-category-badge">Brand Applications</span></h6>
+                        <button class="copy-btn" onclick="copyToClipboard('applications')">Copy</button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="p-3 mb-2" style="background: ${colors.primary}; color: white; border-radius: 8px;">
+                                <small style="font-family: ${fonts.heading}; font-weight: bold;">${brandName}</small><br>
+                                <small style="font-family: ${fonts.body};">Business Card Example</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 mb-2" style="background: white; border: 1px solid ${colors.primary}; border-radius: 8px;">
+                                <small style="font-family: ${fonts.heading}; font-weight: bold; color: ${colors.primary};">${brandName}</small><br>
+                                <small style="font-family: ${fonts.body}; color: #666;">Letterhead Example</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateColorPalette(preference) {
+            const palettes = {
+                warm: {
+                    primary: '#D2691E',
+                    secondary: '#FF6347',
+                    accent: '#FFD700',
+                    neutral: '#8B4513'
+                },
+                cool: {
+                    primary: '#4682B4',
+                    secondary: '#20B2AA',
+                    accent: '#9370DB',
+                    neutral: '#708090'
+                },
+                neutral: {
+                    primary: '#2F4F4F',
+                    secondary: '#696969',
+                    accent: '#A9A9A9',
+                    neutral: '#DCDCDC'
+                },
+                vibrant: {
+                    primary: '#FF1493',
+                    secondary: '#00CED1',
+                    accent: '#FFD700',
+                    neutral: '#32CD32'
+                },
+                pastel: {
+                    primary: '#DDA0DD',
+                    secondary: '#98FB98',
+                    accent: '#F0E68C',
+                    neutral: '#F5DEB3'
+                },
+                monochrome: {
+                    primary: '#000000',
+                    secondary: '#404040',
+                    accent: '#808080',
+                    neutral: '#C0C0C0'
+                }
+            };
+            
+            return palettes[preference] || palettes.cool;
+        }
+
+        function generateFontPairings(personality) {
+            const pairings = {
+                professional: {
+                    heading: 'Arial, sans-serif',
+                    body: 'Helvetica, sans-serif'
+                },
+                creative: {
+                    heading: 'Georgia, serif',
+                    body: 'Open Sans, sans-serif'
+                },
+                friendly: {
+                    heading: 'Verdana, sans-serif',
+                    body: 'Tahoma, sans-serif'
+                },
+                luxury: {
+                    heading: 'Times New Roman, serif',
+                    body: 'Garamond, serif'
+                },
+                playful: {
+                    heading: 'Comic Sans MS, cursive',
+                    body: 'Trebuchet MS, sans-serif'
+                },
+                bold: {
+                    heading: 'Impact, sans-serif',
+                    body: 'Arial Black, sans-serif'
+                },
+                minimalist: {
+                    heading: 'Helvetica Neue, sans-serif',
+                    body: 'System UI, sans-serif'
+                }
+            };
+            
+            return pairings[personality] || pairings.professional;
+        }
+
+        function generateBrandGuidelines(brandName, personality) {
+            document.getElementById('guidelinesSection').style.display = 'block';
+            document.getElementById('guidelinesContent').innerHTML = `
+                <h6>Logo Usage Guidelines</h6>
+                <ul>
+                    <li>Maintain minimum clear space equal to the height of the logo</li>
+                    <li>Never stretch, skew, or alter the logo proportions</li>
+                    <li>Use approved color variations only</li>
+                    <li>Minimum size: 24px height for digital, 0.5 inch for print</li>
+                </ul>
+                
+                <h6 class="mt-3">Color Guidelines</h6>
+                <ul>
+                    <li>Primary color should dominate brand applications</li>
+                    <li>Secondary colors for support and accent elements</li>
+                    <li>Ensure sufficient contrast for accessibility (WCAG 2.1 AA)</li>
+                    <li>Use neutral colors for body text and backgrounds</li>
+                </ul>
+                
+                <h6 class="mt-3">Typography Guidelines</h6>
+                <ul>
+                    <li>Heading font for titles, headlines, and emphasis</li>
+                    <li>Body font for paragraph text and general content</li>
+                    <li>Maintain consistent hierarchy and spacing</li>
+                    <li>Minimum body text size: 14px for digital, 11pt for print</li>
+                </ul>
+                
+                <h6 class="mt-3">Brand Voice: ${personality}</h6>
+                <p>Tone and messaging should reflect the ${personality} personality in all communications. Keep messaging consistent across all touchpoints and channels.</p>
+            `;
+        }
+
+        function copyToClipboard(section) {
+            // This would copy the relevant section content
+            navigator.clipboard.writeText(`${section} copied to clipboard!`);
+            
+            // Show feedback
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            btn.style.backgroundColor = '#28a745';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.backgroundColor = '#14697D';
+            }, 2000);
+        }
+
+        function updateUsageCounter() {
+            const remainingElement = document.getElementById('remainingUses');
+            let remaining = parseInt(remainingElement.textContent) - 1;
+            remainingElement.textContent = remaining;
+            
+            if (remaining <= 0) {
+                document.getElementById('usageTracker').innerHTML = `
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div class="flex-grow-1">
+                        <strong>Usage Limit Reached</strong><br>
+                        <div class="small mt-1">Upgrade to continue creating brand kits</div>
+                    </div>
+                    <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade Now</a>
+                `;
+            }
+        }
+
+        // Export functionality
+        document.getElementById('copyBrand').addEventListener('click', function() {
+            copyToClipboard('Complete brand kit');
+        });
+
+        document.getElementById('downloadBrand').addEventListener('click', function() {
+            alert('Brand kit PDF download would start here');
+        });
+
+        document.getElementById('exportAssets').addEventListener('click', function() {
+            alert('Logo assets export would start here');
+        });
+
+        // Edit and new brand buttons
+        document.getElementById('editBrandBtn').addEventListener('click', function() {
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('brandKitBuilderForm').style.display = 'block';
+        });
+
+        document.getElementById('newBrandBtn').addEventListener('click', function() {
+            document.getElementById('brandKitBuilderForm').reset();
+            document.querySelectorAll('.brand-type-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('selectedBrandType').value = '';
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('brandKitBuilderForm').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

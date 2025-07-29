@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevify | AI-Powered Tools to Elevate Your Work</title>
+    <!-- Bootstrap for structure -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <!--Gumroad Payments-->
+    <script src="https://gumroad.com/js/gumroad.js"></script>
+
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo"><!-- Your logo here (SVG or image) -->
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <nav>
+                        <a href="#" class="btn btn-outline-dark me-2">Home</a>
+                        <a href="#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+                <div class="col-md-1">
+                    <!-- Subscription Status Display -->
+                    <div id="subscription-status"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        
+        <!-- Hero Section with heading and image in same line -->
+        <section class="hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <h2>
+                            <span class="teal-text">Smarter work,</span> 
+                            <span style="color: #A82C2C;">powered by AI.</span>
+                        </h2>
+                    </div>
+                    <div class="col-md-3 hero-img">
+                        <img src="/img/hero.svg" alt="AI productivity tools" class="img-fluid float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- AI Suite Section with Filtering by Category -->
+        <section id="tools" class="ai-suite-section">
+            <div class="container">
+                <div class="ai-suite-header">
+                    <h2>What can I help you create?</h2>
+                    
+                </div>
+                
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search AI tools...">
+                </div>
+
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-category="all">For You</button>
+                    <button class="tab-button" data-category="writing">Writing Tools</button>
+                    <button class="tab-button" data-category="research">Research Tools</button>
+                    <button class="tab-button" data-category="design">Design Tools</button>
+                    <button class="tab-button" data-category="productivity">Productivity</button>
+                    <button class="tab-button" data-category="business">Business</button>
+                </div>
+                <div class="ai-tools-grid">
+                    <!-- AI Assistant -->
+                    <div class="ai-tool-card" data-categories="writing,productivity" data-tool="writesuite">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img1.svg" alt="AI Assistant" class="ai-tool-img">
+                            <span class="ai-tool-tag">NEW</span>
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">AI Writesuite</h3>
+                            <p class="ai-tool-description">Write, summarize, proofread, and paraphrase with ease.</p>
+                            <a href="/writesuite.html" class="btn btn-primary tool-btn" data-tool="writesuite">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Mockup Generator -->
+                    <div class="ai-tool-card" data-categories="business,writing" data-tool="legalease">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img18.svg" alt="Mockup Generator" class="ai-tool-img">
+                            <span class="ai-tool-tag">UPDATED</span>
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">LegalEase</h3>
+                            <p class="ai-tool-description">Draft and translate contracts, agreements, and legal docs in minutes. </p>
+                            <a href="/legalease.html" class="btn btn-primary tool-btn" data-tool="legalease">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Character -->
+                    <div class="ai-tool-card" data-categories="research,writing" data-tool="researchmate">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img3.svg" alt="AI Character" class="ai-tool-img">
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Research Assistant</h3>
+                            <p class="ai-tool-description">Summarize articles, extract key points, generate citations, and create study notes.</p>
+                            <a href="/researchmate.html" class="btn btn-primary tool-btn" data-tool="researchmate">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Replace Details with AI -->
+                    <div class="ai-tool-card" data-categories="productivity,business" data-tool="socialboost">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img4.svg" alt="Replace Details with AI" class="ai-tool-img">
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Social Media Assistant </h3>
+                            <p class="ai-tool-description">Create content tailored to each platform, analyze performance, and draft replies to comments.</p>
+                            <a href="/socialboost.html" class="btn btn-primary tool-btn" data-tool="socialboost">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Writer -->
+                    <div class="ai-tool-card" data-categories="productivity" data-tool="resume_optimizer">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img5.svg" alt="AI Writer" class="ai-tool-img">
+                            <span class="ai-tool-tag">POPULAR</span>
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">AI Resume Builder & Optimizer</h3>
+                            <p class="ai-tool-description">Create a standout resume tailored to your dream job.</p>
+                            <a href="/resume-optimizer.html" class="btn btn-primary tool-btn" data-tool="resume_optimizer">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Content Rewriter -->
+                    <div class="ai-tool-card" data-categories="productivity, business" data-tool="content_repurposer">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img6.svg" alt="Content Rewriter" class="ai-tool-img">
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Content Repurposer</h3>
+                            <p class="ai-tool-description">Rewrite and paraphrase your content to make it fresh and unique</p>
+                            <a href="/content-repurposer.html" class="btn btn-primary tool-btn" data-tool="content_repurposer">Try Free</a>
+                        </div>
+                    </div>
+                    <!-- Grammar Checker -->
+                    <div class="ai-tool-card" data-categories="business" data-tool="seo_optimizer">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img7.svg" alt="Grammar Checker" class="ai-tool-img">
+                            <span class="ai-tool-tag">NEW</span>
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">SEO Optimizer</h3>
+                            <p class="ai-tool-description">Boost your content's visibility with smart keyword suggestions, meta descriptions, and on-page SEO tips optimized for Google</p>
+                            <a href="/seo-optimizer.html" class="btn btn-primary tool-btn" data-tool="seo_optimizer">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Social Media Writer -->
+                    <div class="ai-tool-card" data-categories="productivity, writing, business" data-tool="email_assistant">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img8.svg" alt="Social Media Writer" class="ai-tool-img">
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Email Assistant</h3>
+                            <p class="ai-tool-description">Instantly generate polished messages for outreach, follow-ups, and replies in your preferred tone.</p>
+                            <a href="/email-assistant.html" class="btn btn-primary tool-btn" data-tool="email_assistant">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Study Assistant -->
+                    <div class="ai-tool-card" data-categories="design" data-tool="portfolio_generator">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img9.svg" alt="Study Assistant" class="ai-tool-img">
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Portfolio Generator</h3>
+                            <p class="ai-tool-description"> Upload your projects and showcase your creative work with a professional portfolio. </p>
+                            <a href="/portfolio-generator.html" class="btn btn-primary tool-btn" data-tool="portfolio_generator">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Citation Generator -->
+                    <div class="ai-tool-card" data-categories="research,writing" data-tool="job_tracker">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img11.svg" alt="Citation Generator" class="ai-tool-img">
+                            <span class="ai-tool-tag">UPDATED</span>
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Job Application Tracker & Interview Prep Bot</h3>
+                            <p class="ai-tool-description">log job applications, get reminders, and practice AI-generated interview questions.</p>
+                            <a href="/job-tracker.html" class="btn btn-primary tool-btn" data-tool="job_tracker">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Analyzer -->
+                    <div class="ai-tool-card" data-categories="research,business" data-tool="data_visualization">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img10.svg" alt="Data Analyzer" class="ai-tool-img">
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Data Analyzer & Visualizer</h3>
+                            <p class="ai-tool-description">Analyze research data and create beautiful visualizations</p>
+                            <a href="/data-viz.html" class="btn btn-primary tool-btn" data-tool="data_visualization">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Survey Builder -->
+                    <div class="ai-tool-card" data-categories="research,business" data-tool="survey_builder">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img12.svg" alt="Survey Builder" class="ai-tool-img">
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Survey Builder</h3>
+                            <p class="ai-tool-description">Create professional surveys with AI question suggestions, smart logic, and insightful analytics.</p>
+                            <a href="/survey-builder.html" class="btn btn-primary tool-btn" data-tool="survey_builder">Try Free</a>
+                        </div>
+                    </div>
+                    <!-- Logo Generator -->
+                    <div class="ai-tool-card" data-categories="business,design" data-tool="market_research_assistant">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img13.svg" alt="Logo Generator" class="ai-tool-img">
+                            <span class="ai-tool-tag">TRENDING</span>
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Market Research Assistant</h3>
+                            <p class="ai-tool-description">Enter a niche or product → get customer pain points, competitor analysis, and trend data</p>
+                            <a href="/market-assistant.html" class="btn btn-primary tool-btn" data-tool="market_research_assistant">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Banner Creator -->
+                    <div class="ai-tool-card" data-categories="design,business" data-tool="banner_creator">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img14.svg" alt="Banner Creator" class="ai-tool-img">
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Banner & Web Header Creator</h3>
+                            <p class="ai-tool-description">Design web banners, email headers, or creatives that fit brand style.</p>
+                            <a href="/banner-creator.html" class="btn btn-primary tool-btn" data-tool="banner_creator">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Task Manager -->
+                    <div class="ai-tool-card" data-categories="design,productivity" data-tool="mockup_generator">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img15.svg" alt="Task Manager" class="ai-tool-img">
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Mockup Generator</h3>
+                            <p class="ai-tool-description">Place your product or design onto device mockups, packaging, or clothing automatically.</p>
+                            <a href="/mockup-generator.html" class="btn btn-primary tool-btn" data-tool="mockup_generator">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Meeting Assistant -->
+                    <div class="ai-tool-card" data-categories="productivity,business" data-tool="meeting_assistant">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img16.svg" alt="Meeting Assistant" class="ai-tool-img">
+                            <span class="ai-tool-tag">COMING SOON</span>
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Meeting Assistant</h3>
+                            <p class="ai-tool-description">Record, transcribe, and summarize your meetings automatically.</p>
+                            <a href="/meeting-assistant.html" class="btn btn-primary tool-btn" data-tool="meeting_assistant">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Invoice Generator -->
+                    <div class="ai-tool-card" data-categories="business" data-tool="invoice_generator">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img17.svg" alt="Invoice Generator" class="ai-tool-img">
+                            <span class="ai-tool-tag">COMING SOON</span>
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Invoice Generator</h3>
+                            <p class="ai-tool-description">Create professional invoices with automatic calculations.</p>
+                            <a href="/invoice-generator.html" class="btn btn-primary tool-btn" data-tool="invoice_generator">Try Free</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Sales Copy Generator -->
+                    <div class="ai-tool-card" data-categories="business,design" data-tool="brand_builder">
+                        <div class="ai-tool-img-container">
+                            <img src="/img/img2.svg" alt="Sales Copy Generator" class="ai-tool-img">
+                            <span class="ai-tool-tag">COMING SOON</span>
+                        </div>
+                        <div class="ai-tool-content">
+                            <h3 class="ai-tool-title">Brand Kit Builder</h3>
+                            <p class="ai-tool-description">Generate a brand kit from a business name and industry.</p>
+                            <a href="/brand-builder.html" class="btn btn-primary tool-btn" data-tool="brand_builder">Try Free</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <a href="/seo-optimizer.html" class="action-button">
+                        <i class="fas fa-video"></i> Boost SEO ranking
+                    </a>
+                    <a href="/survey-builder.html" class="action-button">
+                        <i class="fas fa-search"></i> Create survey
+                    </a>
+                    <a href="/brand-builder.html" class="action-button">
+                        <i class="fas fa-image"></i> Generate brand kit
+                    </a>
+                    <a href="/researchmate.html" class="action-button">
+                        <i class="fas fa-edit"></i> Draft academic paper 
+                    </a>
+                    <a href="/email-assistant.html" class="action-button">
+                        <i class="fas fa-expand"></i> Draft email 
+                    </a>
+                    <a href="/content-repurposer.html" class="action-button">
+                        <i class="fas fa-expand"></i> Reuse content
+                    </a>
+                </div>
+            </div>
+        </section>
+        <!-- Why Professionals Choose Elevify -->
+        <section class="py-5 professionals-section" style="background-color: #fff;">
+            <div class="container">
+                <h2 class="text-center mb-5">Why Professionals Choose Elevify</h2>
+                
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="left-content-container">
+                            <p>Elevify isn't just another AI platform — it's built to solve real productivity problems. Our users include freelancers, remote teams, agencies, and startups who rely on us to create high-quality content, save time on repetitive tasks, and stay ahead in a fast-paced digital world.</p>
+                            <div class="left-vector-container">
+                                <img src="/img/team2.svg" alt="Features illustration" class="img-fluid">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="floating-image-container">
+                            <img src="/img/team.svg" alt="Team collaboration" class="img-fluid float-animation">
+                        </div>
+                        <div class="under-image-content">
+                            <h3 class="info-text">What Makes Elevify Different?</h3>
+                            <ul class="mt-3">
+                                <li><i class="fas fa-check me-2" style="color: #14697D;"></i> All-in-one AI suite - no need to juggle multiple tools</li>
+                                <li><i class="fas fa-check me-2" style="color: #14697D;"></i> Simple, intuitive interface - no learning curve</li>
+                                <li><i class="fas fa-check me-2" style="color: #14697D;"></i> Custom-built for African and global markets - tools that actually work where you are</li>
+                                <li><i class="fas fa-check me-2" style="color: #14697D;"></i> Free forever plan - get started without any risk</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- What can Elevify do? Section -->
+        <section class="dark-section">
+            <div class="container">
+                <h2 class="text-center mb-5">What can Elevify do?</h2>
+                <p class="text-center mb-5">Elevify is a smart AI productivity suite that helps professionals and teams save time, improve content quality, and stay organized.</p>
+                
+                <div class="row mt-5">
+                    <!-- Tool 1 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="tool-card">
+                            <div class="card-body">
+                                <div class="tool-card-img">
+                                    <img src="/img/create.svg" alt="Content Creation">
+                                </div>
+                                <h3>Create professional content</h3>
+                                <p>💼 Repurpose blog posts into captions, generate hashtags, and adapt tone for different audiences — all in one click.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tool 2 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="tool-card">
+                            <div class="card-body">
+                                <div class="tool-card-img">
+                                    <img src="/img/analyse.svg" alt="Data Analysis">
+                                </div>
+                                <h3>Analyze and visualize data</h3>
+                                <p>Transform complex data into easy-to-understand charts and reports that tell a compelling story.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tool 3 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="tool-card">
+                            <div class="card-body">
+                                <div class="tool-card-img">
+                                    <img src="/img/research.svg" alt="Content Repurposing">
+                                </div>
+                                <h3>Research with ease</h3>
+                                <p> 📚 Simplify research with easy citation generation, accurate references, and a built-in plagiarism checker.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tool 4 -->
+                    <div class="col-md-6 mb-4">
+                        <div class="tool-card">
+                            <div class="card-body">
+                                <div class="tool-card-img">
+                                    <img src="/img/write.svg" alt="Research Tool">
+                                </div>
+                                <h3>Write Better</h3>
+                                <p> ✍️ Write faster and better with tools that proofread, summarize, paraphrase, and detect AI-generated content.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container text-center">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 text-start">
+                        <h2>
+                            <span class="teal-text">Smarter work</span><br>
+                            <span style="color: #A82C2C;">Starts Here.</span>
+                        </h2>
+                        <p class="lead mb-4">Choose a plan that fits your needs, or try Elevify Free with no commitment. Explore our powerful AI tools built to save you time and help you thrive.</p>
+            
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="/img/hero5.svg" alt="AI productivity tools" class="img-fluid float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="py-5" style="background-color: #F5F5F5;">
+            <div class="container">
+                <h2 class="text-center mb-5">Explore Our Pricing Options</h2>
+                <p class="text-center mb-5">No guesswork, just value. Start with free access to explore the tools, unlock any feature for only $1 when you need it, or choose a monthly or yearly plan to enjoy the full Elevify experience.</p>
+                
+                <div class="row" id="pricing-container">
+                    <!-- Free Plan -->
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="pricing-card">
+                            <div class="card-body">
+                                <h3>Free</h3>
+                                <div class="pricing-card-title">$0</div>
+                                <p>Good for testing the platform.</p>
+                                <a href="#" class="btn btn-primary w-100">Get Started</a>
+                                <ul class="mt-4">
+                                    <li>5 free uses per tool (reset monthly)</li>
+                                    <li>No credit card required</li>
+                                    <li>Limited access to advanced features</li>
+                                    <li>Great for students, casual users, or first-timers</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 24-Hour All Access Plan -->
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="pricing-card">
+                            <div class="card-body">
+                                <div class="bg-info px-2 py-1 d-inline-block rounded mb-2 text-white">Popular</div>
+                                <h3>24-Hour All Access</h3>
+                                <div class="pricing-card-title">$2</div>
+                                <p>One-time payment, full access</p>
+                                <button onclick="window.open('https://elevify.gumroad.com/l/hngcmx', '_blank')"class="btn btn-primary w-100 purchase-btn" data-tier="24h_all_access">Buy Now</button>
+                                <ul class="mt-4">
+                                    <li>Unlimited access to ALL tools for 24 hours</li>
+                                    <li>Perfect for intensive work sessions</li>
+                                    <li>No recurring charges</li>
+                                    <li>Great for deadlines and projects</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pro Plan -->
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="pricing-card">
+                            <div class="card-body">
+                                <h3>Pro</h3>
+                                <div class="pricing-card-title">$15</div>
+                                <p>Every month</p>
+                                <p>Unlimited use of all of Elevify's AI tool suite.</p>
+                                <button onclick="window.open('https://elevify.gumroad.com/l/flbal', '_blank')" class="btn btn-primary w-100 purchase-btn" data-tier="pro">Buy Now</button>
+                                <ul class="mt-4">
+                                    <li>Unlimited access to all tools</li>
+                                    <li>Priority customer support</li>
+                                    <li>Early access to new features</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pay-As-You-Go Plan -->
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="pricing-card">
+                            <div class="card-body">
+                                <div class="bg-warning px-2 py-1 d-inline-block rounded mb-2">Best Value</div>
+                                <h3>Pay-As-You-Go</h3>
+                                <div class="pricing-card-title">$1</div>
+                                <p>Per tool, 24-hour access</p>
+                                <button disabled class="btn btn-primary w-100 purchase-btn" data-tier="pay_as_you_go">Buy Now</button>
+                                <ul class="mt-4">
+                                    <li>$1 per tool for 24-hour unlimited access</li>
+                                    <li>Ideal for users who just need a tool briefly</li>
+                                    <li>Access expires after 24 hours</li>
+                                    <li>Good for light users or one-off projects</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="py-5">
+            <div class="container">
+                <h2 class="text-center mb-5">What Our Clients Say</h2>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="testimonial-card">
+                            <div class="card-body">
+                                <p class="testimonial-text">"I've cut my content creation time in half thanks to Elevify. The tools are easy to use and help me deliver polished work to clients much faster."</p>
+                                <div class="testimonial-author">
+                                    <strong>Sarah Johnson</strong>
+                                    <div>Content Writer, Nairobi</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="testimonial-card">
+                            <div class="card-body">
+                                <p class="testimonial-text">"This is the toolkit I didn't know I needed for running my solo business. Elevify takes care of the repetitive stuff so I can focus on strategy and growth."</p>
+                                <div class="testimonial-author">
+                                    <strong>Daniel Okafor</strong>
+                                    <div>Digital Marketer, Cape Town</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="testimonial-card">
+                            <div class="card-body">
+                                <p class="testimonial-text">"I've tried a bunch of AI tools before, but Elevify stands out for its simplicity and value. It's now part of my daily workflow."</p>
+                                <div class="testimonial-author">
+                                    <strong>Amina Rahman</strong>
+                                    <div>Freelance Designer, Johannesburg</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-5">
+            <div class="container">
+                <h2 class="text-center mb-5">Get In Touch</h2>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <h3>Contact Us</h3>
+                        <p>500 Terry Francine Street<br>San Francisco, CA 94158</p>
+                        
+                        <h5 class="mt-4">General Inquiries:</h5>
+                        <p>123-456-7890</p>
+                        
+                        <h5 class="mt-4">Sales:</h5>
+                        <p>info@elevify.com</p>
+                        
+                        <h5 class="mt-4">Customer Care:</h5>
+                        <p>info@elevify.com</p>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <h3>Sign up for our newsletter!</h3>
+                        <p>Sign up to get the latest news on our product.</p>
+                        
+                        <form>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" placeholder="Email">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Subscribe</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;"> .</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#tools">Tools</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Upgrade Modal -->
+    <div id="upgrade-modal" class="upgrade-modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Upgrade to Continue</h3>
+            <p>You've reached your free limit for <span class="tool-name"></span>.</p>
+            
+            <div class="upgrade-options">
+                <div class="upgrade-option">
+                    <h4>Pay-As-You-Go</h4>
+                    <div class="price">$1</div>
+                    <p>24-hour access to <span class="tool-name"></span></p>
+                    <button disabled class="purchase-btn" data-tier="pay_as_you_go" data-tool="">
+                        Get 24h Access
+                    </button>
+                </div>
+                
+                <div class="upgrade-option recommended">
+                    <h4>24-Hour All Access</h4>
+                    <div class="price">$2</div>
+                    <p>24-hour access to all 18 tools</p>
+                    <button class="purchase-btn" data-tier="24h_all_access">
+                        Get All Tools
+                    </button>
+                </div>
+                
+                <div class="upgrade-option">
+                    <h4>Pro</h4>
+                    <div class="price">$15/month</div>
+                    <p>Unlimited access to everything</p>
+                    <button class="purchase-btn" data-tier="pro">
+                        Go Pro
+                    </button>
+                </div>
+            </div>
+            
+            <button class="close-modal">Maybe Later</button>
+        </div>
+    </div>
+
+    <!-- Tool Selector Modal -->
+    <div id="tool-selector-modal" class="tool-selector-modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Select Tool for 24-Hour Access ($1)</h3>
+            <div class="tools-grid">
+                <!-- Tools will be populated by JavaScript -->
+            </div>
+            <button class="close-modal">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Elevify Payment Management Script -->
+   <script>
+        // Elevify Payment Manager Class - Updated for Render Deployment
+        class ElevifyPaymentManager {
+            constructor() {
+                // Updated API base URL for Render backend
+                this.API_BASE_URL = 'https://elevify.onrender.com';
+                this.pricingTiers = null;
+                this.userSubscriptions = null;
+                this.init();
+            }
+
+            async init() {
+                await this.loadPricingTiers();
+                await this.loadUserSubscriptions();
+                this.setupEventListeners();
+                this.updateUIBasedOnSubscriptions();
+            }
+
+            async loadPricingTiers() {
+                try {
+                    const response = await fetch(`${this.API_BASE_URL}/api/pricing/tiers`, {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        this.pricingTiers = data.tiers;
+                    }
+                } catch (error) {
+                    console.error('Failed to load pricing tiers:', error);
+                }
+            }
+
+            async loadUserSubscriptions() {
+                try {
+                    const response = await fetch(`${this.API_BASE_URL}/api/user/subscription-status`, {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    const data = await response.json();
+                    this.userSubscriptions = data;
+                    this.updateSubscriptionDisplay();
+                } catch (error) {
+                    console.error('Failed to load user subscriptions:', error);
+                }
+            }
+
+            async checkToolAccess(toolId) {
+                try {
+                    const response = await fetch(`${this.API_BASE_URL}/api/check-tool-access`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            tool_id: toolId
+                        })
+                    });
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('Failed to check tool access:', error);
+                    return { can_use: false, access_reason: 'error' };
+                }
+            }
+
+            async initiatePayment(tierType, toolName = null) {
+                try {
+                    const response = await fetch(`${this.API_BASE_URL}/api/payment/initiate`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            tier_type: tierType,
+                            tool_name: toolName
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Redirect to Gumroad
+                        window.open(data.gumroad_url, '_blank');
+                        
+                        // Show success message
+                        this.showMessage(`Payment initiated for ${data.tier_info.name} (${data.tier_info.price}). Complete your purchase in the new window to activate your subscription.`);
+                    } else {
+                        throw new Error(data.error);
+                    }
+                } catch (error) {
+                    console.error('Payment initiation failed:', error);
+                    this.showError(error.message);
+                }
+            }
+
+            // Handle tool clicks for main page navigation
+            async handleToolClick(toolName, href) {
+                // For "Try Free" buttons on the main page, always allow navigation to the tool
+                // The usage check will happen within the tool page itself
+                window.location.href = href;
+                return true;
+            }
+
+            // Method specifically for handling upgrade button clicks within tool pages
+            async handleUpgradeClick(toolName) {
+                this.showUpgradeModal(toolName);
+            }
+
+            async handlePurchase(tierType, toolName = null) {
+                // Check if user already has this subscription
+                if (this.hasActiveTier(tierType)) {
+                    this.showMessage('You already have an active subscription for this tier!');
+                    return;
+                }
+
+                if (tierType === 'pay_as_you_go' && !toolName) {
+                    this.showToolSelector();
+                } else {
+                    await this.initiatePayment(tierType, toolName);
+                }
+            }
+
+            showToolSelector() {
+                const tools = [
+                    'writesuite', 'legalease', 'researchmate', 'socialboost', 
+                    'resume_optimizer', 'content_repurposer', 'seo_optimizer',
+                    'email_assistant', 'portfolio_generator', 'job_tracker',
+                    'data_visualization', 'survey_builder', 'market_research_assistant',
+                    'banner_creator', 'mockup_generator', 'meeting_assistant',
+                    'invoice_generator', 'brand_builder'
+                ];
+
+                const modal = document.getElementById('tool-selector-modal');
+                const toolsGrid = modal.querySelector('.tools-grid');
+                
+                toolsGrid.innerHTML = tools.map(tool => `
+                    <button class="tool-option" onclick="elevifyPayments.selectTool('${tool}')">
+                        ${this.formatToolName(tool)}
+                    </button>
+                `).join('');
+
+                modal.style.display = 'block';
+            }
+
+            async selectTool(toolName) {
+                // Close modal
+                const modal = document.getElementById('tool-selector-modal');
+                modal.style.display = 'none';
+
+                // Initiate payment for specific tool
+                await this.initiatePayment('pay_as_you_go', toolName);
+            }
+
+            showUpgradeModal(toolName) {
+                const modal = document.getElementById('upgrade-modal');
+                const toolNameElements = modal.querySelectorAll('.tool-name');
+                
+                toolNameElements.forEach(el => {
+                    el.textContent = this.formatToolName(toolName);
+                });
+
+                // Update pay-as-you-go button with correct tool
+                const payAsYouGoBtn = modal.querySelector('[data-tier="pay_as_you_go"]');
+                if (payAsYouGoBtn) {
+                    payAsYouGoBtn.dataset.tool = toolName;
+                }
+
+                modal.style.display = 'block';
+            }
+
+            formatToolName(toolName) {
+                return toolName.split('_').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ');
+            }
+
+            hasActiveTier(tierType) {
+                if (!this.userSubscriptions) return false;
+                
+                const summary = this.userSubscriptions.subscription_summary;
+                
+                switch (tierType) {
+                    case 'pro':
+                        return summary?.pro;
+                    case '24h_all_access':
+                        return summary?.['24h_all_access'];
+                    case 'pay_as_you_go':
+                        return false; // Always allow new tool purchases
+                    default:
+                        return false;
+                }
+            }
+
+            updateSubscriptionDisplay() {
+                const statusContainer = document.getElementById('subscription-status');
+                if (!statusContainer || !this.userSubscriptions) return;
+
+                const summary = this.userSubscriptions.subscription_summary;
+                let statusHTML = '';
+                
+                if (summary?.pro) {
+                    statusHTML = '<span class="badge bg-success">PRO</span>';
+                } else if (summary?.['24h_all_access']) {
+                    statusHTML = '<span class="badge bg-info">24H ALL ACCESS</span>';
+                } else if (summary?.pay_as_you_go_tools?.length > 0) {
+                    statusHTML = '<span class="badge bg-warning">PAY-AS-YOU-GO</span>';
+                } else {
+                    statusHTML = '<span class="badge bg-secondary">FREE</span>';
+                }
+                
+                statusContainer.innerHTML = statusHTML;
+            }
+
+            async updateUIBasedOnSubscriptions() {
+                if (!this.userSubscriptions) return;
+
+                // Update tool buttons based on subscription status
+                document.querySelectorAll('[data-tool]').forEach(async (element) => {
+                    const toolName = element.dataset.tool;
+                    
+                    // Only check access for buttons that are NOT "Try Free" buttons on main page
+                    if (!element.classList.contains('tool-btn')) return;
+                    
+                    const access = await this.checkToolAccess(toolName);
+                    
+                    element.classList.remove('tool-free', 'tool-paid', 'tool-blocked');
+                    
+                    if (access.can_use) {
+                        const reason = access.access_reason;
+                        if (reason === 'pro' || reason === '24h_all_access' || reason === 'pay_as_you_go') {
+                            element.classList.add('tool-paid');
+                            element.title = `Available via ${reason}`;
+                        } else {
+                            element.classList.add('tool-free');
+                            if (access.usage) {
+                                element.title = `${access.usage.remaining} free uses remaining`;
+                            }
+                        }
+                    } else {
+                        element.classList.add('tool-blocked');
+                        element.title = 'Upgrade to continue using this tool';
+                    }
+                });
+
+                this.updateSubscriptionDisplay();
+            }
+
+            setupEventListeners() {
+                // Listen for payment completion (refresh when user returns to tab)
+                window.addEventListener('focus', () => {
+                    setTimeout(() => {
+                        this.loadUserSubscriptions();
+                    }, 2000);
+                });
+
+                // Set up purchase button handlers
+                document.addEventListener('click', (e) => {
+                    if (e.target.matches('.purchase-btn')) {
+                        e.preventDefault();
+                        const tierType = e.target.dataset.tier;
+                        const toolName = e.target.dataset.tool || null;
+                        this.handlePurchase(tierType, toolName);
+                    }
+                });
+
+                // Handle upgrade button clicks (within tool pages)
+                document.addEventListener('click', (e) => {
+                    if (e.target.matches('[href="/#pricing"]') && e.target.textContent.includes('Upgrade')) {
+                        e.preventDefault();
+                        // Get tool name from the page or a data attribute
+                        const toolName = this.getCurrentToolName();
+                        if (toolName) {
+                            this.handleUpgradeClick(toolName);
+                        } else {
+                            // Fallback to pricing page
+                            window.location.href = '/#pricing';
+                        }
+                        return;
+                    }
+
+                    // For "Try Free" buttons on main page, allow normal navigation
+                    if (e.target.matches('.tool-btn')) {
+                        // Let the click proceed normally - the tool page will handle usage checking
+                        return true;
+                    }
+                });
+
+                // Modal close handlers
+                document.addEventListener('click', (e) => {
+                    if (e.target.matches('.close-modal')) {
+                        e.target.closest('.upgrade-modal, .tool-selector-modal').style.display = 'none';
+                    }
+                });
+
+                // Close modals when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (e.target.matches('.upgrade-modal, .tool-selector-modal')) {
+                        e.target.style.display = 'none';
+                    }
+                });
+
+                // Refresh subscriptions periodically
+                setInterval(() => {
+                    this.loadUserSubscriptions();
+                }, 60000); // Every minute
+            }
+
+            // Method to determine current tool name from the page
+            getCurrentToolName() {
+                // Try to get tool name from URL
+                const path = window.location.pathname;
+                if (path.includes('.html')) {
+                    const toolFile = path.split('/').pop();
+                    const toolMappings = {
+                        'writesuite.html': 'writesuite',
+                        'socialboost.html': 'socialboost',
+                        'researchmate.html': 'researchmate',
+                        'resume-optimizer.html': 'resume_optimizer',
+                        'content-repurposer.html': 'content_repurposer',
+                        'seo-optimizer.html': 'seo_optimizer',
+                        'email-assistant.html': 'email_assistant',
+                        'portfolio-generator.html': 'portfolio_generator',
+                        'job-tracker.html': 'job_tracker',
+                        'data-viz.html': 'data_visualization',
+                        'survey-builder.html': 'survey_builder',
+                        'market-assistant.html': 'market_research_assistant',
+                        'banner-creator.html': 'banner_creator',
+                        'mockup-generator.html': 'mockup_generator',
+                        'meeting-assistant.html': 'meeting_assistant',
+                        'invoice-generator.html': 'invoice_generator',
+                        'brand-builder.html': 'brand_builder',
+                        'legalease.html': 'legalease'
+                    };
+                    return toolMappings[toolFile];
+                }
+                
+                // Try to get from a data attribute on the body or a global variable
+                if (window.CURRENT_TOOL_ID) {
+                    return window.CURRENT_TOOL_ID;
+                }
+                
+                // Fallback - return null
+                return null;
+            }
+
+            showMessage(message) {
+                const toast = document.createElement('div');
+                toast.className = 'alert alert-info alert-dismissible fade show';
+                toast.setAttribute('role', 'alert');
+                toast.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                const container = document.getElementById('toast-container');
+                if (container) {
+                    container.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 5000);
+                }
+            }
+
+            showError(message) {
+                const toast = document.createElement('div');
+                toast.className = 'alert alert-danger alert-dismissible fade show';
+                toast.setAttribute('role', 'alert');
+                toast.innerHTML = `
+                    Error: ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                const container = document.getElementById('toast-container');
+                if (container) {
+                    container.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 5000);
+                }
+            }
+        }
+
+        // Global function to manually trigger upgrade modal from tool pages
+        window.showUpgradeModal = function(toolName) {
+            if (window.elevifyPayments) {
+                window.elevifyPayments.handleUpgradeClick(toolName);
+            }
+        };
+
+        // Initialize payment manager when DOM is loaded
+        let elevifyPayments;
+        document.addEventListener('DOMContentLoaded', function() {
+            elevifyPayments = new ElevifyPaymentManager();
+        });
+    </script>
+
+    <script>
+        // Add scrolled class to header on scroll
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        
+        // Card click animation
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.classList.add('card-clicked');
+                setTimeout(() => {
+                    this.classList.remove('card-clicked');
+                }, 300);
+            });
+        });
+    </script>
+
+    <!-- Category filtering and search script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all tab buttons and tools
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const allTools = document.querySelectorAll('.ai-tool-card');
+            
+            // Initialize counters to show how many tools are in each category
+            const categoryCounter = {};
+            allTools.forEach(tool => {
+                const categories = tool.getAttribute('data-categories').split(',');
+                categories.forEach(category => {
+                    if (!categoryCounter[category]) {
+                        categoryCounter[category] = 0;
+                    }
+                    categoryCounter[category]++;
+                });
+            });
+            
+            console.log('Tools per category:', categoryCounter);
+            
+            // Add click event listener to each tab button
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Get the category to filter by
+                    const categoryToShow = button.getAttribute('data-category');
+                    
+                    // Remove active class from all buttons
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    button.classList.add('active');
+                    
+                    // Filter tools based on category
+                    allTools.forEach(tool => {
+                        if (categoryToShow === 'all') {
+                            tool.style.display = '';
+                        } else {
+                            const toolCategories = tool.getAttribute('data-categories').split(',');
+                            if (toolCategories.includes(categoryToShow)) {
+                                tool.style.display = '';
+                            } else {
+                                tool.style.display = 'none';
+                            }
+                        }
+                    });
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.querySelector('.search-input');
+            searchInput.addEventListener('keyup', () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                // If search is empty and a tab is selected, just show that tab's items
+                if (searchTerm === '') {
+                    const activeTab = document.querySelector('.tab-button.active');
+                    const activeCategory = activeTab.getAttribute('data-category');
+                    
+                    allTools.forEach(tool => {
+                        if (activeCategory === 'all') {
+                            tool.style.display = '';
+                        } else {
+                            const toolCategories = tool.getAttribute('data-categories').split(',');
+                            if (toolCategories.includes(activeCategory)) {
+                                tool.style.display = '';
+                            } else {
+                                tool.style.display = 'none';
+                            }
+                        }
+                    });
+                    return;
+                }
+                
+                // If searching, filter within the current category
+                const activeTab = document.querySelector('.tab-button.active');
+                const activeCategory = activeTab.getAttribute('data-category');
+                
+                allTools.forEach(tool => {
+                    const title = tool.querySelector('.ai-tool-title').textContent.toLowerCase();
+                    const description = tool.querySelector('.ai-tool-description').textContent.toLowerCase();
+                    const toolCategories = tool.getAttribute('data-categories').split(',');
+                    
+                    const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+                    const matchesCategory = activeCategory === 'all' || toolCategories.includes(activeCategory);
+                    
+                    if (matchesSearch && matchesCategory) {
+                        tool.style.display = '';
+                    } else {
+                        tool.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Initially filter to show "For You" (all) tools
+            tabButtons[0].click();
+        });
+    </script>
+    <style>
+        /* Additional CSS for payment UI elements */
+        .subscription-status .badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+        }
+
+        .upgrade-modal, .tool-selector-modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 30px;
+            border: none;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .upgrade-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .upgrade-option {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upgrade-option:hover {
+            border-color: #14697d;
+            transform: translateY(-2px);
+        }
+
+        .upgrade-option.recommended {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%);
+        }
+
+        .upgrade-option h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .upgrade-option .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #14697D;
+            margin-bottom: 10px;
+        }
+
+        .upgrade-option p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .upgrade-option button {
+            background: #ffbf23;
+            color: black;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-family: 'Sora';
+            font-size: small;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .upgrade-option button:hover {
+            background: #000;
+            color: white;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .tool-option {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 30px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .tool-option:hover {
+            background: #e9ecef;
+            border-color: #14697D;
+        }
+
+        .close-modal {
+            background: #ffbf23;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .close-modal:hover {
+            background: #000;
+        }
+
+        .tool-free {
+            opacity: 1;
+        }
+
+        .tool-paid {
+            background: linear-gradient(135deg, #28a745, #20c997) !important;
+            color: white !important;
+        }
+
+        #toast-container .alert {
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,3498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WriterSuite - AI Writing Assistant | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .feature-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .feature-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .feature-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .tone-option {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .tone-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .tone-option.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+        }
+        
+        .content-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.8;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .usage-disclaimer {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .tool-tab {
+            background: none;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-radius: 30px 30px 0 0;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-tab:hover {
+            color: #333;
+            background-color: #f0f0f0;
+        }
+        
+        .tool-tab.active {
+            background-color: #14697D;
+            color: white;
+        }
+
+        .tool-tabs {
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .length-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            
+        }
+
+        .length-slider::-webkit-slider-thumb {
+           
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #14697D;
+            cursor: pointer;
+        }
+
+        .length-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #14697D;
+            cursor: pointer;
+            border: none;
+        }
+
+        .suggestions-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .suggestion-item {
+            padding: 0.5rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .suggestion-item:hover {
+            background-color: #e9ecef;
+        }
+
+        .error-highlight {
+            background-color: #ffebee;
+            padding: 2px 4px;
+            border-radius: 3px;
+            border-bottom: 2px solid #f44336;
+        }
+
+        .alert-usage-exhausted {
+            background-color: #ffe6e6;
+            border-color: #ff9999;
+            color: #cc0000;
+        }
+
+        .retry-suggestion {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+         /* ===== UPGRADE MODAL STYLES ===== */
+
+/* Modal container and layout */
+.modal-xl {
+    max-width: 1000px;
+}
+
+@media (max-width: 992px) {
+    .modal-xl {
+        max-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-xl {
+        margin: 1rem;
+    }
+}
+
+/* Modal content styling */
+#upgradeModal .modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+#upgradeModal .modal-header {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1.5rem 2rem 1rem;
+}
+
+#upgradeModal .modal-title {
+    font-family: 'Antic Slab', serif;
+    color: #14697D;
+    font-weight: 400;
+    font-size: 1.5rem;
+}
+
+#upgradeModal .modal-body {
+    padding: 2rem;
+}
+
+#upgradeModal .modal-body p {
+    font-family: 'Quicksand', sans-serif;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* ===== PRICING TIER CARDS ===== */
+
+/* Base card styling */
+.pricing-tier-card {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+    background: #f8f9fa;
+    position: relative;
+    overflow: visible;
+    border-radius: 15px;
+}
+
+/* Card body styling */
+.pricing-tier-card .card-body {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+/* Icon styling */
+.pricing-tier-card i {
+    color: #14697D;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Card title styling */
+.pricing-tier-card h6 {
+    font-family: 'Antic Slab', serif;
+    font-weight: 400;
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+/* Card description */
+.pricing-tier-card small {
+    font-family: 'Quicksand', sans-serif;
+    color: #666;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Price display styling */
+.price-display {
+    font-family: 'Sora', sans-serif;
+    margin-bottom: 1.5rem;
+}
+
+.price-display span {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #14697D;
+}
+
+.price-display small {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: normal;
+}
+
+/* Features list styling */
+.features-list {
+    min-height: 80px;
+    width: 100%;
+    text-align: left;
+    margin-top: auto;
+}
+
+.features-list div {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.features-list small {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.features-list i {
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    width: 12px;
+}
+
+/* Badge styling */
+.pricing-tier-card .badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    z-index: 5;
+}
+
+/* ===== HOVER EFFECTS ===== */
+.pricing-tier-card:hover {
+    border-color: #14697D;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(20, 105, 125, 0.2);
+    background-color: #ffffff;
+}
+
+.pricing-tier-card:hover i {
+    color: #0f5566;
+}
+
+/* ===== SELECTED STATE (YELLOW HIGHLIGHT) ===== */
+.pricing-tier-card.selected {
+    border-color: #FFbf23 !important;
+    background-color: #fffbf0 !important;
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    z-index: 10;
+}
+
+.pricing-tier-card.selected h6 {
+    color: #14697D;
+}
+
+.pricing-tier-card.selected i {
+    color: #FFbf23;
+    transform: scale(1.1);
+}
+
+.pricing-tier-card.selected .price-display span {
+    color: #FFbf23;
+}
+
+/* ===== GET SELECTED PLAN BUTTON ===== */
+#getSelectedPlan {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    border: none;
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
+#getSelectedPlan:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#getSelectedPlan:enabled {
+    background-color: #14697D;
+    border-color: #14697D;
+    color: white;
+}
+
+#getSelectedPlan:enabled:hover {
+    background-color: #0f5566;
+    border-color: #0f5566;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(20, 105, 125, 0.3);
+}
+
+#getSelectedPlan:enabled:active {
+    transform: translateY(0);
+}
+
+/* Button icon */
+#getSelectedPlan i {
+    margin-right: 0.5rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet and below */
+@media (max-width: 992px) {
+    .pricing-tier-card .card-body {
+        padding: 1.5rem 1rem;
+    }
+    
+    .pricing-tier-card i {
+        font-size: 2rem;
+    }
+    
+    .price-display span {
+        font-size: 1.8rem;
+    }
+    
+    .features-list {
+        min-height: 70px;
+    }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+    #upgradeModal .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .pricing-tier-card {
+        margin-bottom: 1rem;
+    }
+    
+    .pricing-tier-card.selected {
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 8px 25px rgba(255, 191, 35, 0.3);
+    }
+    
+    .pricing-tier-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    #getSelectedPlan {
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 576px) {
+    #upgradeModal .modal-body {
+        padding: 1rem;
+    }
+    
+    .price-display span {
+        font-size: 1.6rem !important;
+    }
+    
+    .features-list {
+        text-align: center !important;
+        min-height: 60px;
+    }
+    
+    .pricing-tier-card h6 {
+        font-size: 1.1rem;
+    }
+    
+    .pricing-tier-card i {
+        font-size: 1.8rem;
+    }
+    
+    .pricing-tier-card .badge {
+        font-size: 0.6rem;
+        padding: 0.3rem 0.5rem;
+    }
+}
+
+/* ===== ANIMATION ENHANCEMENTS ===== */
+
+/* Smooth transitions for all interactive elements */
+.pricing-tier-card,
+.pricing-tier-card i,
+.pricing-tier-card h6,
+.pricing-tier-card .price-display span,
+#getSelectedPlan {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Subtle pulse animation for selected state */
+.pricing-tier-card.selected {
+    animation: selectedPulse 0.6s ease-out;
+}
+
+@keyframes selectedPulse {
+    0% {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    }
+    50% {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 0 15px 40px rgba(255, 191, 35, 0.5);
+    }
+    100% {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    }
+}
+
+/* Modal entrance animation */
+#upgradeModal.fade .modal-dialog {
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+#upgradeModal.fade:not(.show) .modal-dialog {
+    transform: translate(0, -25px) scale(0.95);
+    opacity: 0;
+}
+
+#upgradeModal.fade.show .modal-dialog {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+}
+
+/* ===== ACCESSIBILITY ===== */
+
+/* Focus states for keyboard navigation */
+.pricing-tier-card:focus {
+    outline: 3px solid rgba(255, 191, 35, 0.5);
+    outline-offset: 2px;
+}
+
+#getSelectedPlan:focus {
+    outline: 3px solid rgba(20, 105, 125, 0.5);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .pricing-tier-card {
+        border-width: 3px;
+    }
+    
+    .pricing-tier-card.selected {
+        border-width: 4px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .pricing-tier-card,
+    .pricing-tier-card i,
+    .pricing-tier-card h6,
+    .pricing-tier-card .price-display span,
+    #getSelectedPlan {
+        transition: none;
+    }
+    
+    .pricing-tier-card:hover,
+    .pricing-tier-card.selected {
+        transform: none;
+    }
+    
+    .selectedPulse {
+        animation: none;
+    }
+}
+/* Rich text editor styles */
+.rich-text-editor {
+    transition: all 0.3s ease;
+}
+
+.rich-text-editor:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.editing-toolbar .btn.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.editing-toolbar .btn:hover {
+    background-color: #e9ecef;
+}
+
+/* Copy success message animation */
+.alert.position-fixed {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                        
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>WriterSuite - AI Writing Assistant</h1>
+                        <p class="lead">Create, edit, and perfect your content with AI-powered writing tools designed for professionals, students, and content creators.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img1.svg" alt="Writing Tools" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-pen-fancy" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose your writing task</div>
+                            <div class="mt-2"><span class="step-number">2</span> Input your content or prompt</div>
+                            <div class="mt-2"><span class="step-number">3</span> Select tone and options</div>
+                            <div class="mt-2"><span class="step-number">4</span> Let AI enhance your text</div>
+                            <div class="mt-2"><span class="step-number">5</span> Review & export results</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-magic" style="color: #FFbf23;"></i> AI Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Original content generation</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Grammar & style correction</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Intelligent summarization</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Contextual editing</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Multiple rewrite options</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Tone optimization</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-file-alt" style="color: #A82C2C;"></i> Content Types</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-blog" style="color: #14697D;"></i> Blog Posts & Articles</div>
+                            <div class="mb-2"><i class="fas fa-envelope" style="color: #14697D;"></i> Emails & Messages</div>
+                            <div class="mb-2"><i class="fas fa-graduation-cap" style="color: #14697D;"></i> Essays & Reports</div>
+                            <div class="mb-2"><i class="fas fa-bullhorn" style="color: #14697D;"></i> Marketing Copy</div>
+                            <div class="mb-2"><i class="fas fa-newspaper" style="color: #14697D;"></i> Press Releases</div>
+                            <div class="mb-2"><i class="fas fa-share-alt" style="color: #14697D;"></i> Social Media Posts</div>
+                            <div class="mb-2"><i class="fas fa-file-contract" style="color: #14697D;"></i> Business Documents</div>
+                            <div><i class="fas fa-plus" style="color: #14697D;"></i> Creative Writing</div>
+                        </div>
+                    </div>
+
+                    <div class="usage-disclaimer">
+                        <h6><i class="fas fa-info-circle me-2" style="color: #856404;"></i>Usage Guidelines</h6>
+                        <p class="small mb-0">AI-generated content should be reviewed and fact-checked. Use responsibly and ensure content meets your standards before publishing.</p>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">WriterSuite</h4>
+                        
+                       <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">20</span> / 20 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade</button>
+                        </div>
+
+                        <!-- Tool Tabs -->
+                        <div class="tool-tabs mb-4">
+                            <button class="tool-tab active" data-tab="write">Write</button>
+                            <button class="tool-tab" data-tab="proofread">Proofread</button>
+                            <button class="tool-tab" data-tab="summarize">Summarize</button>
+                            <button class="tool-tab" data-tab="edit">Edit</button>
+                            <button class="tool-tab" data-tab="rewrite">Rewrite</button>
+                        </div>
+
+                        <!-- Write Section -->
+                        <div id="writeSection" class="tab-content active">
+                            <form id="writeForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Content Type</label>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="feature-card card h-100" data-type="blog_post">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-blog mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Blog Post</h6>
+                                                    <small class="text-muted">Articles & posts</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="feature-card card h-100" data-type="email">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-envelope mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Email</h6>
+                                                    <small class="text-muted">Professional emails</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="feature-card card h-100" data-type="essay">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-graduation-cap mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Essay</h6>
+                                                    <small class="text-muted">Academic writing</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="feature-card card h-100" data-type="report">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-chart-line mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Report</h6>
+                                                    <small class="text-muted">Business reports</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="feature-card card h-100" data-type="social_media">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-share-alt mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Social Media</h6>
+                                                    <small class="text-muted">Posts & captions</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="feature-card card h-100" data-type="creative">
+                                                <div class="card-body text-center">
+                                                    <i class="fas fa-feather-alt mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                    <h6>Creative</h6>
+                                                    <small class="text-muted">Stories & creative</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedContentType" name="contentType" required>
+
+                                <div class="mb-4">
+                                    <label for="writePrompt" class="form-label fw-bold">Writing Prompt</label>
+                                    <textarea class="form-control" id="writePrompt" name="writePrompt" rows="4" placeholder="Describe what you want to write about. Be specific about the topic, audience, and key points you want to cover..." required></textarea>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Tone & Style</label>
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <div class="tone-option selected" data-tone="professional">
+                                                <i class="fas fa-briefcase mb-2" style="color: #14697D;"></i>
+                                                <div>Professional</div>
+                                                <small class="text-muted">Formal</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="tone-option" data-tone="friendly">
+                                                <i class="fas fa-smile mb-2" style="color: #14697D;"></i>
+                                                <div>Friendly</div>
+                                                <small class="text-muted">Conversational</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="tone-option" data-tone="persuasive">
+                                                <i class="fas fa-bullhorn mb-2" style="color: #14697D;"></i>
+                                                <div>Persuasive</div>
+                                                <small class="text-muted">Compelling</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <div class="tone-option" data-tone="academic">
+                                                <i class="fas fa-university mb-2" style="color: #14697D;"></i>
+                                                <div>Academic</div>
+                                                <small class="text-muted">Scholarly</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedTone" name="tone" value="professional">
+
+                                <div class="mb-4">
+                                    <label for="lengthSlider" class="form-label fw-bold">Content Length: <span id="lengthLabel">Medium</span></label>
+                                    <input type="range" class="length-slider" id="lengthSlider" name="length" min="1" max="3" value="2" step="1">
+                                    <div class="d-flex justify-content-between mt-2">
+                                        <small class="text-muted">Short (200-400 words)</small>
+                                        <small class="text-muted">Medium (400-800 words)</small>
+                                        <small class="text-muted">Long (800-1500 words)</small>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-pen-fancy me-2"></i> Generate Content
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Proofread Section -->
+                        <div id="proofreadSection" class="tab-content">
+                            <form id="proofreadForm">
+                                <div class="mb-4">
+                                    <label for="proofreadText" class="form-label fw-bold">Text to Proofread</label>
+                                    <textarea class="form-control" id="proofreadText" name="proofreadText" rows="10" placeholder="Paste your text here for grammar, spelling, and style checking..." required></textarea>
+                                    <div class="form-text">Maximum 5,000 words</div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="checkGrammar" checked>
+                                        <label class="form-check-label" for="checkGrammar">
+                                            Grammar & Spelling
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="checkStyle" checked>
+                                        <label class="form-check-label" for="checkStyle">
+                                            Style & Clarity
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="checkTone">
+                                        <label class="form-check-label" for="checkTone">
+                                            Tone Optimization
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-spell-check me-2"></i> Proofread Text
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Summarize Section -->
+                        <div id="summarizeSection" class="tab-content">
+                            <form id="summarizeForm">
+                                <div class="mb-4">
+                                    <label for="summarizeText" class="form-label fw-bold">Text to Summarize</label>
+                                    <textarea class="form-control" id="summarizeText" name="summarizeText" rows="10" placeholder="Paste your long-form content here for summarization (up to 5,000 words)..." required></textarea>
+                                    <div class="form-text">Maximum 5,000 words</div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Summary Type</label>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <div class="tone-option selected" data-summary="paragraph">
+                                                <i class="fas fa-paragraph mb-2" style="color: #14697D;"></i>
+                                                <div>Paragraph</div>
+                                                <small class="text-muted">Flowing text</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="tone-option" data-summary="bullets">
+                                                <i class="fas fa-list-ul mb-2" style="color: #14697D;"></i>
+                                                <div>Bullet Points</div>
+                                                <small class="text-muted">Key points</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="tone-option" data-summary="headline">
+                                                <i class="fas fa-newspaper mb-2" style="color: #14697D;"></i>
+                                                <div>Headlines</div>
+                                                <small class="text-muted">Main ideas</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedSummaryType" name="summaryType" value="paragraph">
+
+                                <div class="mb-4">
+                                    <label for="summaryLength" class="form-label fw-bold">Summary Length</label>
+                                    <select class="form-select" id="summaryLength" name="summaryLength">
+                                        <option value="brief">Brief (1-2 sentences)</option>
+                                        <option value="concise" selected>Concise (1 paragraph)</option>
+                                        <option value="detailed">Detailed (2-3 paragraphs)</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-compress-alt me-2"></i> Summarize Text
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Edit Section -->
+                        <div id="editSection" class="tab-content">
+                            <form id="editForm">
+                                <div class="mb-4">
+                                    <label for="editText" class="form-label fw-bold">Text to Edit</label>
+                                    <textarea class="form-control" id="editText" name="editText" rows="8" placeholder="Paste your text here for editing..." required></textarea>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="editInstructions" class="form-label fw-bold">Editing Instructions</label>
+                                    <textarea class="form-control" id="editInstructions" name="editInstructions" rows="3" placeholder="Tell AI how to edit your text (e.g., 'make it more persuasive', 'use simpler language', 'shorten this paragraph')..." required></textarea>
+                                </div>
+
+                                <div class="mb-4">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="preserveMeaning" checked>
+                                        <label class="form-check-label" for="preserveMeaning">
+                                            Preserve original meaning
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="showInlineEdits" checked>
+                                        <label class="form-check-label" for="showInlineEdits">
+                                            Show inline suggestions
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-edit me-2"></i> Edit Text
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Rewrite Section -->
+                        <div id="rewriteSection" class="tab-content">
+                            <form id="rewriteForm">
+                                <div class="mb-4">
+                                    <label for="rewriteText" class="form-label fw-bold">Text to Rewrite</label>
+                                    <textarea class="form-control" id="rewriteText" name="rewriteText" rows="8" placeholder="Paste your text here for rewriting..." required></textarea>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Rewrite Goal</label>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="tone-option selected" data-rewrite="readability">
+                                                <i class="fas fa-eye mb-2" style="color: #14697D;"></i>
+                                                <div>Improve Readability</div>
+                                                <small class="text-muted">Clearer & simpler</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="tone-option" data-rewrite="tone">
+                                                <i class="fas fa-volume-up mb-2" style="color: #14697D;"></i>
+                                                <div>Change Tone</div>
+                                                <small class="text-muted">Different style</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="tone-option" data-rewrite="seo">
+                                                <i class="fas fa-search mb-2" style="color: #14697D;"></i>
+                                                <div>SEO Optimization</div>
+                                                <small class="text-muted">Search friendly</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="tone-option" data-rewrite="concise">
+                                                <i class="fas fa-compress mb-2" style="color: #14697D;"></i>
+                                                <div>Make Concise</div>
+                                                <small class="text-muted">Shorter & direct</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" id="selectedRewriteGoal" name="rewriteGoal" value="readability">
+
+                                <div class="mb-4">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="multipleOptions" checked>
+                                        <label class="form-check-label" for="multipleOptions">
+                                            Generate multiple rewrite options
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="preserveLength">
+                                        <label class="form-check-label" for="preserveLength">
+                                            Preserve original length
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-redo me-2"></i> Rewrite Text
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Container -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4" id="resultsTitle">AI Results</h4>
+                        
+                        <!-- Content Preview -->
+                        <div class="content-preview mb-4" id="contentPreview">
+                            <!-- Generated/edited content will appear here -->
+                        </div>
+                        
+                        <!-- Suggestions Panel -->
+                        <div id="suggestionsPanel" class="suggestions-list" style="display: none;">
+                            <h6><i class="fas fa-lightbulb me-2"></i>AI Suggestions</h6>
+                            <div id="suggestionsList">
+                                <!-- Suggestions will appear here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="exportWord">
+                                <i class="fas fa-file-word"></i>
+                                <div>Download Word</div>
+                                <small class="text-muted">.docx format</small>
+                            </div>
+                            <div class="export-option" id="copyContent">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Text</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                            <div class="export-option" id="exportPDF">
+                                <i class="fas fa-file-pdf"></i>
+                                <div>Export PDF</div>
+                                <small class="text-muted">.pdf format</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editResultBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Result
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newTaskBtn">
+                                <i class="fas fa-plus me-1"></i> New Task
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading Spinner -->
+                    <div class="loading-spinner" id="loadingSpinner"></div>
+                </div>
+            </div>
+        </div>
+         <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">supercharge</span> your workflow?</h2>
+                <p class="lead mb-4">Join thousands of professionals who simplify their work with Elevify's AI tools.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Upgrade Modal -->
+<div class="modal fade" id="upgradeModal" tabindex="-1" aria-labelledby="upgradeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content" style="border-radius: 20px; border: none;">
+            <div class="modal-header" style="border-bottom: 1px solid #e0e0e0;">
+                <h5 class="modal-title" id="upgradeModalLabel" style="font-family: 'Antic Slab', serif; color: #14697D;">
+                    <i class="fas fa-crown me-2" style="color: #FFbf23;"></i>Upgrade for Unlimited Access
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-center mb-4" style="font-family: 'Quicksand', sans-serif; color: #666;">
+                    Choose the plan that works best for you and unlock unlimited access.
+                </p>
+                
+                <!-- Pricing Cards Container -->
+                <div class="row g-3 mb-4">
+                    <!-- Pay As You Go -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="payasyougo" data-url="https://elevify.net?wanted=https://elevify.net/writesuite">
+                            <div class="card-body text-center p-3">
+                                <i class="fas fa-gift mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>Pay As You Go </h6>
+                                <small class="text-muted mb-3 d-block">24 Hour Access for WriterSuite</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$1</span>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>24-hour unlimited access to WriteSuite</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>All writing tools included (Write, Edit, Proofread, Summarize, Rewrite)</small></div>
+                                    <div class="mb-1"><i class="fas fa-times text-muted me-2"></i><small>No monthly commitment - pay only when you need it</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 24 Hour Pass -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="24hourpass" data-url="https://elevify.gumroad.com/l/hngcmx?wanted=https://elevify.net/writesuite">
+                            <div class="card-body text-center p-3 position-relative">
+                                <span class="badge position-absolute" style="top: 10px; right: 10px; background-color: #FFbf23; color: #000; font-size: 0.7rem;">Popular</span>
+                                <i class="fas fa-clock mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>24-Hour Pass</h6>
+                                <small class="text-muted mb-3 d-block">All tools unlimited for 24 hours</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$2</span>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Unlimited access to ALL Elevify tools for 24 hours</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>No daily limits - generate as much as you need</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Batch processing - work on multiple projects</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pro Tier -->
+                    <div class="col-12 col-md-12 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="pro" data-url="https://elevify.gumroad.com/l/flbal?wanted=https://elevify.net/writesuite">
+                            <div class="card-body text-center p-3 position-relative">
+                                <span class="badge position-absolute" style="top: 10px; right: 10px; background-color: #14697D; color: white; font-size: 0.7rem;">Best Value</span>
+                                <i class="fas fa-crown mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>Pro Monthly</h6>
+                                <small class="text-muted mb-3 d-block">Full unlimited access</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$15</span>
+                                    <small class="text-muted">/month</small>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Unlimited monthly usage across all tools</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Brand consistency tools - maintain your voice across all content</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Bulk operations - process multiple documents at once</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hidden input to track selection -->
+                <input type="hidden" id="selectedPricingTier" name="pricingTier" required>
+                
+                <!-- Get Button -->
+                <button type="button" class="btn btn-primary btn-lg w-100" id="getSelectedPlan" disabled>
+                    <i class="fas fa-shopping-cart me-2"></i>Get Selected Plan
+                </button>
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">Secure payment powered by Gumroad</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+// ============================================================================
+// PART 1: CONFIGURATION AND GLOBAL FUNCTIONS - FIXED AI SUGGESTIONS
+// ============================================================================
+
+const CONFIG = {
+    // Backend API base URL - Updated to Render backend
+    API_BASE_URL: 'https://elevify.onrender.com',
+    
+    // API endpoints
+    ENDPOINTS: {
+        WRITESUITE_GENERATE: '/api/writesuite/generate',
+        WRITESUITE_SUGGESTIONS: '/api/writesuite/suggestions',
+        CHECK_TOOL_ACCESS: '/api/check-tool-access'
+    },
+    
+    // Tool configuration
+    TOOL_ID: 'writesuite',
+    TOOL_NAME: 'AI Writers Suite'
+};
+
+const API_BASE_URL = getApiBaseUrl();
+console.log('🌐 API Base URL:', API_BASE_URL);
+console.log('🌐 Frontend URL:', window.location.origin);
+
+// ============================================================================
+// GLOBAL AI SUGGESTIONS FUNCTIONS - MOVED OUTSIDE DOMContentLoaded
+// ============================================================================
+
+// AI SUGGESTIONS FUNCTIONS - FIXED TO BE GLOBALLY ACCESSIBLE
+async function generateAISuggestions(content, contentType = 'general') {
+    const suggestionsList = document.getElementById('suggestionsList');
+    if (!suggestionsList) {
+        console.log('❌ suggestionsList element not found');
+        return;
+    }
+    
+    console.log('🤖 Starting AI suggestions generation...', { contentType, contentLength: content?.length });
+    
+    // Show loading state
+    suggestionsList.innerHTML = `
+        <div class="text-center p-3">
+            <div class="spinner-border spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <span>Analyzing content for AI suggestions...</span>
+        </div>
+    `;
+    
+    try {
+        console.log('🔗 Making request to:', `${API_BASE_URL}/api/writesuite/suggestions`);
+        
+        const response = await fetch(`${API_BASE_URL}/api/writesuite/suggestions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: content,
+                contentType: contentType
+            })
+        });
+        
+        console.log('📡 Response status:', response.status);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ AI suggestions API error:', response.status, errorText);
+            throw new Error(`API error (${response.status}): ${errorText}`);
+        }
+        
+        const data = await response.json();
+        console.log('✅ AI suggestions response data:', data);
+        
+        if (data.success && data.suggestions && data.suggestions.length > 0) {
+            console.log(`✅ Got ${data.suggestions.length} AI suggestions`);
+            displayAISuggestions(data.suggestions);
+            
+            if (!data.note) {
+                console.log('✅ Using real AI suggestions from Cohere');
+            } else {
+                console.log('⚠️ Using fallback suggestions:', data.note);
+            }
+        } else {
+            console.log('⚠️ No suggestions returned, using fallback');
+            displayFallbackSuggestions();
+        }
+    } catch (error) {
+        console.error('❌ AI suggestions request failed:', error);
+        console.log('🔄 Falling back to static suggestions');
+        displayFallbackSuggestions();
+    }
+}
+
+function displayAISuggestions(suggestions) {
+    const suggestionsList = document.getElementById('suggestionsList');
+    if (!suggestionsList) {
+        console.log('❌ suggestionsList element not found in displayAISuggestions');
+        return;
+    }
+    
+    if (!suggestions || suggestions.length === 0) {
+        suggestionsList.innerHTML = `
+            <div class="text-center text-muted p-3">
+                <i class="fas fa-check-circle me-2"></i>
+                Your content looks great! No specific suggestions at this time.
+            </div>
+        `;
+        return;
+    }
+    
+    console.log('🎨 Displaying AI suggestions:', suggestions);
+    
+    const suggestionsHTML = suggestions.map((suggestion, index) => `
+        <div class="suggestion-item" onclick="highlightSuggestion(${index}, '${suggestion.type}')">
+            <i class="${suggestion.icon} me-2" style="color: #14697D;"></i>
+            <strong>${suggestion.title}:</strong> ${suggestion.description}
+        </div>
+    `).join('');
+    
+    suggestionsList.innerHTML = suggestionsHTML;
+    console.log('✅ AI suggestions displayed successfully');
+}
+
+function displayFallbackSuggestions() {
+    const suggestionsList = document.getElementById('suggestionsList');
+    if (!suggestionsList) {
+        console.log('❌ suggestionsList element not found in displayFallbackSuggestions');
+        return;
+    }
+    
+    console.log('🔄 Displaying fallback suggestions');
+    
+    suggestionsList.innerHTML = `
+        <div class="suggestion-item" onclick="highlightSuggestion(0, 'readability')">
+            <i class="fas fa-lightbulb me-2" style="color: #FFbf23;"></i>
+            <strong>Readability:</strong> Consider using shorter sentences for better flow
+        </div>
+        <div class="suggestion-item" onclick="highlightSuggestion(1, 'grammar')">
+            <i class="fas fa-spell-check me-2" style="color: #14697D;"></i>
+            <strong>Word Choice:</strong> Replace weak words with stronger alternatives
+        </div>
+        <div class="suggestion-item" onclick="highlightSuggestion(2, 'structure')">
+            <i class="fas fa-stream me-2" style="color: #28a745;"></i>
+            <strong>Structure:</strong> Use transition words to connect ideas smoothly
+        </div>
+    `;
+    
+    console.log('✅ Fallback suggestions displayed');
+}
+
+function highlightSuggestion(index, type) {
+    console.log('🎯 Highlighting suggestion:', { index, type });
+    
+    // Visual feedback for clicked suggestion
+    const suggestionItems = document.querySelectorAll('.suggestion-item');
+    if (suggestionItems[index]) {
+        suggestionItems[index].style.backgroundColor = '#e8f5e8';
+        suggestionItems[index].style.transform = 'scale(1.02)';
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+            suggestionItems[index].style.backgroundColor = '';
+            suggestionItems[index].style.transform = '';
+        }, 2000);
+    }
+    
+    // Show tooltip with suggestion category
+    showSuggestionTooltip(type);
+}
+
+function showSuggestionTooltip(type) {
+    const tooltipMessages = {
+        'readability': 'Focus on making your content easier to read and understand',
+        'grammar': 'Check for grammar, spelling, and punctuation improvements',
+        'style': 'Enhance your writing style and tone',
+        'flow': 'Improve the logical flow and connection between ideas', 
+        'impact': 'Increase the impact and persuasiveness of your content',
+        'structure': 'Organize your content with better structure and formatting',
+        'engagement': 'Make your content more engaging for your audience',
+        'clarity': 'Clarify your message and make it more direct'
+    };
+    
+    const message = tooltipMessages[type] || 'AI-generated writing improvement suggestion';
+    
+    // Create floating tooltip
+    const tooltip = document.createElement('div');
+    tooltip.className = 'ai-suggestion-tooltip';
+    tooltip.innerHTML = `
+        <div class="tooltip-content">
+            <i class="fas fa-robot me-2"></i>
+            ${message}
+        </div>
+    `;
+    tooltip.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #14697D;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        z-index: 9999;
+        max-width: 300px;
+        text-align: center;
+        animation: fadeInOut 3s ease-in-out;
+    `;
+    
+    document.body.appendChild(tooltip);
+    
+    // Remove tooltip after animation
+    setTimeout(() => {
+        if (tooltip.parentNode) {
+            tooltip.remove();
+        }
+    }, 3000);
+}
+
+// Test function for AI suggestions
+async function testAISuggestions() {
+    console.log('🧪 Testing AI suggestions endpoint...');
+    
+    const testContent = "This is a sample text for testing AI suggestions. It contains some content that might need improvement.";
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/writesuite/suggestions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: testContent,
+                contentType: 'general'
+            })
+        });
+        
+        console.log('🧪 Test response status:', response.status);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('🧪 Test response data:', data);
+            return data;
+        } else {
+            const errorText = await response.text();
+            console.error('🧪 Test failed:', response.status, errorText);
+            return null;
+        }
+    } catch (error) {
+        console.error('🧪 Test request failed:', error);
+        return null;
+    }
+}
+
+// Make functions globally accessible
+window.generateAISuggestions = generateAISuggestions;
+window.displayAISuggestions = displayAISuggestions;
+window.highlightSuggestion = highlightSuggestion;
+window.showSuggestionTooltip = showSuggestionTooltip;
+window.testAISuggestions = testAISuggestions;
+// ============================================================================
+// PART 2: DOM INITIALIZATION AND FORM HANDLERS
+// ============================================================================
+
+// WriteSuite JavaScript - Fixed for Backend Integration
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing WriteSuite with Backend API...');
+    
+    const TOOL_ID = 'writesuite';
+    
+    // DOM Elements
+    let featureCards, selectedContentTypeInput, toolTabs, loadingSpinner, 
+        resultsContainer, contentPreview, toneOptions, selectedToneInput,
+        lengthSlider, lengthLabel;
+    
+    // Initialize immediately without setTimeout
+    console.log('Setting up WriteSuite functionality with Backend API integration...');
+    
+    featureCards = document.querySelectorAll('.feature-card');
+    selectedContentTypeInput = document.getElementById('selectedContentType');
+    toolTabs = document.querySelectorAll('.tool-tab');
+    loadingSpinner = document.getElementById('loadingSpinner');
+    resultsContainer = document.getElementById('resultsContainer');
+    contentPreview = document.getElementById('contentPreview');
+    toneOptions = document.querySelectorAll('.tone-option');
+    selectedToneInput = document.getElementById('selectedTone');
+    lengthSlider = document.getElementById('lengthSlider');
+    lengthLabel = document.getElementById('lengthLabel');
+    
+    console.log('Backend API integration ready. Elements found:', {
+        featureCards: featureCards?.length || 0,
+        toneOptions: toneOptions?.length || 0,
+        toolTabs: toolTabs?.length || 0,
+        suggestionsPanel: !!document.getElementById('suggestionsPanel'),
+        suggestionsList: !!document.getElementById('suggestionsList')
+    });
+    
+    // Test AI suggestions endpoint after DOM is loaded
+    setTimeout(() => {
+        testAISuggestions().then(result => {
+            if (result && result.success) {
+                console.log('✅ AI suggestions endpoint is working correctly');
+            } else {
+                console.log('⚠️ AI suggestions endpoint test failed - will use fallback');
+            }
+        });
+    }, 2000);
+    
+    // Debug elements status
+    debugElementsStatus();
+    
+    // Initialize all functions
+    initializeUsageTracking();
+    setupFeatureSelection();
+    setupToneSelection();
+    setupTabSwitching();
+    setupLengthSlider();
+    setupFormSubmissions();
+    setupExportOptions();
+    setupEditButtons();
+    checkForSuccessfulPurchase();
+    
+    console.log('🚀 WriteSuite initialization complete');
+    console.log('📊 Final element count:', {
+        featureCards: document.querySelectorAll('.feature-card').length,
+        toneOptions: document.querySelectorAll('.tone-option').length,
+        toolTabs: document.querySelectorAll('.tool-tab').length,
+        forms: document.querySelectorAll('form').length
+    });
+
+    // Test the write form specifically
+    const testWriteForm = document.getElementById('writeForm');
+    if (testWriteForm) {
+        console.log('✅ Write form ready for testing');
+        
+        // Add a test click handler to the generate button
+        const generateBtn = testWriteForm.querySelector('button[type="submit"]');
+        if (generateBtn) {
+            console.log('✅ Generate button found');
+            
+            // Test button click
+            generateBtn.addEventListener('click', function(e) {
+                console.log('🔥 Generate button clicked!');
+            });
+        } else {
+            console.log('❌ Generate button not found');
+        }
+    } else {
+        console.log('❌ Write form not found - this is the main issue!');
+    }
+    
+    // Check for successful purchase redirect
+    function checkForSuccessfulPurchase() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('wanted') && urlParams.get('wanted').includes('writesuite')) {
+            // Show success message
+            const successAlert = document.createElement('div');
+            successAlert.className = 'alert alert-success alert-dismissible fade show';
+            successAlert.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Purchase Successful!</strong> You now have full access to WriteSuite. Welcome to unlimited AI writing assistance!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.container').insertBefore(successAlert, document.querySelector('.container').firstChild);
+            
+            // Reset usage tracking to unlimited
+            resetUsageAfterPurchase();
+            
+            // Clean up URL
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+        }
+    }
+    
+    function resetUsageAfterPurchase() {
+        const usageKey = 'writesuite_usage';
+        const usage = { remaining: 999, limit: 999, month: 'unlimited', isPaid: true };
+        localStorage.setItem(usageKey, JSON.stringify(usage));
+        updateUsageDisplay(usage);
+    }
+    
+    // ADD this debugging function to check if all elements are loaded
+    function debugElementsStatus() {
+        const elements = {
+            'writeForm': document.getElementById('writeForm'),
+            'selectedContentType': document.getElementById('selectedContentType'),
+            'writePrompt': document.getElementById('writePrompt'),
+            'selectedTone': document.getElementById('selectedTone'),
+            'lengthSlider': document.getElementById('lengthSlider'),
+            'loadingSpinner': document.getElementById('loadingSpinner'),
+            'resultsContainer': document.getElementById('resultsContainer'),
+            'contentPreview': document.getElementById('contentPreview'),
+            'featureCards': document.querySelectorAll('.feature-card'),
+            'suggestionsPanel': document.getElementById('suggestionsPanel'),
+            'suggestionsList': document.getElementById('suggestionsList')
+        };
+        
+        console.log('🔍 Element Status Check:');
+        Object.entries(elements).forEach(([name, element]) => {
+            if (element) {
+                if (element.length !== undefined) {
+                    console.log(`✅ ${name}: ${element.length} elements found`);
+                } else {
+                    console.log(`✅ ${name}: Found`);
+                }
+            } else {
+                console.log(`❌ ${name}: Not found`);
+            }
+        });
+    }
+    
+    function initializeUsageTracking() {
+        // Since backend uses frontend tracking, use localStorage
+        const usageKey = 'writesuite_usage';
+        const resetKey = 'writesuite_reset';
+        const now = new Date();
+        const currentMonth = now.getFullYear() + '-' + (now.getMonth() + 1);
+        
+        let usage = JSON.parse(localStorage.getItem(usageKey)) || { remaining: 20, limit: 20, month: currentMonth };
+        let lastReset = localStorage.getItem(resetKey);
+        
+        // Reset if new month (unless it's a paid account)
+        if (usage.month !== currentMonth && !usage.isPaid) {
+            usage = { remaining: 20, limit: 20, month: currentMonth };
+            localStorage.setItem(usageKey, JSON.stringify(usage));
+            localStorage.setItem(resetKey, now.toISOString());
+        }
+        
+        updateUsageDisplay(usage);
+    }
+    
+    function updateUsageDisplay(usage) {
+        const remainingUsesEl = document.getElementById('remainingUses');
+        const usageTracker = document.getElementById('usageTracker');
+        
+        if (remainingUsesEl) {
+            remainingUsesEl.textContent = usage.isPaid ? 'Unlimited' : (usage.remaining || 0);
+        }
+        
+        if (usageTracker) {
+            usageTracker.classList.remove('alert-info', 'alert-warning', 'alert-danger', 'alert-success');
+            
+            if (usage.isPaid) {
+                usageTracker.classList.add('alert-success');
+                usageTracker.innerHTML = '<i class="fas fa-crown me-2"></i><div class="flex-grow-1"><strong>Pro Access Active!</strong><div class="small mt-1">Unlimited uses this month</div></div><button class="btn btn-outline-success" onclick="showUpgradeModal()">Manage Plan</button>';
+            } else if (usage.remaining === 0) {
+                usageTracker.classList.add('alert-danger');
+                usageTracker.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i><div class="flex-grow-1"><strong>No free uses remaining this month!</strong><div class="small mt-1">Upgrade to continue using this tool</div></div><button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade</button>';
+            } else if (usage.remaining <= 2) {
+                usageTracker.classList.add('alert-warning');
+            } else {
+                usageTracker.classList.add('alert-info');
+            }
+        }
+        
+        // Update reset date
+        const resetDateEl = document.getElementById('resetDate');
+        if (resetDateEl) {
+            if (usage.isPaid) {
+                resetDateEl.textContent = 'Never (Unlimited)';
+            } else {
+                const nextMonth = new Date();
+                nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
+                resetDateEl.textContent = nextMonth.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+            }
+        }
+    }
+    
+    // ENHANCED decrementUsage function
+    function decrementUsage() {
+        // TESTING MODE: Always return true to bypass usage limits
+        const TESTING_MODE = true; // Set to false to re-enable usage tracking
+        
+        if (TESTING_MODE) {
+            console.log('⚠️ Testing mode: Usage tracking disabled');
+            return true;
+        }
+        
+        // Check if user has paid access
+        const usageKey = 'writesuite_usage';
+        let usage = JSON.parse(localStorage.getItem(usageKey)) || { 
+            remaining: 20, 
+            limit: 20, 
+            month: new Date().getFullYear() + '-' + (new Date().getMonth() + 1) 
+        };
+        
+        if (usage.isPaid) {
+            console.log('✅ Paid user - unlimited access');
+            return true;
+        }
+        
+        // Original usage tracking code
+        if (usage.remaining > 0) {
+            usage.remaining--;
+            localStorage.setItem(usageKey, JSON.stringify(usage));
+            updateUsageDisplay(usage);
+            console.log('Usage decremented. Remaining:', usage.remaining);
+            return true;
+        }
+        
+        console.log('No usage remaining');
+        return false;
+    }
+
+    // ENHANCED restoreUsage function
+    function restoreUsage() {
+        const TESTING_MODE = true; // Set to false to re-enable usage tracking
+        
+        if (TESTING_MODE) {
+            console.log('⚠️ Testing mode: Usage restore disabled');
+            return;
+        }
+        
+        const usageKey = 'writesuite_usage';
+        let usage = JSON.parse(localStorage.getItem(usageKey));
+        if (usage && usage.remaining < usage.limit && !usage.isPaid) {
+            usage.remaining++;
+            localStorage.setItem(usageKey, JSON.stringify(usage));
+            updateUsageDisplay(usage);
+            console.log('Usage restored. Remaining:', usage.remaining);
+        }
+    }
+    
+    // ENHANCED setupFeatureSelection function
+    function setupFeatureSelection() {
+        if (!featureCards || featureCards.length === 0) {
+            console.log('⚠️ No feature cards found');
+            return;
+        }
+        
+        console.log('Setting up feature selection for', featureCards.length, 'cards');
+        
+        featureCards.forEach((card, index) => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove selected class from all cards in the same container
+                const container = this.closest('.row') || this.parentElement;
+                const allCards = container.querySelectorAll('.feature-card');
+                allCards.forEach(c => c.classList.remove('selected'));
+                
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                const type = this.getAttribute('data-type');
+                if (selectedContentTypeInput) {
+                    selectedContentTypeInput.value = type;
+                    console.log('✅ Selected content type:', type);
+                } else {
+                    console.log('⚠️ selectedContentTypeInput not found');
+                }
+            });
+        });
+    }
+    
+    function setupToneSelection() {
+        if (!toneOptions || toneOptions.length === 0) return;
+        
+        toneOptions.forEach((option) => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove selected class from all options in the same container
+                const container = this.closest('.row') || this.parentElement;
+                const allOptions = container.querySelectorAll('.tone-option');
+                allOptions.forEach(o => o.classList.remove('selected'));
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                const tone = this.getAttribute('data-tone');
+                const summary = this.getAttribute('data-summary');
+                const rewrite = this.getAttribute('data-rewrite');
+                
+                if (tone && selectedToneInput) {
+                    selectedToneInput.value = tone;
+                }
+                if (summary) {
+                    const summaryInput = document.getElementById('selectedSummaryType');
+                    if (summaryInput) summaryInput.value = summary;
+                }
+                if (rewrite) {
+                    const rewriteInput = document.getElementById('selectedRewriteGoal');
+                    if (rewriteInput) rewriteInput.value = rewrite;
+                }
+                
+                console.log('Selected option:', tone || summary || rewrite);
+            });
+        });
+    }
+    
+    function setupTabSwitching() {
+        if (!toolTabs || toolTabs.length === 0) return;
+        
+        toolTabs.forEach((tab) => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetTab = this.getAttribute('data-tab');
+                
+                console.log('Switching to tab:', targetTab);
+                
+                // Update active tab
+                toolTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show/hide content sections
+                const allSections = document.querySelectorAll('.tab-content');
+                allSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                const targetSection = document.getElementById(targetTab + 'Section');
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
+                
+                // Hide results when switching tabs
+                if (resultsContainer) {
+                    resultsContainer.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    function setupLengthSlider() {
+        if (!lengthSlider || !lengthLabel) return;
+        
+        lengthSlider.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            const labels = ['Short', 'Medium', 'Long'];
+            lengthLabel.textContent = labels[value - 1] || 'Medium';
+        });
+    }
+    
+    // ENHANCED setupFormSubmissions function
+    function setupFormSubmissions() {
+        const writeForm = document.getElementById('writeForm');
+        const proofreadForm = document.getElementById('proofreadForm');
+        const summarizeForm = document.getElementById('summarizeForm');
+        const editForm = document.getElementById('editForm');
+        const rewriteForm = document.getElementById('rewriteForm');
+        
+        console.log('Setting up form submissions:', {
+            writeForm: !!writeForm,
+            proofreadForm: !!proofreadForm,
+            summarizeForm: !!summarizeForm,
+            editForm: !!editForm,
+            rewriteForm: !!rewriteForm
+        });
+        
+        if (writeForm) {
+            writeForm.addEventListener('submit', handleWrite);
+            console.log('✅ Write form handler attached');
+        } else {
+            console.log('⚠️ Write form not found');
+        }
+        
+        if (proofreadForm) proofreadForm.addEventListener('submit', handleProofread);
+        if (summarizeForm) summarizeForm.addEventListener('submit', handleSummarize);
+        if (editForm) editForm.addEventListener('submit', handleEdit);
+        if (rewriteForm) rewriteForm.addEventListener('submit', handleRewrite);
+    }
+    
+    function setupExportOptions() {
+        const exportWord = document.getElementById('exportWord');
+        const copyContent = document.getElementById('copyContent');
+        const exportPDF = document.getElementById('exportPDF');
+        
+        if (exportWord) exportWord.addEventListener('click', exportToWord);
+        if (copyContent) copyContent.addEventListener('click', copyToClipboard);
+        if (exportPDF) exportPDF.addEventListener('click', exportToPDF);
+    }
+    
+    function setupEditButtons() {
+        const editResultBtn = document.getElementById('editResultBtn');
+        const newTaskBtn = document.getElementById('newTaskBtn');
+        
+        if (editResultBtn) {
+            editResultBtn.addEventListener('click', function() {
+                // Enable inline editing of the generated content
+                enableInlineEditing();
+            });
+        }
+        
+        if (newTaskBtn) {
+            newTaskBtn.addEventListener('click', function() {
+                // Hide results
+                if (resultsContainer) resultsContainer.style.display = 'none';
+                
+                // Reset all forms and selections (existing code)
+                const forms = document.querySelectorAll('form');
+                forms.forEach(form => form.reset());
+                
+                document.querySelectorAll('.feature-card, .tone-option').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                
+                // Set defaults
+                const defaultTone = document.querySelector('[data-tone="professional"]');
+                if (defaultTone) defaultTone.classList.add('selected');
+                
+                const defaultSummary = document.querySelector('[data-summary="paragraph"]');
+                if (defaultSummary) defaultSummary.classList.add('selected');
+                
+                const defaultRewrite = document.querySelector('[data-rewrite="readability"]');
+                if (defaultRewrite) defaultRewrite.classList.add('selected');
+                
+                // Reset hidden inputs
+                if (selectedToneInput) selectedToneInput.value = 'professional';
+                if (selectedContentTypeInput) selectedContentTypeInput.value = '';
+                
+                const summaryInput = document.getElementById('selectedSummaryType');
+                if (summaryInput) summaryInput.value = 'paragraph';
+                
+                const rewriteInput = document.getElementById('selectedRewriteGoal');
+                if (rewriteInput) rewriteInput.value = 'readability';
+                
+                // Switch to Write tab
+                const writeTab = document.querySelector('[data-tab="write"]');
+                if (writeTab) writeTab.click();
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    }
+    // ============================================================================
+    // PART 3: API HANDLERS AND FORM PROCESSING
+    // ============================================================================
+    
+    // COMPLETE handleWrite function - FIXED AND ENHANCED
+    async function handleWrite(e) {
+        e.preventDefault();
+        
+        console.log('handleWrite function called');
+        
+        // Get form elements
+        const selectedContentTypeInput = document.getElementById('selectedContentType');
+        const writePrompt = document.getElementById('writePrompt');
+        const selectedToneInput = document.getElementById('selectedTone');
+        const lengthSlider = document.getElementById('lengthSlider');
+        
+        console.log('Form elements:', {
+            contentType: selectedContentTypeInput?.value,
+            prompt: writePrompt?.value,
+            tone: selectedToneInput?.value,
+            length: lengthSlider?.value
+        });
+        
+        // Validation
+        if (!selectedContentTypeInput?.value) {
+            showError('Please select a content type first.');
+            return;
+        }
+        
+        if (!writePrompt?.value.trim()) {
+            showError('Please enter a writing prompt.');
+            return;
+        }
+        
+        // TESTING MODE: Skip usage check for now
+        const TESTING_MODE = true; // Set to false to re-enable usage tracking
+        
+        if (!TESTING_MODE) {
+            if (!decrementUsage()) {
+                displayUsageExhaustedError();
+                return;
+            }
+        } else {
+            console.log('⚠️ Testing mode: Usage tracking disabled');
+        }
+        
+        showLoading();
+        
+        try {
+            const requestData = {
+                writePrompt: `Create ${selectedContentTypeInput.value} content about: ${writePrompt.value}
+                
+                Requirements:
+                - Generate complete, finished content without any questions or incomplete sections
+                - Use ${selectedToneInput.value} tone
+                - No meta-commentary or placeholders
+                - Provide ready-to-use content only
+                
+                Topic: ${writePrompt.value}`,
+                contentType: selectedContentTypeInput.value,
+                tone: selectedToneInput.value,
+                length: parseInt(lengthSlider.value)
+            };
+            
+            console.log('Sending request to backend:', `${API_BASE_URL}/api/writesuite/generate`);
+            console.log('Request data:', requestData);
+            
+            // Extended timeout for backend cold starts
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+            
+            const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData),
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Response error:', response.status, errorText);
+                throw new Error(`Backend error (${response.status}): ${errorText}`);
+            }
+            
+            const data = await response.json();
+            console.log('Success response from backend:', data);
+            
+            if (data.success) {
+                // FIXED: This will now properly call AI suggestions
+                displayResults('Generated Content', data.content, true);
+            } else {
+                handleApiError(data, response.status);
+            }
+        } catch (error) {
+            console.error('Request failed:', error);
+            
+            if (error.name === 'AbortError') {
+                displayError('Request timed out. The backend may be starting up (this can take 30+ seconds on first use). Please try again.');
+            } else if (error.message.includes('CORS')) {
+                displayError('CORS error: Please check if the backend allows requests from this domain.');
+            } else if (error.message.includes('fetch')) {
+                displayError('Cannot reach backend. Please check if the backend service is running.');
+            } else {
+                displayError(`Network error: ${error.message}`);
+            }
+            
+            // Restore usage on error (only if not in testing mode)
+            if (!TESTING_MODE) {
+                restoreUsage();
+            }
+        } finally {
+            hideLoading();
+        }
+    }
+    
+    async function handleProofread(e) {
+        e.preventDefault();
+        
+        const text = document.getElementById('proofreadText').value;
+        if (!text.trim()) {
+            showError('Please enter text to proofread.');
+            return;
+        }
+        
+        if (!decrementUsage()) {
+            displayUsageExhaustedError();
+            return;
+        }
+        
+        showLoading();
+        
+        try {
+            const checkGrammar = document.getElementById('checkGrammar').checked;
+            const checkStyle = document.getElementById('checkStyle').checked;
+            const checkTone = document.getElementById('checkTone').checked;
+            
+            let focusAreas = [];
+            if (checkGrammar) focusAreas.push('grammar and spelling');
+            if (checkStyle) focusAreas.push('style and clarity');
+            if (checkTone) focusAreas.push('tone consistency');
+            
+            const requestData = {
+                writePrompt: `Proofread and correct the following text. Focus on: ${focusAreas.join(', ')}.
+                
+                Provide the corrected version without any commentary, questions, or incomplete sections. Make necessary improvements while preserving the original meaning.
+                
+                Text to proofread:
+                ${text}`,
+                contentType: 'proofread',
+                tone: 'professional',
+                length: 2
+            };
+            
+            console.log('Sending proofread request:', `${API_BASE_URL}/api/writesuite/generate`);
+            
+            const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                displayResults('Proofread Results', data.content, true);
+            } else {
+                handleApiError(data, response.status);
+            }
+        } catch (error) {
+            console.error('Proofread error:', error);
+            displayError('Failed to proofread text. Please try again.');
+            restoreUsage();
+        } finally {
+            hideLoading();
+        }
+    }
+        
+    async function handleSummarize(e) {
+        e.preventDefault();
+        
+        const text = document.getElementById('summarizeText').value;
+        if (!text.trim()) {
+            showError('Please enter text to summarize.');
+            return;
+        }
+        
+        if (!decrementUsage()) {
+            displayUsageExhaustedError();
+            return;
+        }
+        
+        showLoading();
+        
+        try {
+            const summaryType = document.getElementById('selectedSummaryType').value;
+            const summaryLength = document.getElementById('summaryLength').value;
+            
+            const requestData = {
+                writePrompt: `Please create a ${summaryLength} ${summaryType} summary of this text: ${text}`,
+                contentType: 'summary',
+                tone: 'professional',
+                length: summaryLength === 'brief' ? 1 : summaryLength === 'detailed' ? 3 : 2
+            };
+            
+            console.log('Sending summarize request:', `${API_BASE_URL}/api/writesuite/generate`);
+            
+            const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                displayResults('Summary', data.content, true);
+            } else {
+                handleApiError(data, response.status);
+            }
+        } catch (error) {
+            console.error('Summarize error:', error);
+            displayError('Failed to summarize text. Please try again.');
+            // Restore usage on error
+            let usage = JSON.parse(localStorage.getItem('writesuite_usage'));
+            if (usage) {
+                usage.remaining++;
+                localStorage.setItem('writesuite_usage', JSON.stringify(usage));
+                updateUsageDisplay(usage);
+            }
+        } finally {
+            hideLoading();
+        }
+    }
+    
+    async function handleEdit(e) {
+        e.preventDefault();
+        
+        const text = document.getElementById('editText').value;
+        const instructions = document.getElementById('editInstructions').value;
+        
+        if (!text.trim()) {
+            showError('Please provide text to edit.');
+            return;
+        }
+        
+        if (!instructions.trim()) {
+            showError('Please provide editing instructions.');
+            return;
+        }
+        
+        if (!decrementUsage()) {
+            displayUsageExhaustedError();
+            return;
+        }
+        
+        showLoading();
+        
+        try {
+            const preserveMeaning = document.getElementById('preserveMeaning').checked;
+            const showInlineEdits = document.getElementById('showInlineEdits').checked;
+            
+            const requestData = {
+                writePrompt: `Edit the following text according to these specific instructions: "${instructions}". 
+                
+                ${preserveMeaning ? 'IMPORTANT: Preserve the original meaning and main ideas.' : ''}
+                ${showInlineEdits ? 'Show clear improvements and changes.' : ''}
+                
+                Provide only the edited version without any commentary, questions, or incomplete sections.
+                
+                Text to edit:
+                ${text}`,
+                contentType: 'edit',
+                tone: 'professional',
+                length: 2
+            };
+            
+            console.log('Sending edit request:', `${API_BASE_URL}/api/writesuite/generate`);
+            
+            const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                displayResults('Edited Text', data.content, true);
+            } else {
+                handleApiError(data, response.status);
+            }
+        } catch (error) {
+            console.error('Edit error:', error);
+            displayError('Failed to edit text. Please try again.');
+            restoreUsage();
+        } finally {
+            hideLoading();
+        }
+    }
+        
+    async function handleRewrite(e) {
+        e.preventDefault();
+        
+        const text = document.getElementById('rewriteText').value;
+        if (!text.trim()) {
+            showError('Please enter text to rewrite.');
+            return;
+        }
+        
+        if (!decrementUsage()) {
+            displayUsageExhaustedError();
+            return;
+        }
+        
+        showLoading();
+        
+        try {
+            const rewriteGoal = document.getElementById('selectedRewriteGoal').value;
+            const multipleOptions = document.getElementById('multipleOptions').checked;
+            const preserveLength = document.getElementById('preserveLength').checked;
+            
+            const requestData = {
+                writePrompt: `Please rewrite this text to ${rewriteGoal.replace('_', ' ')}. ${multipleOptions ? 'Provide the best version. ' : ''}${preserveLength ? 'Keep similar length. ' : ''}Text to rewrite: ${text}`,
+                contentType: 'rewrite',
+                tone: 'professional',
+                length: 2
+            };
+            
+            console.log('Sending rewrite request:', `${API_BASE_URL}/api/writesuite/generate`);
+            
+            const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                displayResults('Rewritten Text', data.content, true);
+            } else {
+                handleApiError(data, response.status);
+            }
+        } catch (error) {
+            console.error('Rewrite error:', error);
+            displayError('Failed to rewrite text. Please try again.');
+            // Restore usage on error
+            let usage = JSON.parse(localStorage.getItem('writesuite_usage'));
+            if (usage) {
+                usage.remaining++;
+                localStorage.setItem('writesuite_usage', JSON.stringify(usage));
+                updateUsageDisplay(usage);
+            }
+        } finally {
+            hideLoading();
+        }
+    }
+    // ============================================================================
+    // PART 4: ERROR HANDLING, DISPLAY, EXPORT, AND PRICING FUNCTIONS
+    // ============================================================================
+    
+    // Enhanced error handling function
+    function handleApiError(data, statusCode) {
+        console.log('API Error:', data);
+        
+        if (statusCode === 403) {
+            // Handle usage limit errors
+            if (data.error === 'usage_limit_exceeded') {
+                displayUsageExhaustedError();
+                return;
+            }
+            
+            if (data.error === 'rate_limit_exceeded') {
+                displayRateLimitError();
+                return;
+            }
+            
+            if (data.error && data.error.includes('suspicious_activity')) {
+                displaySuspiciousActivityError();
+                return;
+            }
+        }
+        
+        // Generic error handling
+        const errorMessage = data.message || data.error || 'An unexpected error occurred. Please try again.';
+        displayError(errorMessage);
+    }
+    
+    function displayUsageExhaustedError() {
+        const resultsTitle = document.getElementById('resultsTitle');
+        if (resultsTitle) resultsTitle.textContent = 'Usage Limit Reached';
+        
+        if (contentPreview) {
+            contentPreview.innerHTML = `
+                <div class="alert alert-usage-exhausted">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-exclamation-triangle me-3" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5 class="mb-1">Free Monthly Limit Reached</h5>
+                            <p class="mb-0">You've used all 20 free uses for this month.</p>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="/#pricing" class="btn btn-primary me-2">
+                            <i class="fas fa-crown me-1"></i> Upgrade to Pro
+                        </a>
+                        <small class="text-muted">Unlimited uses • Priority support • Advanced features</small>
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (resultsContainer) {
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+    
+    function displayRateLimitError() {
+        const resultsTitle = document.getElementById('resultsTitle');
+        if (resultsTitle) resultsTitle.textContent = 'Too Many Requests';
+        
+        if (contentPreview) {
+            contentPreview.innerHTML = `
+                <div class="alert alert-warning">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-clock me-3" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5 class="mb-1">Please Slow Down</h5>
+                            <p class="mb-0">You're making requests too quickly. Please wait a moment before trying again.</p>
+                        </div>
+                    </div>
+                    <div class="retry-suggestion">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Tip:</strong> Wait 30-60 seconds between requests to avoid rate limiting.
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (resultsContainer) {
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+    
+    function displaySuspiciousActivityError() {
+        const resultsTitle = document.getElementById('resultsTitle');
+        if (resultsTitle) resultsTitle.textContent = 'Request Blocked';
+        
+        if (contentPreview) {
+            contentPreview.innerHTML = `
+                <div class="alert alert-warning">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-shield-alt me-3" style="font-size: 2rem;"></i>
+                        <div>
+                            <h5 class="mb-1">Security Check</h5>
+                            <p class="mb-0">Your request was temporarily blocked for security reasons.</p>
+                        </div>
+                    </div>
+                    <div class="retry-suggestion">
+                        <strong>What to try:</strong>
+                        <ul class="mt-2 mb-0">
+                            <li>Refresh the page and try again</li>
+                            <li>Make sure JavaScript is enabled</li>
+                            <li>Wait a few minutes before making another request</li>
+                            <li>Use a standard web browser</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+        
+        if (resultsContainer) {
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+    
+    // ENHANCED showError function
+    function showError(message) {
+        console.error('Error:', message);
+        
+        // Create a more user-friendly error display
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger alert-dismissible fade show';
+        errorDiv.innerHTML = `
+            <i class="fas fa-exclamation-circle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        // Insert at the top of the active tab content
+        const activeTab = document.querySelector('.tab-content.active');
+        if (activeTab) {
+            activeTab.insertBefore(errorDiv, activeTab.firstChild);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.remove();
+                }
+            }, 5000);
+        } else {
+            // Fallback to alert
+            alert(message);
+        }
+    }
+    
+    function showLoading() {
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'block';
+            console.log('Loading spinner shown');
+        }
+        if (resultsContainer) {
+            resultsContainer.style.display = 'none';
+        }
+    }
+    
+    function hideLoading() {
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
+            console.log('Loading spinner hidden');
+        }
+    }
+    
+    // ENHANCED displayResults function - FIXED to use AI suggestions
+    function displayResults(title, content, showSuggestions = false) {
+        const resultsTitle = document.getElementById('resultsTitle');
+        const suggestionsPanel = document.getElementById('suggestionsPanel');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const contentPreview = document.getElementById('contentPreview');
+        
+        console.log('📋 Displaying results:', { 
+            title, 
+            contentLength: content?.length || 0, 
+            showSuggestions,
+            suggestionsPanel: !!suggestionsPanel,
+            suggestionsList: !!document.getElementById('suggestionsList')
+        });
+        
+        if (resultsTitle) {
+            resultsTitle.textContent = title;
+        } else {
+            console.log('⚠️ resultsTitle element not found');
+        }
+        
+        if (contentPreview) {
+            contentPreview.innerHTML = formatContent(content);
+        } else {
+            console.log('⚠️ contentPreview element not found');
+        }
+        
+        if (showSuggestions && suggestionsPanel) {
+            console.log('🎯 Showing suggestions panel...');
+            suggestionsPanel.style.display = 'block';
+            
+            // Get current content type for better suggestions
+            const contentType = document.getElementById('selectedContentType')?.value || 'general';
+            console.log('🎯 Content type for suggestions:', contentType);
+            
+            // FIXED: Generate AI suggestions with actual content and small delay
+            setTimeout(() => {
+                console.log('🚀 Calling generateAISuggestions with content:', content?.substring(0, 100) + '...');
+                generateAISuggestions(content, contentType);
+            }, 500); // Small delay to ensure DOM is ready
+        } else if (suggestionsPanel) {
+            console.log('🎯 Hiding suggestions panel');
+            suggestionsPanel.style.display = 'none';
+        }
+        
+        if (resultsContainer) {
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+            console.log('✅ Results displayed successfully');
+        } else {
+            console.log('⚠️ resultsContainer element not found');
+        }
+    }
+    
+    function displayError(message) {
+        const resultsTitle = document.getElementById('resultsTitle');
+        if (resultsTitle) resultsTitle.textContent = 'Error';
+        
+        if (contentPreview) {
+            contentPreview.innerHTML = `<div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${message}
+            </div>`;
+        }
+        
+        if (resultsContainer) {
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        console.error('Error displayed:', message);
+    }
+    
+    function formatContent(content) {
+        if (!content) return '';
+        return content
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>');
+    }
+    
+    // Enhanced enableInlineEditing function that preserves formatting
+    function enableInlineEditing() {
+        if (!contentPreview) return;
+        
+        const currentContent = contentPreview.innerHTML;
+        
+        // Create a rich text editor using contentEditable
+        const editableArea = document.createElement('div');
+        editableArea.contentEditable = true;
+        editableArea.className = 'form-control rich-text-editor';
+        editableArea.style.minHeight = '300px';
+        editableArea.style.width = '100%';
+        editableArea.style.fontFamily = 'inherit';
+        editableArea.style.fontSize = 'inherit';
+        editableArea.style.lineHeight = '1.5';
+        editableArea.style.padding = '12px';
+        editableArea.style.border = '2px solid #007bff';
+        editableArea.style.borderRadius = '5px';
+        editableArea.style.outline = 'none';
+        editableArea.style.backgroundColor = '#f8f9fa';
+        editableArea.innerHTML = currentContent;
+        
+        // Create formatting toolbar
+        const toolbar = document.createElement('div');
+        toolbar.className = 'editing-toolbar mb-2 p-2 bg-light rounded';
+        toolbar.innerHTML = `
+            <div class="btn-group btn-group-sm me-3" role="group">
+                <button type="button" class="btn btn-outline-secondary" data-command="bold" title="Bold (Ctrl+B)">
+                    <i class="fas fa-bold"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" data-command="italic" title="Italic (Ctrl+I)">
+                    <i class="fas fa-italic"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" data-command="underline" title="Underline (Ctrl+U)">
+                    <i class="fas fa-underline"></i>
+                </button>
+            </div>
+            <div class="btn-group btn-group-sm me-3" role="group">
+                <button type="button" class="btn btn-outline-secondary" data-command="justifyLeft" title="Align Left">
+                    <i class="fas fa-align-left"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" data-command="justifyCenter" title="Align Center">
+                    <i class="fas fa-align-center"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" data-command="justifyRight" title="Align Right">
+                    <i class="fas fa-align-right"></i>
+                </button>
+            </div>
+            <div class="btn-group btn-group-sm me-3" role="group">
+                <button type="button" class="btn btn-outline-secondary" data-command="insertUnorderedList" title="Bullet List">
+                    <i class="fas fa-list-ul"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" data-command="insertOrderedList" title="Numbered List">
+                    <i class="fas fa-list-ol"></i>
+                </button>
+            </div>
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-secondary" data-command="undo" title="Undo (Ctrl+Z)">
+                    <i class="fas fa-undo"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" data-command="redo" title="Redo (Ctrl+Y)">
+                    <i class="fas fa-redo"></i>
+                </button>
+            </div>
+        `;
+        
+        // Create control buttons
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'mt-3 d-flex gap-2';
+        buttonContainer.innerHTML = `
+            <button type="button" class="btn btn-success" id="saveEditBtn">
+                <i class="fas fa-save me-1"></i>Save Changes
+            </button>
+            <button type="button" class="btn btn-secondary" id="cancelEditBtn">
+                <i class="fas fa-times me-1"></i>Cancel
+            </button>
+            <button type="button" class="btn btn-info" id="previewEditBtn">
+                <i class="fas fa-eye me-1"></i>Preview
+            </button>
+        `;
+        
+        // Store the original content
+        const originalContent = currentContent;
+        
+        // Replace content with editable area
+        contentPreview.innerHTML = '';
+        contentPreview.appendChild(toolbar);
+        contentPreview.appendChild(editableArea);
+        contentPreview.appendChild(buttonContainer);
+        
+        // Set up toolbar functionality
+        setupToolbar(toolbar, editableArea);
+        
+        // Focus on the editable area
+        editableArea.focus();
+        
+        // Handle save button
+        document.getElementById('saveEditBtn').addEventListener('click', function() {
+            const editedContent = editableArea.innerHTML;
+            contentPreview.innerHTML = editedContent;
+            showEditSuccessMessage();
+        });
+        
+        // Handle cancel button
+        document.getElementById('cancelEditBtn').addEventListener('click', function() {
+            contentPreview.innerHTML = originalContent;
+        });
+        
+        // Handle preview button
+        document.getElementById('previewEditBtn').addEventListener('click', function() {
+            togglePreview(editableArea, toolbar, buttonContainer);
+        });
+        
+        // Handle keyboard shortcuts
+        editableArea.addEventListener('keydown', function(e) {
+            // Ctrl+S or Cmd+S to save
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                document.getElementById('saveEditBtn').click();
+            }
+            
+            // Escape to cancel
+            if (e.key === 'Escape') {
+                document.getElementById('cancelEditBtn').click();
+            }
+        });
+        
+        // Auto-save to localStorage every 30 seconds
+        const autoSaveInterval = setInterval(() => {
+            localStorage.setItem('writesuite_autosave', editableArea.innerHTML);
+        }, 30000);
+        
+        // Clear auto-save when done
+        const originalSaveHandler = document.getElementById('saveEditBtn').onclick;
+        const originalCancelHandler = document.getElementById('cancelEditBtn').onclick;
+        
+        document.getElementById('saveEditBtn').onclick = function() {
+            clearInterval(autoSaveInterval);
+            localStorage.removeItem('writesuite_autosave');
+            if (originalSaveHandler) originalSaveHandler.call(this);
+        };
+        
+        document.getElementById('cancelEditBtn').onclick = function() {
+            clearInterval(autoSaveInterval);
+            localStorage.removeItem('writesuite_autosave');
+            if (originalCancelHandler) originalCancelHandler.call(this);
+        };
+    }
+
+    // Setup toolbar functionality
+    function setupToolbar(toolbar, editableArea) {
+        const buttons = toolbar.querySelectorAll('[data-command]');
+        
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const command = this.getAttribute('data-command');
+                
+                // Execute the formatting command
+                document.execCommand(command, false, null);
+                
+                // Update button states
+                updateToolbarStates(toolbar);
+                
+                // Keep focus on editable area
+                editableArea.focus();
+            });
+        });
+        
+        // Update toolbar states when selection changes
+        editableArea.addEventListener('selectionchange', () => updateToolbarStates(toolbar));
+        editableArea.addEventListener('keyup', () => updateToolbarStates(toolbar));
+        editableArea.addEventListener('mouseup', () => updateToolbarStates(toolbar));
+    }
+
+    // Update toolbar button states based on current formatting
+    function updateToolbarStates(toolbar) {
+        const commands = ['bold', 'italic', 'underline', 'justifyLeft', 'justifyCenter', 'justifyRight'];
+        
+        commands.forEach(command => {
+            const button = toolbar.querySelector(`[data-command="${command}"]`);
+            if (button) {
+                if (document.queryCommandState(command)) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            }
+        });
+    }
+
+    // Toggle between edit and preview mode
+    function togglePreview(editableArea, toolbar, buttonContainer) {
+        const previewBtn = document.getElementById('previewEditBtn');
+        
+        if (editableArea.contentEditable === 'true') {
+            // Switch to preview mode
+            editableArea.contentEditable = false;
+            editableArea.style.backgroundColor = '#ffffff';
+            editableArea.style.border = '1px solid #dee2e6';
+            toolbar.style.display = 'none';
+            previewBtn.innerHTML = '<i class="fas fa-edit me-1"></i>Edit';
+            previewBtn.className = 'btn btn-warning';
+        } else {
+            // Switch back to edit mode
+            editableArea.contentEditable = true;
+            editableArea.style.backgroundColor = '#f8f9fa';
+            editableArea.style.border = '2px solid #007bff';
+            toolbar.style.display = 'block';
+            previewBtn.innerHTML = '<i class="fas fa-eye me-1"></i>Preview';
+            previewBtn.className = 'btn btn-info';
+            editableArea.focus();
+        }
+    }
+
+    // ENHANCED showEditSuccessMessage function
+    function showEditSuccessMessage(message = 'Content updated successfully!') {
+        const successDiv = document.createElement('div');
+        successDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
+        successDiv.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        const contentPreview = document.getElementById('contentPreview');
+        if (contentPreview && contentPreview.parentNode) {
+            contentPreview.parentNode.insertBefore(successDiv, contentPreview.nextSibling);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.remove();
+                }
+            }, 3000);
+        }
+    }
+    
+    function exportToWord() {
+        if (!contentPreview) return;
+        
+        const content = contentPreview.innerHTML || contentPreview.textContent;
+        const currentDate = new Date().toLocaleDateString();
+        const fileName = 'writesuite-content-' + new Date().toISOString().slice(0,10) + '.doc';
+        // Create a proper Word document structure
+        const wordContent = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset='utf-8'>
+<title>WriteSuite Content</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>90</w:Zoom>
+<w:DoNotPromptForConvert/>
+<w:DoNotShowInsertionsAndDeletions/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+@page {
+margin: 1in;
+}
+body {
+font-family: Arial, sans-serif;
+font-size: 12pt;
+line-height: 1.5;
+margin: 0;
+padding: 0;
+}
+h1, h2, h3 {
+color: #333;
+}
+p {
+margin: 0 0 12pt 0;
+}
+</style>
+</head>
+<body>
+<div>
+<h1>WriteSuite Generated Content</h1>
+<p><strong>Generated on:</strong> ${currentDate}</p>
+<hr>
+${content}
+</div>
+</body>
+</html>`;
+        
+        const blob = new Blob([wordContent], { 
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+    // Enhanced copy function that preserves formatting
+    function copyToClipboard() {
+        if (!contentPreview) return;
+        
+        const range = document.createRange();
+        range.selectNodeContents(contentPreview);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        
+        try {
+            // Try to copy with formatting first
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showCopySuccessMessage('Content copied with formatting!');
+            } else {
+                // Fallback to plain text
+                fallbackCopyToClipboard(contentPreview.textContent);
+            }
+        } catch (err) {
+            console.error('Copy failed:', err);
+            fallbackCopyToClipboard(contentPreview.textContent);
+        } finally {
+            selection.removeAllRanges();
+        }
+    }
+
+    // Enhanced fallback copy function
+    function fallbackCopyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text)
+                .then(() => showCopySuccessMessage('Content copied as plain text!'))
+                .catch(err => {
+                    console.error('Clipboard API failed:', err);
+                    legacyCopyToClipboard(text);
+                });
+        } else {
+            legacyCopyToClipboard(text);
+        }
+    }
+
+    // Legacy copy method
+    function legacyCopyToClipboard(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            showCopySuccessMessage('Content copied!');
+        } catch (err) {
+            console.error('Legacy copy failed:', err);
+            alert('Failed to copy content. Please select and copy manually.');
+        }
+        
+        document.body.removeChild(textArea);
+    }
+
+    // Show copy success message
+    function showCopySuccessMessage(message) {
+        const successAlert = document.createElement('div');
+        successAlert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        successAlert.style.top = '20px';
+        successAlert.style.right = '20px';
+        successAlert.style.zIndex = '9999';
+        successAlert.style.minWidth = '300px';
+        successAlert.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(successAlert);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            if (successAlert.parentNode) {
+                successAlert.remove();
+            }
+        }, 3000);
+    }
+    
+    function exportToPDF() {
+        if (!contentPreview) return;
+        
+        const content = contentPreview.innerHTML || contentPreview.textContent;
+        const currentDate = new Date().toLocaleDateString();
+        
+        // Create a new window for PDF generation
+        const printWindow = window.open('', '_blank');
+        const pdfContent = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>WriteSuite Content - PDF Export</title>
+<style>
+@media print {
+@page {
+margin: 1in;
+size: A4;
+}
+body {
+-webkit-print-color-adjust: exact;
+print-color-adjust: exact;
+}
+}
+body {
+font-family: 'Times New Roman', Times, serif;
+font-size: 12pt;
+line-height: 1.6;
+color: #333;
+max-width: 8.5in;
+margin: 0 auto;
+padding: 0.5in;
+background: white;
+}
+h1, h2, h3 {
+color: #14697D;
+margin-top: 24pt;
+margin-bottom: 12pt;
+}
+h1 {
+font-size: 18pt;
+border-bottom: 2px solid #14697D;
+padding-bottom: 6pt;
+}
+h2 {
+font-size: 16pt;
+}
+h3 {
+font-size: 14pt;
+}
+p {
+margin: 0 0 12pt 0;
+text-align: justify;
+}
+.header {
+text-align: center;
+margin-bottom: 24pt;
+border-bottom: 1px solid #ccc;
+padding-bottom: 12pt;
+}
+.footer {
+margin-top: 24pt;
+padding-top: 12pt;
+border-top: 1px solid #ccc;
+font-size: 10pt;
+color: #666;
+text-align: center;
+}
+strong {
+font-weight: bold;
+}
+em {
+font-style: italic;
+}
+.error-highlight {
+background-color: #ffebee;
+padding: 2px 4px;
+border-radius: 3px;
+border-bottom: 2px solid #f44336;
+}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>WriteSuite Generated Content</h1>
+<p><strong>Generated on:</strong> ${currentDate}</p>
+<p><strong>Generated by:</strong> Elevify WriteSuite AI</p>
+</div>
+<div class="content">
+${content}
+</div>
+<div class="footer">
+<p>Generated by Elevify WriteSuite - AI-Powered Writing Assistant</p>
+<p>Visit: elevify.net</p>
+</div>
+<script>
+window.onload = function() {
+setTimeout(function() {
+window.print();
+setTimeout(function() {
+window.close();
+}, 100);
+}, 500);
+};
+<\/script>
+</body>
+</html>`;
+        
+        printWindow.document.write(pdfContent);
+        printWindow.document.close();
+    }
+    
+    // Make displayResults globally accessible
+    window.displayResults = displayResults;
+    
+    console.log('🚀 WriteSuite initialization complete with fixed AI suggestions');
+});
+
+// Add scroll effect to header
+window.addEventListener('scroll', function() {
+    const header = document.querySelector('header');
+    if (header) {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    }
+});
+
+// Test Backend API connection on page load
+window.addEventListener('load', async function() {
+    try {
+        console.log('🧪 Testing Backend connection...');
+        const testResponse = await fetch(`${API_BASE_URL}/api/test`);
+        if (testResponse.ok) {
+            const data = await testResponse.json();
+            console.log('✅ Backend connection successful:', data);
+            
+            // Check if WriteSuite endpoint is available
+            const endpoints = data.all_tool_endpoints || [];
+            const writeSuiteEndpoint = '/api/writesuite/generate';
+            
+            if (endpoints.includes(writeSuiteEndpoint) || data.message.includes('Elevify')) {
+                console.log('✅ WriteSuite endpoint is available');
+            } else {
+                console.warn('⚠️ WriteSuite endpoint may not be available');
+            }
+        } else {
+            console.warn('⚠️ Backend test failed with status:', testResponse.status);
+        }
+    } catch (error) {
+        console.warn('⚠️ Backend connection test failed:', error.message);
+        console.log('💡 Note: If your backend was sleeping, the first request may take 30+ seconds');
+    }
+});
+
+// Pricing tier selection with enhanced animation
+document.addEventListener('DOMContentLoaded', function() {
+    // Pricing card selection in modal
+    document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove selected class from all pricing cards with animation
+            document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(c => {
+                c.classList.remove('selected');
+                c.style.zIndex = '1';
+            });
+            
+            // Add selected class to clicked card with enhanced animation
+            this.classList.add('selected');
+            this.style.zIndex = '10';
+            
+            // Update hidden input
+            document.getElementById('selectedPricingTier').value = this.dataset.tier;
+            
+            // Enable the Get button with animation
+            const getButton = document.getElementById('getSelectedPlan');
+            getButton.disabled = false;
+            
+            // Update button text based on selection
+            const tier = this.dataset.tier;
+            const tierNames = {
+                'payasyougo': 'Get Pay-As-You-Go - $1',
+                '24hourpass': 'Get 24-Hour Pass - $2',
+                'pro': 'Get Pro Monthly - $15'
+            };
+            
+            // Animate button text change
+            getButton.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                getButton.innerHTML = `<i class="fas fa-shopping-cart me-2"></i>${tierNames[tier]}`;
+                getButton.style.transform = 'scale(1)';
+            }, 100);
+        });
+        
+        // Add subtle hover effect enhancement
+        card.addEventListener('mouseenter', function() {
+            if (!this.classList.contains('selected')) {
+                this.style.transform = 'translateY(-3px)';
+            }
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            if (!this.classList.contains('selected')) {
+                this.style.transform = 'translateY(0)';
+            }
+        });
+    });
+});
+
+// Handle Get Selected Plan button click
+document.getElementById('getSelectedPlan').addEventListener('click', function() {
+    const selectedCard = document.querySelector('#upgradeModal .pricing-tier-card.selected');
+    
+    if (selectedCard) {
+        const url = selectedCard.dataset.url;
+        
+        // Add click animation
+        this.style.transform = 'scale(0.98)';
+        
+        setTimeout(() => {
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('upgradeModal'));
+            modal.hide();
+            
+            // Redirect to Gumroad
+            window.open(url, '_blank');
+        }, 150);
+    }
+});
+
+// Show upgrade modal function
+function showUpgradeModal() {
+    const upgradeModal = new bootstrap.Modal(document.getElementById('upgradeModal'));
+    upgradeModal.show();
+}
+
+// Reset modal state when closed
+document.getElementById('upgradeModal').addEventListener('hidden.bs.modal', function() {
+    // Remove all selections with reset animation
+    document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(c => {
+        c.classList.remove('selected');
+        c.style.zIndex = '1';
+        c.style.transform = '';
+    });
+    
+    // Clear hidden input
+    document.getElementById('selectedPricingTier').value = '';
+    
+    // Disable and reset the Get button
+    const getButton = document.getElementById('getSelectedPlan');
+    getButton.disabled = true;
+    getButton.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>Get Selected Plan';
+    getButton.style.transform = '';
+});
+
+// Add CSS for suggestion animations and enhanced styling
+const suggestionCSS = `
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}
+
+.suggestion-item {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.suggestion-item:hover {
+    background-color: #f8f9fa;
+    border-color: #14697D;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(20, 105, 125, 0.15);
+}
+
+.suggestion-item:hover::before {
+    content: "Click for more info";
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 0.7rem;
+    color: #14697D;
+    background: #f0f8ff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.suggestion-item strong {
+    color: #14697D;
+    font-weight: 600;
+}
+
+.suggestions-list {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.suggestions-list h6 {
+    color: #14697D;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.rich-text-editor {
+    transition: all 0.3s ease;
+}
+
+.rich-text-editor:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.editing-toolbar .btn.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.editing-toolbar .btn:hover {
+    background-color: #e9ecef;
+}
+
+.alert.position-fixed {
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+`;
+
+// Add the CSS to your document
+const style = document.createElement('style');
+style.textContent = suggestionCSS;
+document.head.appendChild(style);
+
+// Make functions globally accessible for console testing
+window.testAISuggestions = testAISuggestions;
+window.generateAISuggestions = generateAISuggestions;
+window.displayAISuggestions = displayAISuggestions;
+window.highlightSuggestion = highlightSuggestion;
+
+console.log('🌐 AI Base URL:', API_BASE_URL);
+console.log('🧪 Test AI suggestions by running: testAISuggestions()');
+console.log('🎯 Generate AI suggestions by running: generateAISuggestions("your content", "content_type")');
+</script>
+
+</body>
+</html>

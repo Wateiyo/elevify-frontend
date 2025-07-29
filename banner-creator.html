@@ -1,0 +1,2380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banner & Web Header Creator | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .banner-type-card h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .banner-type-card small {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .banner-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .banner-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .banner-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        p, li, span, div, label, .form-control, .form-select {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .btn {
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+        }
+        
+        .banner-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .design-option {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .design-option:hover {
+            border-color: #14697D;
+            box-shadow: 0 2px 10px rgba(20, 105, 125, 0.15);
+        }
+        
+        .design-option.selected {
+            border-color: #FFbf23;
+            background-color: #fffbf0;
+        }
+        
+        .copy-btn {
+            background-color: #14697D;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background-color: #0f5566;
+            color: white;
+        }
+        
+        .processing-message {
+            display: none;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .design-suggestions {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .banner-preview-sample {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .banner-type-badge {
+            background-color: #14697D;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .color-swatch {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+
+        .color-swatch.selected {
+            border-color: #FFbf23;
+            transform: scale(1.2);
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+       /* ===== UPGRADE MODAL STYLES ===== */
+
+/* Modal container and layout */
+.modal-xl {
+    max-width: 1000px;
+}
+
+@media (max-width: 992px) {
+    .modal-xl {
+        max-width: 800px;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-xl {
+        margin: 1rem;
+    }
+}
+
+/* Modal content styling */
+#upgradeModal .modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+#upgradeModal .modal-header {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1.5rem 2rem 1rem;
+}
+
+#upgradeModal .modal-title {
+    font-family: 'Antic Slab', serif;
+    color: #14697D;
+    font-weight: 400;
+    font-size: 1.5rem;
+}
+
+#upgradeModal .modal-body {
+    padding: 2rem;
+}
+
+#upgradeModal .modal-body p {
+    font-family: 'Quicksand', sans-serif;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* ===== PRICING TIER CARDS ===== */
+
+/* Base card styling */
+.pricing-tier-card {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    height: 100%;
+    background: #f8f9fa;
+    position: relative;
+    overflow: visible;
+    border-radius: 15px;
+}
+
+/* Card body styling */
+.pricing-tier-card .card-body {
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+/* Icon styling */
+.pricing-tier-card i {
+    color: #14697D;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Card title styling */
+.pricing-tier-card h6 {
+    font-family: 'Antic Slab', serif;
+    font-weight: 400;
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+/* Card description */
+.pricing-tier-card small {
+    font-family: 'Quicksand', sans-serif;
+    color: #666;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Price display styling */
+.price-display {
+    font-family: 'Sora', sans-serif;
+    margin-bottom: 1.5rem;
+}
+
+.price-display span {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #14697D;
+}
+
+.price-display small {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: normal;
+}
+
+/* Features list styling */
+.features-list {
+    min-height: 80px;
+    width: 100%;
+    text-align: left;
+    margin-top: auto;
+}
+
+.features-list div {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.features-list small {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.features-list i {
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    width: 12px;
+}
+
+/* Badge styling */
+.pricing-tier-card .badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    z-index: 5;
+}
+
+/* ===== HOVER EFFECTS ===== */
+.pricing-tier-card:hover {
+    border-color: #14697D;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(20, 105, 125, 0.2);
+    background-color: #ffffff;
+}
+
+.pricing-tier-card:hover i {
+    color: #0f5566;
+}
+
+/* ===== SELECTED STATE (YELLOW HIGHLIGHT) ===== */
+.pricing-tier-card.selected {
+    border-color: #FFbf23 !important;
+    background-color: #fffbf0 !important;
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    z-index: 10;
+}
+
+.pricing-tier-card.selected h6 {
+    color: #14697D;
+}
+
+.pricing-tier-card.selected i {
+    color: #FFbf23;
+    transform: scale(1.1);
+}
+
+.pricing-tier-card.selected .price-display span {
+    color: #FFbf23;
+}
+
+/* ===== GET SELECTED PLAN BUTTON ===== */
+#getSelectedPlan {
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    border: none;
+    width: 100%;
+    margin-top: 1.5rem;
+}
+
+#getSelectedPlan:disabled {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#getSelectedPlan:enabled {
+    background-color: #14697D;
+    border-color: #14697D;
+    color: white;
+}
+
+#getSelectedPlan:enabled:hover {
+    background-color: #0f5566;
+    border-color: #0f5566;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(20, 105, 125, 0.3);
+}
+
+#getSelectedPlan:enabled:active {
+    transform: translateY(0);
+}
+
+/* Button icon */
+#getSelectedPlan i {
+    margin-right: 0.5rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet and below */
+@media (max-width: 992px) {
+    .pricing-tier-card .card-body {
+        padding: 1.5rem 1rem;
+    }
+    
+    .pricing-tier-card i {
+        font-size: 2rem;
+    }
+    
+    .price-display span {
+        font-size: 1.8rem;
+    }
+    
+    .features-list {
+        min-height: 70px;
+    }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+    #upgradeModal .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .pricing-tier-card {
+        margin-bottom: 1rem;
+    }
+    
+    .pricing-tier-card.selected {
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 8px 25px rgba(255, 191, 35, 0.3);
+    }
+    
+    .pricing-tier-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    #getSelectedPlan {
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 576px) {
+    #upgradeModal .modal-body {
+        padding: 1rem;
+    }
+    
+    .price-display span {
+        font-size: 1.6rem !important;
+    }
+    
+    .features-list {
+        text-align: center !important;
+        min-height: 60px;
+    }
+    
+    .pricing-tier-card h6 {
+        font-size: 1.1rem;
+    }
+    
+    .pricing-tier-card i {
+        font-size: 1.8rem;
+    }
+    
+    .pricing-tier-card .badge {
+        font-size: 0.6rem;
+        padding: 0.3rem 0.5rem;
+    }
+}
+
+/* ===== ANIMATION ENHANCEMENTS ===== */
+
+/* Smooth transitions for all interactive elements */
+.pricing-tier-card,
+.pricing-tier-card i,
+.pricing-tier-card h6,
+.pricing-tier-card .price-display span,
+#getSelectedPlan {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Subtle pulse animation for selected state */
+.pricing-tier-card.selected {
+    animation: selectedPulse 0.6s ease-out;
+}
+
+@keyframes selectedPulse {
+    0% {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    }
+    50% {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 0 15px 40px rgba(255, 191, 35, 0.5);
+    }
+    100% {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(255, 191, 35, 0.4);
+    }
+}
+
+/* Modal entrance animation */
+#upgradeModal.fade .modal-dialog {
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+#upgradeModal.fade:not(.show) .modal-dialog {
+    transform: translate(0, -25px) scale(0.95);
+    opacity: 0;
+}
+
+#upgradeModal.fade.show .modal-dialog {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+}
+
+/* ===== ACCESSIBILITY ===== */
+
+/* Focus states for keyboard navigation */
+.pricing-tier-card:focus {
+    outline: 3px solid rgba(255, 191, 35, 0.5);
+    outline-offset: 2px;
+}
+
+#getSelectedPlan:focus {
+    outline: 3px solid rgba(20, 105, 125, 0.5);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .pricing-tier-card {
+        border-width: 3px;
+    }
+    
+    .pricing-tier-card.selected {
+        border-width: 4px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .pricing-tier-card,
+    .pricing-tier-card i,
+    .pricing-tier-card h6,
+    .pricing-tier-card .price-display span,
+    #getSelectedPlan {
+        transition: none;
+    }
+    
+    .pricing-tier-card:hover,
+    .pricing-tier-card.selected {
+        transform: none;
+    }
+    
+    .selectedPulse {
+        animation: none;
+    }
+}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                        
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>Banner & Web Header Creator</h1>
+                        <p class="lead">Design professional web banners, email headers, and social media creatives with AI-powered design suggestions that match your brand perfectly.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img14.svg" alt="Banner Creator" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-palette" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose banner type</div>
+                            <div class="mt-2"><span class="step-number">2</span> Define your message</div>
+                            <div class="mt-2"><span class="step-number">3</span> Set brand style</div>
+                            <div class="mt-2"><span class="step-number">4</span> AI generates designs</div>
+                            <div class="mt-2"><span class="step-number">5</span> Export and use!</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-magic" style="color: #FFbf23;"></i> Design Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> AI-powered layouts</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Brand-consistent colors</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Typography optimization</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Multiple size formats</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Export-ready files</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> Design variations</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-images" style="color: #A82C2C;"></i> Banner Types</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-globe" style="color: #14697D;"></i> Website Headers</div>
+                            <div class="mb-2"><i class="fas fa-envelope" style="color: #14697D;"></i> Email Headers</div>
+                            <div class="mb-2"><i class="fas fa-share-alt" style="color: #14697D;"></i> Social Media Banners</div>
+                            <div class="mb-2"><i class="fas fa-bullhorn" style="color: #14697D;"></i> Marketing Banners</div>
+                            <div class="mb-2"><i class="fas fa-calendar" style="color: #14697D;"></i> Event Banners</div>
+                            <div class="mb-2"><i class="fas fa-shopping-cart" style="color: #14697D;"></i> E-commerce Banners</div>
+                            <div class="mb-2"><i class="fas fa-newspaper" style="color: #14697D;"></i> Blog Headers</div>
+                            <div><i class="fas fa-mobile-alt" style="color: #14697D;"></i> Mobile Banners</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Create Your Banner</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade</button>
+                        </div>
+
+                        <form id="bannerCreatorForm">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Banner Type</label>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="banner-type-card card h-100" data-type="website_header">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-globe mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Website Header</h6>
+                                                <small class="text-muted">Hero banners & headers</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="banner-type-card card h-100" data-type="email_header">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-envelope mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Email Header</h6>
+                                                <small class="text-muted">Newsletter & email tops</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="banner-type-card card h-100" data-type="social_media">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-share-alt mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Social Media</h6>
+                                                <small class="text-muted">Facebook, Twitter, LinkedIn</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="banner-type-card card h-100" data-type="marketing_banner">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-bullhorn mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Marketing Banner</h6>
+                                                <small class="text-muted">Ads & promotions</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="banner-type-card card h-100" data-type="event_banner">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-calendar mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Event Banner</h6>
+                                                <small class="text-muted">Conferences & events</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="banner-type-card card h-100" data-type="ecommerce_banner">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-shopping-cart mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>E-commerce</h6>
+                                                <small class="text-muted">Product & sale banners</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="selectedBannerType" name="bannerType" required>
+
+                            <!-- Basic Information -->
+                            <div class="mb-4">
+                                <h5>Banner Content</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="bannerTitle" class="form-label">Main Headline</label>
+                                        <input type="text" class="form-control" id="bannerTitle" name="bannerTitle" placeholder="e.g., Welcome to Our Store" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="bannerSubtitle" class="form-label">Subtitle/Tagline</label>
+                                        <input type="text" class="form-control" id="bannerSubtitle" name="bannerSubtitle" placeholder="e.g., Discover Amazing Products">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="bannerSize" class="form-label">Banner Size</label>
+                                        <select class="form-select" id="bannerSize" name="bannerSize" required>
+                                            <option value="">Select size</option>
+                                            <option value="leaderboard">Leaderboard (728x90)</option>
+                                            <option value="large_rectangle">Large Rectangle (336x280)</option>
+                                            <option value="medium_rectangle">Medium Rectangle (300x250)</option>
+                                            <option value="banner">Banner (468x60)</option>
+                                            <option value="wide_skyscraper">Wide Skyscraper (160x600)</option>
+                                            <option value="mobile_banner">Mobile Banner (320x50)</option>
+                                            <option value="custom">Custom Size</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="bannerStyle" class="form-label">Design Style</label>
+                                        <select class="form-select" id="bannerStyle" name="bannerStyle" required>
+                                            <option value="">Select style</option>
+                                            <option value="modern">Modern</option>
+                                            <option value="minimalist">Minimalist</option>
+                                            <option value="bold">Bold & Vibrant</option>
+                                            <option value="corporate">Corporate</option>
+                                            <option value="creative">Creative</option>
+                                            <option value="elegant">Elegant</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Brand Information -->
+                            <div class="mb-4">
+                                <h5>Brand Style</h5>
+                                <div class="mb-3">
+                                    <label for="brandName" class="form-label">Brand/Company Name</label>
+                                    <input type="text" class="form-control" id="brandName" name="brandName" placeholder="e.g., Your Company Name" required>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="primaryColor" class="form-label">Primary Brand Color</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <input type="color" class="form-control form-control-color" id="primaryColor" name="primaryColor" value="#14697D">
+                                            <input type="text" class="form-control" id="primaryColorHex" placeholder="#14697D">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="secondaryColor" class="form-label">Secondary Color</label>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <input type="color" class="form-control form-control-color" id="secondaryColor" name="secondaryColor" value="#FFbf23">
+                                            <input type="text" class="form-control" id="secondaryColorHex" placeholder="#FFbf23">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fontStyle" class="form-label">Font Style</label>
+                                        <select class="form-select" id="fontStyle" name="fontStyle">
+                                            <option value="">Select font style</option>
+                                            <option value="sans-serif">Sans Serif (Modern)</option>
+                                            <option value="serif">Serif (Traditional)</option>
+                                            <option value="display">Display (Bold)</option>
+                                            <option value="script">Script (Elegant)</option>
+                                            <option value="monospace">Monospace (Tech)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="callToAction" class="form-label">Call to Action</label>
+                                        <input type="text" class="form-control" id="callToAction" name="callToAction" placeholder="e.g., Shop Now, Learn More, Sign Up">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Target and Goals -->
+                            <div class="mb-4">
+                                <h5>Design Goals</h5>
+                                <div class="mb-3">
+                                    <label for="bannerPurpose" class="form-label">Primary Purpose</label>
+                                    <textarea class="form-control" id="bannerPurpose" name="bannerPurpose" rows="2" placeholder="e.g., Drive traffic to our new product launch page and increase conversions" required></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="targetAudience" class="form-label">Target Audience</label>
+                                        <input type="text" class="form-control" id="targetAudience" name="targetAudience" placeholder="e.g., Young professionals, Tech enthusiasts">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="industryType" class="form-label">Industry/Category</label>
+                                        <select class="form-select" id="industryType" name="industryType">
+                                            <option value="">Select industry</option>
+                                            <option value="technology">Technology</option>
+                                            <option value="healthcare">Healthcare</option>
+                                            <option value="finance">Finance</option>
+                                            <option value="retail">Retail</option>
+                                            <option value="education">Education</option>
+                                            <option value="entertainment">Entertainment</option>
+                                            <option value="food">Food & Beverage</option>
+                                            <option value="real_estate">Real Estate</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="designElements" class="form-label">Specific Elements to Include</label>
+                                    <textarea class="form-control" id="designElements" name="designElements" rows="3" placeholder="e.g., Company logo, product images, specific icons, background patterns"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Additional Options -->
+                            <div class="mb-4">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeVariations" checked>
+                                    <label class="form-check-label" for="includeVariations">
+                                        Generate multiple design variations
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeResponsive">
+                                    <label class="form-check-label" for="includeResponsive">
+                                        Create responsive sizes (mobile/tablet/desktop)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="includeAnimations">
+                                    <label class="form-check-label" for="includeAnimations">
+                                        Include animation suggestions
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-palette me-2"></i> Generate Banner Design
+                            </button>
+                        </form>
+                        
+                        <!-- Processing Message -->
+                        <div class="processing-message" id="processingMessage">
+                            <div class="loading-spinner d-inline-block me-2"></div>
+                            <h5 class="mb-0">Designing your perfect banner...</h5>
+                            <p class="text-muted mt-2 mb-0">This may take up to 30 seconds while our AI creates your design.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Banner Design</h4>
+                        
+                        <!-- Banner Information -->
+                        <div class="mb-4" id="bannerInfoSection">
+                            <h5><i class="fas fa-info-circle me-2"></i>Design Overview</h5>
+                            <div id="bannerInfoContainer" class="p-3 bg-light rounded">
+                                <!-- Banner info will be added dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Banner Preview -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-eye me-2"></i>Design Preview</h5>
+                            <div class="banner-preview" id="bannerPreview">
+                                <!-- Banner content will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Design Suggestions -->
+                        <div class="mb-4" id="designSection" style="display: none;">
+                            <h5><i class="fas fa-lightbulb me-2"></i>Design Variations & Suggestions</h5>
+                            <div class="design-suggestions" id="designContent">
+                                <!-- Design suggestions will be added here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="copyDesign">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Design</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                            <div class="export-option" id="downloadPNG">
+                                <i class="fas fa-image"></i>
+                                <div>Download PNG</div>
+                                <small class="text-muted">High resolution</small>
+                            </div>
+                            <div class="export-option" id="downloadSVG">
+                                <i class="fas fa-vector-square"></i>
+                                <div>Download SVG</div>
+                                <small class="text-muted">Vector format</small>
+                            </div>
+                            <div class="export-option" id="exportHTML">
+                                <i class="fas fa-code"></i>
+                                <div>Export HTML</div>
+                                <small class="text-muted">Web ready</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editBannerBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Design
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newBannerBtn">
+                                <i class="fas fa-plus me-1"></i> Create New Banner
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">create</span> stunning visuals?</h2>
+                <p class="lead mb-4">Join thousands of designers and marketers who create stunning banners with Elevify's AI design tools.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div> 
+    </footer>
+   <!-- Upgrade Modal -->
+<div class="modal fade" id="upgradeModal" tabindex="-1" aria-labelledby="upgradeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content" style="border-radius: 20px; border: none;">
+            <div class="modal-header" style="border-bottom: 1px solid #e0e0e0;">
+                <h5 class="modal-title" id="upgradeModalLabel" style="font-family: 'Antic Slab', serif; color: #14697D;">
+                    <i class="fas fa-crown me-2" style="color: #FFbf23;"></i>Upgrade for Unlimited Access
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-center mb-4" style="font-family: 'Quicksand', sans-serif; color: #666;">
+                    Choose the plan that works best for you and unlock unlimited brand kit generation.
+                </p>
+                
+                <!-- Pricing Cards Container -->
+                <div class="row g-3 mb-4">
+                    <!-- Free Tier -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="free" data-url="https://gumroad.com/l/legalease-free">
+                            <div class="card-body text-center p-3">
+                                <i class="fas fa-gift mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>Free Tier</h6>
+                                <small class="text-muted mb-3 d-block">Limited usage per month</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$0</span>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>5 brand kits/month</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Basic templates</small></div>
+                                    <div class="mb-1"><i class="fas fa-times text-muted me-2"></i><small>No priority support</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pay-As-You-Go -->
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="payasyougo" data-url="https://gumroad.com/l/legalease-24hour">
+                            <div class="card-body text-center p-3 position-relative">
+                                <span class="badge position-absolute" style="top: 10px; right: 10px; background-color: #FFbf23; color: #000; font-size: 0.7rem;">Popular</span>
+                                <i class="fas fa-clock mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>24-Hour Pass</h6>
+                                <small class="text-muted mb-3 d-block">Unlimited for 24 hours</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$2</span>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Unlimited brand kits</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>All templates</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>24h full access</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pro Tier -->
+                    <div class="col-12 col-md-12 col-lg-4">
+                        <div class="pricing-tier-card brand-type-card card h-100" data-tier="pro" data-url="https://gumroad.com/l/legalease-pro">
+                            <div class="card-body text-center p-3 position-relative">
+                                <span class="badge position-absolute" style="top: 10px; right: 10px; background-color: #14697D; color: white; font-size: 0.7rem;">Best Value</span>
+                                <i class="fas fa-crown mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                <h6>Pro Monthly</h6>
+                                <small class="text-muted mb-3 d-block">Full unlimited access</small>
+                                <div class="price-display mb-3">
+                                    <span style="font-size: 2rem; font-weight: bold; color: #14697D;">$15</span>
+                                    <small class="text-muted">/month</small>
+                                </div>
+                                <div class="features-list text-start">
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Unlimited everything</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Premium templates</small></div>
+                                    <div class="mb-1"><i class="fas fa-check text-success me-2"></i><small>Priority support</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hidden input to track selection -->
+                <input type="hidden" id="selectedPricingTier" name="pricingTier" required>
+                
+                <!-- Get Button -->
+                <button type="button" class="btn btn-primary btn-lg w-100" id="getSelectedPlan" disabled>
+                    <i class="fas fa-shopping-cart me-2"></i>Get Selected Plan
+                </button>
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">Secure payment powered by Gumroad</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+// Enhanced Banner Creator with AI-Powered Design Variations
+(function() {
+    'use strict';
+    
+    // Configuration
+    const CONFIG = {
+        apiEndpoint: 'https://elevify.onrender.com/api/banner-creator',
+        maxRetries: 3,
+        retryDelay: 1000
+    };
+
+    // State management
+    let currentBannerData = null;
+    let isGenerating = false;
+    let generatedVariations = [];
+    let selectedVariationIndex = 0;
+
+    // DOM Elements (same as before)
+    const elements = {
+        form: document.getElementById('bannerCreatorForm'),
+        bannerTypeCards: document.querySelectorAll('.banner-type-card'),
+        selectedBannerType: document.getElementById('selectedBannerType'),
+        primaryColor: document.getElementById('primaryColor'),
+        primaryColorHex: document.getElementById('primaryColorHex'),
+        secondaryColor: document.getElementById('secondaryColor'),
+        secondaryColorHex: document.getElementById('secondaryColorHex'),
+        processingMessage: document.getElementById('processingMessage'),
+        loadingSpinner: document.querySelector('.loading-spinner'),
+        resultsContainer: document.getElementById('resultsContainer'),
+        bannerInfoContainer: document.getElementById('bannerInfoContainer'),
+        bannerPreview: document.getElementById('bannerPreview'),
+        designContent: document.getElementById('designContent'),
+        designSection: document.getElementById('designSection'),
+        editBannerBtn: document.getElementById('editBannerBtn'),
+        newBannerBtn: document.getElementById('newBannerBtn'),
+        copyDesign: document.getElementById('copyDesign'),
+        downloadPNG: document.getElementById('downloadPNG'),
+        downloadSVG: document.getElementById('downloadSVG'),
+        exportHTML: document.getElementById('exportHTML'),
+        usageTracker: document.getElementById('usageTracker'),
+        remainingUses: document.getElementById('remainingUses')
+    };
+
+    // Initialize the application
+    function init() {
+        console.log('Enhanced Banner Creator: Initializing...');
+        setupEventListeners();
+        setupColorPickers();
+        checkUsageStatus();
+        console.log('Enhanced Banner Creator: Initialization complete');
+    }
+
+    // Setup all event listeners
+    function setupEventListeners() {
+        elements.bannerTypeCards.forEach(card => {
+            card.addEventListener('click', handleBannerTypeSelection);
+        });
+
+        if (elements.form) {
+            elements.form.addEventListener('submit', handleFormSubmission);
+        }
+
+        if (elements.editBannerBtn) {
+            elements.editBannerBtn.addEventListener('click', handleEditBanner);
+        }
+        
+        if (elements.newBannerBtn) {
+            elements.newBannerBtn.addEventListener('click', handleNewBanner);
+        }
+
+        if (elements.copyDesign) {
+            elements.copyDesign.addEventListener('click', handleCopyDesign);
+        }
+        
+        if (elements.downloadPNG) {
+            elements.downloadPNG.addEventListener('click', handleDownloadPNG);
+        }
+        
+        if (elements.downloadSVG) {
+            elements.downloadSVG.addEventListener('click', handleDownloadSVG);
+        }
+        
+        if (elements.exportHTML) {
+            elements.exportHTML.addEventListener('click', handleExportHTML);
+        }
+    }
+
+    // Setup color picker synchronization
+    function setupColorPickers() {
+        if (elements.primaryColor && elements.primaryColorHex) {
+            elements.primaryColor.addEventListener('change', function() {
+                elements.primaryColorHex.value = this.value;
+            });
+            elements.primaryColorHex.addEventListener('input', function() {
+                if (isValidHexColor(this.value)) {
+                    elements.primaryColor.value = this.value;
+                }
+            });
+        }
+
+        if (elements.secondaryColor && elements.secondaryColorHex) {
+            elements.secondaryColor.addEventListener('change', function() {
+                elements.secondaryColorHex.value = this.value;
+            });
+            elements.secondaryColorHex.addEventListener('input', function() {
+                if (isValidHexColor(this.value)) {
+                    elements.secondaryColor.value = this.value;
+                }
+            });
+        }
+    }
+
+    function isValidHexColor(hex) {
+        return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
+    }
+
+    // Handle banner type selection
+    function handleBannerTypeSelection(event) {
+        const card = event.currentTarget;
+        const bannerType = card.dataset.type;
+        
+        if (!bannerType) return;
+
+        elements.bannerTypeCards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        
+        if (elements.selectedBannerType) {
+            elements.selectedBannerType.value = bannerType;
+        }
+    }
+
+    // Handle form submission
+    async function handleFormSubmission(event) {
+        event.preventDefault();
+        
+        if (isGenerating) return;
+
+        const validationResult = validateForm();
+        if (!validationResult.isValid) {
+            showError(validationResult.message);
+            return;
+        }
+
+        const usageCheck = await checkUsageLimits();
+        if (!usageCheck.canUse) {
+            showUpgradeModal();
+            return;
+        }
+
+        await generateBannerWithVariations();
+    }
+
+    // Validate form data
+    function validateForm() {
+        const formData = getFormData();
+        
+        if (!formData.bannerType) {
+            return { isValid: false, message: 'Please select a banner type' };
+        }
+        
+        if (!formData.bannerTitle || formData.bannerTitle.trim().length === 0) {
+            return { isValid: false, message: 'Please enter a main headline' };
+        }
+        
+        if (!formData.brandName || formData.brandName.trim().length === 0) {
+            return { isValid: false, message: 'Please enter your brand/company name' };
+        }
+        
+        if (!formData.bannerSize) {
+            return { isValid: false, message: 'Please select a banner size' };
+        }
+        
+        if (!formData.bannerStyle) {
+            return { isValid: false, message: 'Please select a design style' };
+        }
+        
+        if (!formData.bannerPurpose || formData.bannerPurpose.trim().length === 0) {
+            return { isValid: false, message: 'Please describe the primary purpose of your banner' };
+        }
+
+        return { isValid: true };
+    }
+
+    // Get form data
+    function getFormData() {
+        const formData = new FormData(elements.form);
+        
+        return {
+            bannerType: elements.selectedBannerType?.value || '',
+            bannerTitle: formData.get('bannerTitle') || '',
+            bannerSubtitle: formData.get('bannerSubtitle') || '',
+            bannerSize: formData.get('bannerSize') || '',
+            bannerStyle: formData.get('bannerStyle') || '',
+            brandName: formData.get('brandName') || '',
+            primaryColor: formData.get('primaryColor') || '#14697D',
+            secondaryColor: formData.get('secondaryColor') || '#FFbf23',
+            fontStyle: formData.get('fontStyle') || '',
+            callToAction: formData.get('callToAction') || '',
+            bannerPurpose: formData.get('bannerPurpose') || '',
+            targetAudience: formData.get('targetAudience') || '',
+            industryType: formData.get('industryType') || '',
+            designElements: formData.get('designElements') || '',
+            includeVariations: formData.get('includeVariations') === 'on',
+            includeResponsive: formData.get('includeResponsive') === 'on',
+            includeAnimations: formData.get('includeAnimations') === 'on'
+        };
+    }
+
+    async function checkUsageLimits() {
+        return { canUse: true, remaining: 5 };
+    }
+
+    // Main banner generation function with AI variations
+    async function generateBannerWithVariations() {
+        try {
+            isGenerating = true;
+            showProcessingState();
+            
+            const formData = getFormData();
+            
+            // Generate multiple variations using AI
+            const variations = await generateAIDesignVariations(formData);
+            
+            generatedVariations = variations;
+            selectedVariationIndex = 0;
+            
+            currentBannerData = {
+                formData: formData,
+                variations: variations,
+                selectedIndex: 0
+            };
+            
+            updateUsageTracking();
+            displayBannerResults();
+            showResults();
+            scrollToResults();
+            
+        } catch (error) {
+            console.error('Banner generation failed:', error);
+            handleGenerationError(error);
+        } finally {
+            isGenerating = false;
+            hideProcessingState();
+        }
+    }
+
+    // AI-powered design variation generation - Fixed for CORS
+    async function generateAIDesignVariations(formData) {
+        const variations = [];
+        
+        // Try to call backend API first, fallback to local generation if CORS fails
+        try {
+            const requestData = {
+                action: 'generate_variations',
+                bannerData: {
+                    type: formData.bannerType,
+                    title: formData.bannerTitle,
+                    subtitle: formData.bannerSubtitle,
+                    brandName: formData.brandName,
+                    primaryColor: formData.primaryColor,
+                    secondaryColor: formData.secondaryColor,
+                    style: formData.bannerStyle,
+                    industry: formData.industryType,
+                    targetAudience: formData.targetAudience,
+                    purpose: formData.bannerPurpose
+                }
+            };
+            
+            const response = await fetch(CONFIG.apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.variations) {
+                    return data.variations;
+                }
+            }
+        } catch (error) {
+            console.warn('Backend API failed, generating variations locally:', error);
+        }
+        
+        // Fallback: Generate variations locally
+        const designPrompts = generateDesignPrompts(formData);
+        
+        for (let i = 0; i < designPrompts.length; i++) {
+            const prompt = designPrompts[i];
+            const variationHtml = await generateSingleDesignVariation(formData, prompt);
+            
+            variations.push({
+                id: i,
+                name: prompt.name,
+                description: prompt.description,
+                style: prompt.style,
+                html: variationHtml,
+                personality: prompt.personality,
+                targetAudience: prompt.targetAudience
+            });
+        }
+        
+        return variations;
+    }
+
+    // Generate AI design prompts based on user input
+    function generateDesignPrompts(formData) {
+        const { bannerStyle, industryType, targetAudience, bannerPurpose } = formData;
+        
+        const basePrompts = [
+            {
+                name: "Professional Executive",
+                description: "Clean, authoritative design for corporate decision-makers",
+                style: "executive",
+                personality: "professional, trustworthy, premium",
+                targetAudience: "executives, business leaders",
+                colorScheme: "sophisticated",
+                typography: "clean, modern sans-serif"
+            },
+            {
+                name: "Creative Dynamic",
+                description: "Bold, energetic design with creative flair",
+                style: "creative",
+                personality: "innovative, energetic, bold",
+                targetAudience: "creatives, young professionals",
+                colorScheme: "vibrant",
+                typography: "modern, expressive"
+            },
+            {
+                name: "Minimalist Elegant",
+                description: "Simple, elegant design with maximum impact",
+                style: "minimalist",
+                personality: "refined, sophisticated, clean",
+                targetAudience: "design-conscious users",
+                colorScheme: "monochromatic",
+                typography: "clean, spacious"
+            },
+            {
+                name: "Warm Friendly",
+                description: "Approachable design that builds trust and connection",
+                style: "friendly",
+                personality: "warm, approachable, trustworthy",
+                targetAudience: "general consumers",
+                colorScheme: "warm, inviting",
+                typography: "friendly, rounded"
+            }
+        ];
+
+        // Customize prompts based on user selections
+        return basePrompts.map(prompt => {
+            // Adapt personality based on industry
+            if (industryType === 'technology') {
+                prompt.personality += ', innovative, cutting-edge';
+            } else if (industryType === 'healthcare') {
+                prompt.personality += ', caring, reliable, professional';
+            } else if (industryType === 'finance') {
+                prompt.personality += ', trustworthy, secure, professional';
+            } else if (industryType === 'education') {
+                prompt.personality += ', knowledgeable, inspiring, accessible';
+            }
+            
+            // Adapt to target audience
+            if (targetAudience && targetAudience.includes('young')) {
+                prompt.style = 'modern';
+                prompt.colorScheme = 'vibrant';
+            } else if (targetAudience && targetAudience.includes('professional')) {
+                prompt.style = 'corporate';
+                prompt.colorScheme = 'sophisticated';
+            }
+            
+            return prompt;
+        });
+    }
+
+    // Generate single design variation
+    async function generateSingleDesignVariation(formData, prompt) {
+        const { bannerTitle, bannerSubtitle, brandName, primaryColor, secondaryColor, callToAction } = formData;
+        
+        // Generate color variations based on prompt
+        const colors = generateColorVariations(primaryColor, secondaryColor, prompt.colorScheme);
+        
+        // Generate typography variations
+        const typography = generateTypographyVariations(prompt.typography);
+        
+        // Generate layout based on style
+        const layout = generateLayoutVariation(prompt.style);
+        
+        return generateVariationHTML(
+            bannerTitle,
+            bannerSubtitle,
+            brandName,
+            callToAction,
+            colors,
+            typography,
+            layout,
+            prompt
+        );
+    }
+
+    // Generate color variations
+    function generateColorVariations(primary, secondary, scheme) {
+        const colors = { primary, secondary };
+        
+        switch (scheme) {
+            case 'sophisticated':
+                colors.primary = adjustColor(primary, -20); // Darker, more professional
+                colors.secondary = '#F5F5F5'; // Light gray accent
+                break;
+            case 'vibrant':
+                colors.primary = adjustColor(primary, 20); // Brighter
+                colors.secondary = adjustColor(secondary, 30); // More vibrant
+                break;
+            case 'monochromatic':
+                colors.secondary = adjustColor(primary, -40); // Darker version of primary
+                break;
+            case 'warm':
+                colors.primary = warmColor(primary);
+                colors.secondary = warmColor(secondary);
+                break;
+            default:
+                // Keep original colors
+                break;
+        }
+        
+        return colors;
+    }
+
+    // Generate typography variations
+    function generateTypographyVariations(style) {
+        const typography = {
+            headingFont: "'Helvetica Neue', Arial, sans-serif",
+            bodyFont: "'Helvetica Neue', Arial, sans-serif",
+            headingWeight: '700',
+            bodyWeight: '400',
+            headingSize: '2.5rem',
+            bodySize: '1.2rem'
+        };
+        
+        switch (style) {
+            case 'clean, modern sans-serif':
+                typography.headingFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
+                typography.bodyFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
+                typography.headingWeight = '600';
+                break;
+            case 'modern, expressive':
+                typography.headingFont = "'Montserrat', 'Helvetica Neue', Arial, sans-serif";
+                typography.bodyFont = "'Open Sans', 'Helvetica Neue', Arial, sans-serif";
+                typography.headingWeight = '800';
+                typography.headingSize = '2.8rem';
+                break;
+            case 'clean, spacious':
+                typography.headingFont = "'Lato', 'Helvetica Neue', Arial, sans-serif";
+                typography.bodyFont = "'Lato', 'Helvetica Neue', Arial, sans-serif";
+                typography.headingWeight = '300';
+                typography.bodyWeight = '300';
+                break;
+            case 'friendly, rounded':
+                typography.headingFont = "'Nunito', 'Helvetica Neue', Arial, sans-serif";
+                typography.bodyFont = "'Nunito', 'Helvetica Neue', Arial, sans-serif";
+                typography.headingWeight = '600';
+                break;
+        }
+        
+        return typography;
+    }
+
+    // Generate layout variation
+    function generateLayoutVariation(style) {
+        const layout = {
+            direction: 'column',
+            alignment: 'center',
+            padding: '3rem 2rem',
+            borderRadius: '15px',
+            textAlign: 'center'
+        };
+        
+        switch (style) {
+            case 'executive':
+                layout.direction = 'row';
+                layout.alignment = 'flex-start';
+                layout.textAlign = 'left';
+                layout.padding = '2rem';
+                break;
+            case 'creative':
+                layout.borderRadius = '25px';
+                layout.padding = '4rem 2rem';
+                break;
+            case 'minimalist':
+                layout.padding = '3rem 3rem';
+                layout.borderRadius = '10px';
+                break;
+            case 'friendly':
+                layout.borderRadius = '20px';
+                layout.padding = '3rem 2rem';
+                break;
+        }
+        
+        return layout;
+    }
+
+    // Generate variation HTML
+    function generateVariationHTML(title, subtitle, brandName, cta, colors, typography, layout, prompt) {
+        const subtitleHtml = subtitle ? `<p style="font-family: ${typography.bodyFont}; font-weight: ${typography.bodyWeight}; font-size: ${typography.bodySize}; margin-bottom: 1.5rem; opacity: 0.9;">${subtitle}</p>` : '';
+        
+        const ctaHtml = cta ? `<button style="
+            background: ${colors.secondary};
+            color: ${colors.primary};
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-family: ${typography.bodyFont};
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(0,0,0,0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.2)';">${cta}</button>` : '';
+        
+        return `
+            <div class="banner-preview-sample" style="
+                background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%);
+                color: white;
+                padding: ${layout.padding};
+                border-radius: ${layout.borderRadius};
+                margin-bottom: 2rem;
+                text-align: ${layout.textAlign};
+                display: flex;
+                flex-direction: ${layout.direction};
+                align-items: ${layout.alignment};
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                position: relative;
+                overflow: hidden;
+            ">
+                <div style="position: relative; z-index: 2;">
+                    <div style="
+                        font-family: ${typography.bodyFont};
+                        font-size: 0.9rem;
+                        font-weight: 600;
+                        letter-spacing: 1px;
+                        text-transform: uppercase;
+                        margin-bottom: 1rem;
+                        opacity: 0.8;
+                    ">${brandName}</div>
+                    
+                    <h2 style="
+                        font-family: ${typography.headingFont};
+                        font-weight: ${typography.headingWeight};
+                        font-size: ${typography.headingSize};
+                        margin-bottom: 1rem;
+                        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+                        line-height: 1.2;
+                    ">${title}</h2>
+                    
+                    ${subtitleHtml}
+                    
+                    ${ctaHtml}
+                </div>
+            </div>
+        `;
+    }
+
+    // Color utility functions
+    function adjustColor(color, percent) {
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        const newR = Math.max(0, Math.min(255, r + (r * percent / 100)));
+        const newG = Math.max(0, Math.min(255, g + (g * percent / 100)));
+        const newB = Math.max(0, Math.min(255, b + (b * percent / 100)));
+        
+        return `#${Math.round(newR).toString(16).padStart(2, '0')}${Math.round(newG).toString(16).padStart(2, '0')}${Math.round(newB).toString(16).padStart(2, '0')}`;
+    }
+
+    function warmColor(color) {
+        // Add warmth by increasing red and reducing blue
+        const hex = color.replace('#', '');
+        const r = Math.min(255, parseInt(hex.substr(0, 2), 16) + 20);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = Math.max(0, parseInt(hex.substr(4, 2), 16) - 10);
+        
+        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+
+    // Display banner results with clickable variations
+    function displayBannerResults() {
+        if (!currentBannerData) return;
+        
+        const { formData, variations, selectedIndex } = currentBannerData;
+        
+        // Update banner info
+        updateBannerInfo(formData, variations[selectedIndex]);
+        
+        // Update banner preview with selected variation
+        updateBannerPreview(variations[selectedIndex].html);
+        
+        // Update design suggestions with clickable variations
+        updateDesignVariationsUI(variations, selectedIndex);
+        
+        if (elements.designSection) {
+            elements.designSection.style.display = 'block';
+        }
+    }
+
+    // Update banner info section
+    function updateBannerInfo(formData, selectedVariation) {
+        if (!elements.bannerInfoContainer) return;
+        
+        const infoHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Banner Type:</strong> ${getBannerTypeName(formData.bannerType)}<br>
+                    <strong>Size:</strong> ${formData.bannerSize}<br>
+                    <strong>Style:</strong> ${formData.bannerStyle}<br>
+                    <strong>Brand:</strong> ${formData.brandName}
+                </div>
+                <div class="col-md-6">
+                    <strong>Selected Variation:</strong> ${selectedVariation.name}<br>
+                    <strong>Design Personality:</strong> ${selectedVariation.personality}<br>
+                    <strong>Target Audience:</strong> ${selectedVariation.targetAudience}<br>
+                    <strong>Status:</strong> <span style="color: #28a745;">Ready to Use</span>
+                </div>
+            </div>
+        `;
+        
+        elements.bannerInfoContainer.innerHTML = infoHTML;
+    }
+
+    // Update banner preview
+    function updateBannerPreview(bannerContent) {
+        if (!elements.bannerPreview) return;
+        elements.bannerPreview.innerHTML = bannerContent;
+    }
+
+    // Update design variations UI with clickable options
+    function updateDesignVariationsUI(variations, selectedIndex) {
+        if (!elements.designContent) return;
+        
+        const variationsHTML = variations.map((variation, index) => {
+            const isSelected = index === selectedIndex;
+            const selectedClass = isSelected ? 'selected' : '';
+            
+            return `
+                <div class="col-md-6 mb-3">
+                    <div class="design-variation-card ${selectedClass}" data-variation-index="${index}" onclick="selectDesignVariation(${index})">
+                        <div class="variation-preview" style="
+                            height: 120px;
+                            background: linear-gradient(135deg, #14697D 0%, #FFbf23 100%);
+                            border-radius: 10px;
+                            margin-bottom: 0.5rem;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-weight: bold;
+                            font-size: 0.9rem;
+                            position: relative;
+                            overflow: hidden;
+                        ">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.2);"></div>
+                            <div style="position: relative; z-index: 2;">${variation.name}</div>
+                        </div>
+                        <div class="variation-info">
+                            <strong>${variation.name}</strong>
+                            <small class="d-block text-muted">${variation.description}</small>
+                            <div class="variation-tags mt-1">
+                                <span class="badge bg-primary">${variation.style}</span>
+                                <span class="badge bg-secondary">${variation.personality.split(',')[0]}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        elements.designContent.innerHTML = `
+            <h6><i class="fas fa-palette me-2"></i>AI-Generated Design Variations</h6>
+            <p class="text-muted mb-3">Click on any variation to see it in action. Each design is AI-customized for your specific needs.</p>
+            <div class="row">
+                ${variationsHTML}
+            </div>
+            
+            <div class="mt-4">
+                <button class="btn btn-outline-primary me-2" onclick="generateMoreVariations()">
+                    <i class="fas fa-plus me-1"></i> Generate More Variations
+                </button>
+                <button class="btn btn-outline-secondary" onclick="refineSelectedVariation()">
+                    <i class="fas fa-magic me-1"></i> Refine Selected Design
+                </button>
+            </div>
+        `;
+        
+        // Add CSS for variation cards
+        addVariationCardStyles();
+    }
+
+    // Add CSS for variation cards
+    function addVariationCardStyles() {
+        if (document.getElementById('variation-styles')) return;
+        
+        const style = document.createElement('style');
+        style.id = 'variation-styles';
+        style.textContent = `
+            .design-variation-card {
+                border: 2px solid #e0e0e0;
+                border-radius: 12px;
+                padding: 1rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                height: 100%;
+                background: white;
+            }
+            
+            .design-variation-card:hover {
+                border-color: #14697D;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(20, 105, 125, 0.15);
+            }
+            
+            .design-variation-card.selected {
+                border-color: #FFbf23;
+                background-color: #fffbf0;
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(255, 191, 35, 0.3);
+            }
+            
+            .variation-tags .badge {
+                font-size: 0.7rem;
+                margin-right: 0.25rem;
+            }
+        `;
+        
+        document.head.appendChild(style);
+    }
+
+    // Global function to select design variation
+    window.selectDesignVariation = function(index) {
+        if (!currentBannerData || !currentBannerData.variations[index]) return;
+        
+        selectedVariationIndex = index;
+        currentBannerData.selectedIndex = index;
+        
+        // Update the display
+        displayBannerResults();
+        
+        // Smooth scroll to preview
+        if (elements.bannerPreview) {
+            elements.bannerPreview.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    };
+
+    // Global function to generate more variations - Fixed for CORS
+    window.generateMoreVariations = async function() {
+        if (!currentBannerData) return;
+        
+        try {
+            showProcessingState();
+            
+            // Generate additional variations with slight modifications
+            const basePrompts = generateDesignPrompts(currentBannerData.formData);
+            const additionalPrompts = basePrompts.map(prompt => ({
+                ...prompt,
+                name: prompt.name + " v2",
+                description: prompt.description + " - Enhanced version",
+                personality: prompt.personality + ", enhanced, refined"
+            }));
+            
+            const additionalVariations = [];
+            for (let i = 0; i < additionalPrompts.length; i++) {
+                const prompt = additionalPrompts[i];
+                const variationHtml = await generateSingleDesignVariation(currentBannerData.formData, prompt);
+                
+                additionalVariations.push({
+                    id: currentBannerData.variations.length + i,
+                    name: prompt.name,
+                    description: prompt.description,
+                    style: prompt.style,
+                    html: variationHtml,
+                    personality: prompt.personality,
+                    targetAudience: prompt.targetAudience
+                });
+            }
+            
+            // Add new variations to existing ones
+            currentBannerData.variations = [...currentBannerData.variations, ...additionalVariations];
+            
+            displayBannerResults();
+            
+        } catch (error) {
+            console.error('Error generating more variations:', error);
+            showError('Failed to generate more variations. Please try again.');
+        } finally {
+            hideProcessingState();
+        }
+    };
+
+    // Global function to refine selected variation - Fixed for CORS
+    window.refineSelectedVariation = async function() {
+        if (!currentBannerData) return;
+        
+        const selectedVariation = currentBannerData.variations[selectedVariationIndex];
+        
+        try {
+            showProcessingState();
+            
+            // Generate refined version locally (no API call needed)
+            const refinedVariation = await generateRefinedVariation(currentBannerData.formData, selectedVariation);
+            
+            // Replace the selected variation with refined version
+            currentBannerData.variations[selectedVariationIndex] = refinedVariation;
+            
+            displayBannerResults();
+            
+        } catch (error) {
+            console.error('Error refining variation:', error);
+            showError('Failed to refine variation. Please try again.');
+        } finally {
+            hideProcessingState();
+        }
+    };
+
+    // Generate refined variation
+    async function generateRefinedVariation(formData, baseVariation) {
+        // Create a refined version with subtle improvements
+        const refinedPrompt = {
+            ...baseVariation,
+            name: baseVariation.name + " (Refined)",
+            description: "Enhanced version with improved visual hierarchy and readability",
+            personality: baseVariation.personality + ", refined, polished"
+        };
+        
+        const refinedHtml = await generateSingleDesignVariation(formData, refinedPrompt);
+        
+        return {
+            ...baseVariation,
+            id: baseVariation.id + '_refined',
+            name: refinedPrompt.name,
+            description: refinedPrompt.description,
+            html: refinedHtml
+        };
+    }
+
+    // Rest of the functions remain the same...
+    function getBannerTypeName(type) {
+        const types = {
+            'website_header': 'Website Header',
+            'email_header': 'Email Header',
+            'social_media': 'Social Media Banner',
+            'marketing_banner': 'Marketing Banner',
+            'event_banner': 'Event Banner',
+            'ecommerce_banner': 'E-commerce Banner'
+        };
+        return types[type] || type;
+    }
+
+    function showProcessingState() {
+        if (elements.processingMessage) {
+            elements.processingMessage.style.display = 'block';
+        }
+        if (elements.loadingSpinner) {
+            elements.loadingSpinner.style.display = 'block';
+        }
+        if (elements.form) {
+            elements.form.style.display = 'none';
+        }
+    }
+
+    function hideProcessingState() {
+        if (elements.processingMessage) {
+            elements.processingMessage.style.display = 'none';
+        }
+        if (elements.loadingSpinner) {
+            elements.loadingSpinner.style.display = 'none';
+        }
+    }
+
+    function showResults() {
+        if (elements.resultsContainer) {
+            elements.resultsContainer.style.display = 'block';
+        }
+    }
+
+    function scrollToResults() {
+        if (elements.resultsContainer) {
+            elements.resultsContainer.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    }
+
+    function handleGenerationError(error) {
+        console.error('Banner generation error:', error);
+        showError('Failed to generate banner variations. Please try again.');
+        if (elements.form) {
+            elements.form.style.display = 'block';
+        }
+    }
+
+    function showError(message) {
+        const alertHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        
+        const targetElement = elements.form || elements.resultsContainer;
+        if (targetElement && targetElement.parentNode) {
+            targetElement.parentNode.insertAdjacentHTML('afterbegin', alertHTML);
+            
+            setTimeout(() => {
+                const alert = targetElement.parentNode.querySelector('.alert');
+                if (alert) {
+                    alert.remove();
+                }
+            }, 10000);
+        }
+    }
+
+    function handleEditBanner() {
+        if (elements.form) {
+            elements.form.style.display = 'block';
+        }
+        if (elements.resultsContainer) {
+            elements.resultsContainer.style.display = 'none';
+        }
+    }
+
+    function handleNewBanner() {
+        if (elements.form) {
+            elements.form.reset();
+        }
+        if (elements.selectedBannerType) {
+            elements.selectedBannerType.value = '';
+        }
+        elements.bannerTypeCards.forEach(card => card.classList.remove('selected'));
+        
+        if (elements.primaryColor) elements.primaryColor.value = '#14697D';
+        if (elements.primaryColorHex) elements.primaryColorHex.value = '#14697D';
+        if (elements.secondaryColor) elements.secondaryColor.value = '#FFbf23';
+        if (elements.secondaryColorHex) elements.secondaryColorHex.value = '#FFbf23';
+        
+        if (elements.form) {
+            elements.form.style.display = 'block';
+        }
+        if (elements.resultsContainer) {
+            elements.resultsContainer.style.display = 'none';
+        }
+        
+        // Reset state
+        currentBannerData = null;
+        generatedVariations = [];
+        selectedVariationIndex = 0;
+    }
+
+    async function handleCopyDesign() {
+        try {
+            const bannerHTML = elements.bannerPreview?.innerHTML || '';
+            
+            if (!bannerHTML) {
+                showError('No banner content to copy');
+                return;
+            }
+            
+            await navigator.clipboard.writeText(bannerHTML);
+            
+            const originalContent = elements.copyDesign.innerHTML;
+            elements.copyDesign.innerHTML = '<i class="fas fa-check"></i><div>Copied!</div><small class="text-muted">Selected variation copied</small>';
+            
+            setTimeout(() => {
+                elements.copyDesign.innerHTML = originalContent;
+            }, 2000);
+            
+        } catch (error) {
+            showError('Failed to copy to clipboard');
+        }
+    }
+
+    function handleDownloadPNG() {
+        showInfo('PNG download feature coming soon. Use "Export HTML" to get the code for now.');
+    }
+
+    function handleDownloadSVG() {
+        showInfo('SVG download feature coming soon. Use "Export HTML" to get the code for now.');
+    }
+
+    function handleExportHTML() {
+        try {
+            const bannerHTML = elements.bannerPreview?.innerHTML || '';
+            
+            if (!bannerHTML) {
+                showError('No banner content to export');
+                return;
+            }
+            
+            const formData = getFormData();
+            const selectedVariation = currentBannerData?.variations[selectedVariationIndex];
+            const completeHTML = createCompleteHTMLDocument(bannerHTML, formData, selectedVariation);
+            
+            const blob = new Blob([completeHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${formData.brandName || 'banner'}-${selectedVariation?.name || 'design'}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+        } catch (error) {
+            showError('Failed to export HTML');
+        }
+    }
+
+    function createCompleteHTMLDocument(bannerHTML, formData, selectedVariation) {
+        const variationInfo = selectedVariation ? `
+            <!-- 
+            Design Variation: ${selectedVariation.name}
+            Description: ${selectedVariation.description}
+            Personality: ${selectedVariation.personality}
+            Target Audience: ${selectedVariation.targetAudience}
+            -->
+        ` : '';
+        
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${formData.bannerTitle || 'Banner'} - ${formData.brandName || 'Brand'}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .banner-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .banner-preview-sample {
+            margin-bottom: 0 !important;
+        }
+    </style>
+</head>
+<body>
+    ${variationInfo}
+    <div class="banner-container">
+        ${bannerHTML}
+    </div>
+    <!-- Generated by Elevify AI Banner Creator -->
+    <!-- AI-Powered Design Variations -->
+</body>
+</html>`;
+    }
+
+    function showInfo(message) {
+        const alertHTML = `
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        
+        const targetElement = elements.resultsContainer || document.body;
+        if (targetElement) {
+            targetElement.insertAdjacentHTML('afterbegin', alertHTML);
+            
+            setTimeout(() => {
+                const alert = targetElement.querySelector('.alert-info');
+                if (alert) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+    }
+
+    function checkUsageStatus() {
+        const remaining = 5;
+        
+        if (elements.remainingUses) {
+            elements.remainingUses.textContent = remaining;
+        }
+        
+        if (remaining === 0 && elements.usageTracker) {
+            elements.usageTracker.className = 'alert alert-warning d-flex align-items-center mb-4';
+            elements.usageTracker.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <div class="flex-grow-1">
+                    <strong>No free uses remaining</strong>
+                    <div class="small mt-1">Upgrade to continue creating AI-powered banner variations</div>
+                </div>
+                <button class="btn btn-warning" onclick="showUpgradeModal()">Upgrade Now</button>
+            `;
+        }
+    }
+
+    function updateUsageTracking() {
+        const currentUses = parseInt(elements.remainingUses?.textContent || '5');
+        const newUses = Math.max(0, currentUses - 1);
+        
+        if (elements.remainingUses) {
+            elements.remainingUses.textContent = newUses;
+        }
+        
+        if (newUses === 0) {
+            checkUsageStatus();
+        }
+    }
+
+    function showUpgradeModal() {
+        if (typeof window.showUpgradeModal === 'function') {
+            window.showUpgradeModal();
+        } else {
+            const modal = document.getElementById('upgradeModal');
+            if (modal && typeof bootstrap !== 'undefined') {
+                const upgradeModal = new bootstrap.Modal(modal);
+                upgradeModal.show();
+            } else {
+                alert('Please upgrade your plan to continue using AI-powered banner variations.');
+            }
+        }
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    // Export functions for global access
+    window.BannerCreator = {
+        init,
+        generateBannerWithVariations,
+        handleEditBanner,
+        handleNewBanner,
+        showUpgradeModal,
+        selectDesignVariation,
+        generateMoreVariations,
+        refineSelectedVariation
+    };
+
+})();
+    </script>
+</body>
+</html>

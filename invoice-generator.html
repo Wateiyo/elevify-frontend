@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator | Elevify</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antic+Slab&family=Quicksand:wght@300..700&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Your custom CSS file -->
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .tool-page-hero {
+            background-color: #f9f9f9;
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-page-hero h1 {
+            font-size: 2.5rem;
+            color: #14697D;
+            margin-bottom: 1rem;
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .tool-page-hero .lead {
+            color: #666;
+            font-size: 1.2rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .template-type-card h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        .template-type-card small {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .template-type-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .template-type-card:hover {
+            border-color: #14697D;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(20, 105, 125, 0.2);
+        }
+        
+        .template-type-card.selected {
+            border-color: #FFbf23 !important;
+            background-color: #fffbf0 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(255, 191, 35, 0.3);
+        }
+        
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #14697D;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: #14697D;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Sora', sans-serif;
+            margin-right: 10px;
+        }
+        
+        .features-highlight {
+            background-color: #FFF0F5;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #14697D;
+            box-shadow: 0 0 0 0.2rem rgba(20, 105, 125, 0.25);
+        }
+
+        .form-label {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Antic Slab', serif;
+            font-weight: 400;
+        }
+        
+        p, li, span, div, label, .form-control, .form-select {
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .btn {
+            font-family: 'Sora', sans-serif;
+            font-weight: 600;
+        }
+        
+        .invoice-preview {
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e0e0e0;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .invoice-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .invoice-item:hover {
+            border-color: #14697D;
+            box-shadow: 0 2px 10px rgba(20, 105, 125, 0.15);
+        }
+        
+        .invoice-item.selected {
+            border-color: #FFbf23;
+            background-color: #fffbf0;
+        }
+        
+        .copy-btn {
+            background-color: #14697D;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background-color: #0f5566;
+            color: white;
+        }
+        
+        .processing-message {
+            display: none;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .export-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-option:hover {
+            border-color: #14697D;
+            background-color: #f9f9f9;
+        }
+        
+        .export-option i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #14697D;
+        }
+
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .item-row {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0.5rem 0;
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .add-item-btn {
+            background-color: #14697D;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-item-btn:hover {
+            background-color: #0f5566;
+            color: white;
+        }
+
+        .remove-item-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .remove-item-btn:hover {
+            background-color: #c82333;
+            color: white;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoice-table th,
+        .invoice-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .invoice-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .invoice-total {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #14697D;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .tool-page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 1.5rem;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+            
+            .export-option {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container-nav">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <div class="logo-container">
+                            <img src="/img/logo.svg" alt="logo">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <nav>
+                        
+                        <a href="/#tools" class="btn btn-outline-dark me-2">AI Tools</a>
+                        <a href="/#pricing" class="btn btn-outline-dark me-2">Pricing</a>
+                        <a href="#" class="btn btn-get-started">Get Started</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Tool Hero Section -->
+        <section class="tool-page-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1>Invoice Generator</h1>
+                        <p class="lead">Create professional invoices instantly with customizable templates, automatic calculations, and multiple export formats to streamline your billing process.</p>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <img src="/img/img17.svg" alt="Invoice Generator" style="max-height: 150px;" class="float-animation">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-4 mb-4">
+                    <div class="content-card">
+                        <h5><i class="fas fa-file-invoice" style="color: #14697D;"></i> How It Works</h5>
+                        <ol class="mt-3">
+                            <div><span class="step-number">1</span> Choose template style</div>
+                            <div class="mt-2"><span class="step-number">2</span> Enter business details</div>
+                            <div class="mt-2"><span class="step-number">3</span> Add items & prices</div>
+                            <div class="mt-2"><span class="step-number">4</span> Customize settings</div>
+                            <div class="mt-2"><span class="step-number">5</span> Generate & export!</div>
+                        </ol>
+                    </div>
+
+                    <div class="features-highlight">
+                        <h5><i class="fas fa-magic" style="color: #FFbf23;"></i> Invoice Features</h5>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Professional templates</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Automatic calculations</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Tax & discount support</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Multiple currencies</li>
+                            <li class="mb-2"><i class="fas fa-check-circle" style="color: #14697D;"></i> Custom branding</li>
+                            <li><i class="fas fa-check-circle" style="color: #14697D;"></i> PDF & HTML export</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-card">
+                        <h5><i class="fas fa-palette" style="color: #A82C2C;"></i> Template Styles</h5>
+                        <div class="mt-3">
+                            <div class="mb-2"><i class="fas fa-briefcase" style="color: #14697D;"></i> Professional</div>
+                            <div class="mb-2"><i class="fas fa-paint-brush" style="color: #14697D;"></i> Creative</div>
+                            <div class="mb-2"><i class="fas fa-list" style="color: #14697D;"></i> Minimal</div>
+                            <div class="mb-2"><i class="fas fa-building" style="color: #14697D;"></i> Corporate</div>
+                            <div class="mb-2"><i class="fas fa-star" style="color: #14697D;"></i> Modern</div>
+                            <div class="mb-2"><i class="fas fa-certificate" style="color: #14697D;"></i> Classic</div>
+                            <div class="mb-2"><i class="fas fa-cog" style="color: #14697D;"></i> Service-based</div>
+                            <div><i class="fas fa-shopping-cart" style="color: #14697D;"></i> Product-based</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-8">
+                    <div class="content-card">
+                        <h4 class="mb-4">Create Your Invoice</h4>
+                        
+                        <!-- Usage Tracker -->
+                        <div class="alert alert-info d-flex align-items-center mb-4" id="usageTracker">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <div class="flex-grow-1">
+                                <strong>Free Uses Remaining:</strong> <span id="remainingUses">5</span> / 5 this month
+                                <div class="small mt-1">Resets on: <span id="resetDate">1st of next month</span></div>
+                            </div>
+                            <a href="/#pricing" class="btn btn-sm btn-primary ms-3">Upgrade</a>
+                        </div>
+
+                        <form id="invoiceGeneratorForm">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Invoice Template</label>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="template-type-card card h-100" data-type="professional">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-briefcase mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Professional</h6>
+                                                <small class="text-muted">Clean business style</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="template-type-card card h-100" data-type="creative">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-paint-brush mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Creative</h6>
+                                                <small class="text-muted">Artistic & colorful</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="template-type-card card h-100" data-type="minimal">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-list mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Minimal</h6>
+                                                <small class="text-muted">Simple & clean</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="template-type-card card h-100" data-type="corporate">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-building mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Corporate</h6>
+                                                <small class="text-muted">Enterprise-grade</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="template-type-card card h-100" data-type="modern">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-star mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Modern</h6>
+                                                <small class="text-muted">Trendy design</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="template-type-card card h-100" data-type="classic">
+                                            <div class="card-body text-center">
+                                                <i class="fas fa-certificate mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                                <h6>Classic</h6>
+                                                <small class="text-muted">Traditional layout</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="selectedTemplateType" name="templateType" required>
+
+                            <!-- Business Information -->
+                            <div class="mb-4">
+                                <h5>Business Information</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="businessName" class="form-label">Business Name</label>
+                                        <input type="text" class="form-control" id="businessName" name="businessName" placeholder="Your Business Name" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="businessEmail" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="businessEmail" name="businessEmail" placeholder="business@example.com">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="businessPhone" class="form-label">Phone Number</label>
+                                        <input type="tel" class="form-control" id="businessPhone" name="businessPhone" placeholder="+1 (555) 123-4567">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="businessWebsite" class="form-label">Website</label>
+                                        <input type="url" class="form-control" id="businessWebsite" name="businessWebsite" placeholder="www.yourbusiness.com">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="businessAddress" class="form-label">Business Address</label>
+                                    <textarea class="form-control" id="businessAddress" name="businessAddress" rows="3" placeholder="123 Business St, City, State 12345"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Client Information -->
+                            <div class="mb-4">
+                                <h5>Client Information</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="clientName" class="form-label">Client Name</label>
+                                        <input type="text" class="form-control" id="clientName" name="clientName" placeholder="Client Name or Company" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="clientEmail" class="form-label">Client Email</label>
+                                        <input type="email" class="form-control" id="clientEmail" name="clientEmail" placeholder="client@example.com">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="clientAddress" class="form-label">Client Address</label>
+                                    <textarea class="form-control" id="clientAddress" name="clientAddress" rows="3" placeholder="Client address (optional)"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Invoice Details -->
+                            <div class="mb-4">
+                                <h5>Invoice Details</h5>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="invoiceNumber" class="form-label">Invoice Number</label>
+                                        <input type="text" class="form-control" id="invoiceNumber" name="invoiceNumber" placeholder="INV-001" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="invoiceDate" class="form-label">Invoice Date</label>
+                                        <input type="date" class="form-control" id="invoiceDate" name="invoiceDate" required>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="dueDate" class="form-label">Due Date</label>
+                                        <input type="date" class="form-control" id="dueDate" name="dueDate" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="currency" class="form-label">Currency</label>
+                                        <select class="form-select" id="currency" name="currency" required>
+                                            <option value="">Select currency</option>
+                                            <option value="USD">USD ($)</option>
+                                            <option value="EUR">EUR (€)</option>
+                                            <option value="GBP">GBP (£)</option>
+                                            <option value="JPY">JPY (¥)</option>
+                                            <option value="CAD">CAD (C$)</option>
+                                            <option value="AUD">AUD (A$)</option>
+                                            <option value="KES">KES (KSh)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="paymentTerms" class="form-label">Payment Terms</label>
+                                        <select class="form-select" id="paymentTerms" name="paymentTerms">
+                                            <option value="">Select terms</option>
+                                            <option value="Net 15">Net 15 days</option>
+                                            <option value="Net 30">Net 30 days</option>
+                                            <option value="Net 60">Net 60 days</option>
+                                            <option value="Due on Receipt">Due on Receipt</option>
+                                            <option value="Cash on Delivery">Cash on Delivery</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Invoice Items -->
+                            <div class="mb-4">
+                                <h5>Invoice Items</h5>
+                                <div id="invoiceItems">
+                                    <div class="item-row">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-2">
+                                                <input type="text" class="form-control" name="itemDescription[]" placeholder="Item description" required>
+                                            </div>
+                                            <div class="col-md-2 mb-2">
+                                                <input type="number" class="form-control" name="itemQuantity[]" placeholder="Qty" min="1" value="1" required>
+                                            </div>
+                                            <div class="col-md-2 mb-2">
+                                                <input type="number" class="form-control" name="itemRate[]" placeholder="Rate" step="0.01" min="0" required>
+                                            </div>
+                                            <div class="col-md-2 mb-2">
+                                                <input type="text" class="form-control" name="itemAmount[]" placeholder="Amount" readonly>
+                                            </div>
+                                            <div class="col-md-2 mb-2">
+                                                <button type="button" class="btn remove-item-btn" onclick="removeItem(this)" style="display: none;">Remove</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn add-item-btn mt-2" onclick="addItem()">
+                                    <i class="fas fa-plus me-1"></i> Add Item
+                                </button>
+                            </div>
+
+                            <!-- Additional Settings -->
+                            <div class="mb-4">
+                                <h5>Additional Settings</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="taxRate" class="form-label">Tax Rate (%)</label>
+                                        <input type="number" class="form-control" id="taxRate" name="taxRate" placeholder="0" step="0.01" min="0" max="100">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="discountAmount" class="form-label">Discount Amount</label>
+                                        <input type="number" class="form-control" id="discountAmount" name="discountAmount" placeholder="0" step="0.01" min="0">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="notes" class="form-label">Notes</label>
+                                    <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Additional notes or payment instructions"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Additional Options -->
+                            <div class="mb-4">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeLogo" checked>
+                                    <label class="form-check-label" for="includeLogo">
+                                        Include business logo placeholder
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="includeSignature">
+                                    <label class="form-check-label" for="includeSignature">
+                                        Add signature line
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="includeTerms">
+                                    <label class="form-check-label" for="includeTerms">
+                                        Include terms and conditions
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-file-invoice me-2"></i> Generate Invoice
+                            </button>
+                        </form>
+                        
+                        <!-- Processing Message -->
+                        <div class="processing-message" id="processingMessage">
+                            <div class="loading-spinner d-inline-block me-2"></div>
+                            <h5 class="mb-0">Creating your professional invoice...</h5>
+                            <p class="text-muted mt-2 mb-0">This may take up to 10 seconds while we format your invoice.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div id="resultsContainer" class="content-card" style="display: none;">
+                        <h4 class="mb-4">Your Invoice</h4>
+                        
+                        <!-- Invoice Information -->
+                        <div class="mb-4" id="invoiceInfoSection">
+                            <h5><i class="fas fa-info-circle me-2"></i>Invoice Summary</h5>
+                            <div id="invoiceInfoContainer" class="p-3 bg-light rounded">
+                                <!-- Invoice info will be added dynamically -->
+                            </div>
+                        </div>
+                        
+                        <!-- Invoice Preview -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-eye me-2"></i>Invoice Preview</h5>
+                            <div class="invoice-preview" id="invoicePreview">
+                                <!-- Invoice content will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Export Options -->
+                        <div class="export-options">
+                            <div class="export-option" id="copyInvoice">
+                                <i class="fas fa-copy"></i>
+                                <div>Copy Invoice</div>
+                                <small class="text-muted">To clipboard</small>
+                            </div>
+                            <div class="export-option" id="downloadPDF">
+                                <i class="fas fa-file-pdf"></i>
+                                <div>Download PDF</div>
+                                <small class="text-muted">Ready to send</small>
+                            </div>
+                            <div class="export-option" id="downloadHTML">
+                                <i class="fas fa-code"></i>
+                                <div>Download HTML</div>
+                                <small class="text-muted">Web format</small>
+                            </div>
+                            <div class="export-option" id="emailInvoice">
+                                <i class="fas fa-envelope"></i>
+                                <div>Email</div>
+                                <small class="text-muted">Send directly</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="editInvoiceBtn">
+                                <i class="fas fa-edit me-1"></i> Edit Invoice
+                            </button>
+                            <button class="btn btn-outline-secondary" id="newInvoiceBtn">
+                                <i class="fas fa-plus me-1"></i> Create New Invoice
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <section class="py-5 mt-5" style="background-color: #f9f9f9;">
+            <div class="container text-center">
+                <h2 class="mb-4">Ready to <span style="color: #14697D;">streamline</span> your billing process?</h2>
+                <p class="lead mb-4">Join thousands of professionals who create stunning invoices with Elevify's AI-powered tools.</p>
+                <a href="/#pricing" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket me-2"></i> Start Free Trial
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h1 class="brand-logo" style="font-size: 1.8rem;">elevify<span class="accent-dot" style="color: #FFbf23;">.</span></h1>
+                    <p>Elevate your potential with AI-powered tools that help you work smarter, not harder.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/#tools">Tools</a></li>
+                        <li><a href="/#pricing">Pricing</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <p>&copy; 2025 by Elo.</p>
+                </div>
+            </div>
+        </div> 
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Set today's date as default
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('invoiceDate').value = today;
+            
+            // Set due date to 30 days from now
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+            
+            // Generate invoice number
+            const invoiceNum = 'INV-' + Date.now().toString().slice(-6);
+            document.getElementById('invoiceNumber').value = invoiceNum;
+        });
+
+        // Template selection
+        document.querySelectorAll('.template-type-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.template-type-card').forEach(c => c.classList.remove('selected'));
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                // Update hidden input
+                document.getElementById('selectedTemplateType').value = this.dataset.type;
+            });
+        });
+
+        // Add item functionality
+        function addItem() {
+            const itemsContainer = document.getElementById('invoiceItems');
+            const newItem = document.createElement('div');
+            newItem.className = 'item-row';
+            newItem.innerHTML = `
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <input type="text" class="form-control" name="itemDescription[]" placeholder="Item description" required>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <input type="number" class="form-control" name="itemQuantity[]" placeholder="Qty" min="1" value="1" required>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <input type="number" class="form-control" name="itemRate[]" placeholder="Rate" step="0.01" min="0" required>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <input type="text" class="form-control" name="itemAmount[]" placeholder="Amount" readonly>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <button type="button" class="btn remove-item-btn" onclick="removeItem(this)">Remove</button>
+                    </div>
+                </div>
+            `;
+            itemsContainer.appendChild(newItem);
+            
+            // Show remove buttons if more than one item
+            const removeButtons = document.querySelectorAll('.remove-item-btn');
+            if (removeButtons.length > 1) {
+                removeButtons.forEach(btn => btn.style.display = 'inline-block');
+            }
+            
+            // Add event listeners for calculation
+            addCalculationListeners(newItem);
+        }
+
+        // Remove item functionality
+        function removeItem(button) {
+            const itemRow = button.closest('.item-row');
+            itemRow.remove();
+            
+            // Hide remove buttons if only one item left
+            const removeButtons = document.querySelectorAll('.remove-item-btn');
+            if (removeButtons.length === 1) {
+                removeButtons.forEach(btn => btn.style.display = 'none');
+            }
+            
+            calculateTotals();
+        }
+
+        // Add calculation listeners to item inputs
+        function addCalculationListeners(container = document) {
+            const quantityInputs = container.querySelectorAll('input[name="itemQuantity[]"]');
+            const rateInputs = container.querySelectorAll('input[name="itemRate[]"]');
+            
+            [...quantityInputs, ...rateInputs].forEach(input => {
+                input.addEventListener('input', function() {
+                    const row = this.closest('.item-row');
+                    const quantity = parseFloat(row.querySelector('input[name="itemQuantity[]"]').value) || 0;
+                    const rate = parseFloat(row.querySelector('input[name="itemRate[]"]').value) || 0;
+                    const amount = quantity * rate;
+                    row.querySelector('input[name="itemAmount[]"]').value = amount.toFixed(2);
+                    calculateTotals();
+                });
+            });
+        }
+
+        // Calculate totals
+        function calculateTotals() {
+            const amounts = document.querySelectorAll('input[name="itemAmount[]"]');
+            let subtotal = 0;
+            
+            amounts.forEach(amount => {
+                subtotal += parseFloat(amount.value) || 0;
+            });
+            
+            const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+            const discount = parseFloat(document.getElementById('discountAmount').value) || 0;
+            
+            const taxAmount = (subtotal * taxRate) / 100;
+            const total = subtotal + taxAmount - discount;
+            
+            // Update display if preview is shown
+            updatePreviewTotals(subtotal, taxAmount, discount, total);
+        }
+
+        function updatePreviewTotals(subtotal, tax, discount, total) {
+            // This would update the preview totals in real-time
+            // Implementation would depend on the preview structure
+        }
+
+        // Initialize calculation listeners on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            addCalculationListeners();
+            
+            // Add listeners for tax and discount
+            document.getElementById('taxRate').addEventListener('input', calculateTotals);
+            document.getElementById('discountAmount').addEventListener('input', calculateTotals);
+        });
+
+        // Form submission
+        document.getElementById('invoiceGeneratorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate template selection
+            if (!document.getElementById('selectedTemplateType').value) {
+                alert('Please select an invoice template.');
+                return;
+            }
+            
+            // Show processing message
+            document.getElementById('processingMessage').style.display = 'block';
+            document.querySelector('.loading-spinner').style.display = 'inline-block';
+            
+            // Simulate invoice generation
+            setTimeout(function() {
+                generateInvoicePreview();
+                
+                // Hide form and processing message
+                document.getElementById('invoiceGeneratorForm').closest('.content-card').style.display = 'none';
+                document.getElementById('processingMessage').style.display = 'none';
+                
+                // Show results
+                document.getElementById('resultsContainer').style.display = 'block';
+                
+                // Scroll to results
+                document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        });
+
+        function generateInvoicePreview() {
+            const formData = new FormData(document.getElementById('invoiceGeneratorForm'));
+            const templateType = document.getElementById('selectedTemplateType').value;
+            
+            // Generate invoice summary
+            const summary = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Invoice #:</strong> ${formData.get('invoiceNumber')}<br>
+                        <strong>Template:</strong> ${templateType.charAt(0).toUpperCase() + templateType.slice(1)}<br>
+                        <strong>Currency:</strong> ${formData.get('currency')}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Date:</strong> ${formData.get('invoiceDate')}<br>
+                        <strong>Due:</strong> ${formData.get('dueDate')}<br>
+                        <strong>Client:</strong> ${formData.get('clientName')}
+                    </div>
+                </div>
+            `;
+            document.getElementById('invoiceInfoContainer').innerHTML = summary;
+            
+            // Generate invoice preview
+            generateFullInvoicePreview(formData, templateType);
+        }
+
+        function generateFullInvoicePreview(formData, templateType) {
+            const currency = getCurrencySymbol(formData.get('currency'));
+            
+            // Calculate totals
+            const quantities = formData.getAll('itemQuantity[]');
+            const rates = formData.getAll('itemRate[]');
+            const descriptions = formData.getAll('itemDescription[]');
+            
+            let subtotal = 0;
+            let itemsHTML = '';
+            
+            descriptions.forEach((desc, index) => {
+                if (desc.trim()) {
+                    const qty = parseFloat(quantities[index]) || 0;
+                    const rate = parseFloat(rates[index]) || 0;
+                    const amount = qty * rate;
+                    subtotal += amount;
+                    
+                    itemsHTML += '<tr>' +
+                        '<td>' + desc + '</td>' +
+                        '<td>' + qty + '</td>' +
+                        '<td>' + currency + rate.toFixed(2) + '</td>' +
+                        '<td>' + currency + amount.toFixed(2) + '</td>' +
+                        '</tr>';
+                }
+            });
+            
+            const taxRate = parseFloat(formData.get('taxRate')) || 0;
+            const discount = parseFloat(formData.get('discountAmount')) || 0;
+            const taxAmount = (subtotal * taxRate) / 100;
+            const total = subtotal + taxAmount - discount;
+            
+            let businessAddressHTML = '';
+            if (formData.get('businessAddress')) {
+                businessAddressHTML = formData.get('businessAddress').replace(/\n/g, '<br>') + '<br>';
+            }
+            
+            let clientAddressHTML = '';
+            if (formData.get('clientAddress')) {
+                clientAddressHTML = formData.get('clientAddress').replace(/\n/g, '<br>') + '<br>';
+            }
+            
+            let logoHTML = '';
+            if (formData.get('includeLogo')) {
+                logoHTML = '<div style="background: #f0f0f0; padding: 2rem; border-radius: 10px; margin-bottom: 1rem;">[Your Logo Here]</div>';
+            }
+            
+            let notesHTML = '';
+            if (formData.get('notes')) {
+                notesHTML = '<h6>Notes:</h6><p>' + formData.get('notes') + '</p>';
+            }
+            
+            let paymentTermsHTML = '';
+            if (formData.get('paymentTerms')) {
+                paymentTermsHTML = '<p><strong>Payment Terms:</strong> ' + formData.get('paymentTerms') + '</p>';
+            }
+            
+            let discountHTML = '';
+            if (discount > 0) {
+                discountHTML = '<tr><td><strong>Discount:</strong></td><td class="text-end">-' + currency + discount.toFixed(2) + '</td></tr>';
+            }
+            
+            let taxHTML = '';
+            if (taxRate > 0) {
+                taxHTML = '<tr><td><strong>Tax (' + taxRate + '%):</strong></td><td class="text-end">' + currency + taxAmount.toFixed(2) + '</td></tr>';
+            }
+            
+            let signatureHTML = '';
+            if (formData.get('includeSignature')) {
+                signatureHTML = '<div style="margin-top: 3rem; border-top: 1px solid #ccc; padding-top: 1rem;"><p><strong>Signature:</strong> ___________________________ <strong>Date:</strong> ___________</p></div>';
+            }
+            
+            let termsHTML = '';
+            if (formData.get('includeTerms')) {
+                termsHTML = '<div style="margin-top: 2rem; padding: 1rem; background-color: #f8f9fa; border-radius: 10px;"><h6>Terms & Conditions</h6><p>Payment is due within the specified terms. Late payments may incur additional fees.</p></div>';
+            }
+            
+            const invoiceHTML = 
+                '<div class="invoice-header" style="margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #14697D;">' +
+                    '<div class="row">' +
+                        '<div class="col-md-6">' +
+                            '<h2 style="color: #14697D; margin-bottom: 0;">INVOICE</h2>' +
+                            '<p style="margin: 0;"><strong>Invoice #:</strong> ' + formData.get('invoiceNumber') + '</p>' +
+                            '<p style="margin: 0;"><strong>Date:</strong> ' + formData.get('invoiceDate') + '</p>' +
+                            '<p style="margin: 0;"><strong>Due Date:</strong> ' + formData.get('dueDate') + '</p>' +
+                        '</div>' +
+                        '<div class="col-md-6 text-end">' +
+                            logoHTML +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                
+                '<div class="invoice-parties" style="margin-bottom: 2rem;">' +
+                    '<div class="row">' +
+                        '<div class="col-md-6">' +
+                            '<h5 style="color: #14697D;">From:</h5>' +
+                            '<strong>' + formData.get('businessName') + '</strong><br>' +
+                            businessAddressHTML +
+                            (formData.get('businessEmail') ? formData.get('businessEmail') + '<br>' : '') +
+                            (formData.get('businessPhone') ? formData.get('businessPhone') + '<br>' : '') +
+                            (formData.get('businessWebsite') ? formData.get('businessWebsite') : '') +
+                        '</div>' +
+                        '<div class="col-md-6">' +
+                            '<h5 style="color: #14697D;">Bill To:</h5>' +
+                            '<strong>' + formData.get('clientName') + '</strong><br>' +
+                            clientAddressHTML +
+                            (formData.get('clientEmail') ? formData.get('clientEmail') : '') +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                
+                '<div class="invoice-items" style="margin-bottom: 2rem;">' +
+                    '<table class="invoice-table">' +
+                        '<thead>' +
+                            '<tr style="background-color: #14697D; color: white;">' +
+                                '<th>Description</th>' +
+                                '<th>Quantity</th>' +
+                                '<th>Rate</th>' +
+                                '<th>Amount</th>' +
+                            '</tr>' +
+                        '</thead>' +
+                        '<tbody>' +
+                            itemsHTML +
+                        '</tbody>' +
+                    '</table>' +
+                '</div>' +
+                
+                '<div class="invoice-totals">' +
+                    '<div class="row">' +
+                        '<div class="col-md-6">' +
+                            notesHTML +
+                            paymentTermsHTML +
+                        '</div>' +
+                        '<div class="col-md-6">' +
+                            '<table class="table table-sm">' +
+                                '<tr>' +
+                                    '<td><strong>Subtotal:</strong></td>' +
+                                    '<td class="text-end">' + currency + subtotal.toFixed(2) + '</td>' +
+                                '</tr>' +
+                                discountHTML +
+                                taxHTML +
+                                '<tr style="border-top: 2px solid #14697D;">' +
+                                    '<td class="invoice-total"><strong>Total:</strong></td>' +
+                                    '<td class="text-end invoice-total">' + currency + total.toFixed(2) + '</td>' +
+                                '</tr>' +
+                            '</table>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                
+                signatureHTML +
+                termsHTML;
+            
+            document.getElementById('invoicePreview').innerHTML = invoiceHTML;
+        }
+
+        function getCurrencySymbol(currency) {
+            const symbols = {
+                'USD': '$'
+                ,
+                'EUR': '€',
+                'GBP': '£',
+                'JPY': '¥',
+                'CAD': 'C'
+                ,
+                'AUD': 'A'
+                ,
+                'KES': 'KSh'
+            };
+            return symbols[currency] || ''
+                ;
+        }
+
+        // Export functionality
+        document.getElementById('copyInvoice').addEventListener('click', function() {
+            const invoiceContent = document.getElementById('invoicePreview').innerHTML;
+            navigator.clipboard.writeText(invoiceContent).then(function() {
+                alert('Invoice copied to clipboard!');
+            });
+        });
+
+        document.getElementById('downloadPDF').addEventListener('click', function() {
+            alert('PDF download functionality would be implemented here.');
+        });
+
+        document.getElementById('downloadHTML').addEventListener('click', function() {
+            const invoiceContent = document.getElementById('invoicePreview').innerHTML;
+            const blob = new Blob([invoiceContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'invoice.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('emailInvoice').addEventListener('click', function() {
+            alert('Email functionality would be implemented here.');
+        });
+
+        // Edit and new invoice buttons
+        document.getElementById('editInvoiceBtn').addEventListener('click', function() {
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('invoiceGeneratorForm').closest('.content-card').style.display = 'block';
+        });
+
+        document.getElementById('newInvoiceBtn').addEventListener('click', function() {
+            document.getElementById('invoiceGeneratorForm').reset();
+            document.getElementById('selectedTemplateType').value = '';
+            document.querySelectorAll('.template-type-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('invoiceGeneratorForm').closest('.content-card').style.display = 'block';
+            
+            // Reset to single item
+            const itemsContainer = document.getElementById('invoiceItems');
+            const firstItem = itemsContainer.querySelector('.item-row');
+            itemsContainer.innerHTML = '';
+            itemsContainer.appendChild(firstItem);
+            
+            // Set defaults again
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('invoiceDate').value = today;
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+            const invoiceNum = 'INV-' + Date.now().toString().slice(-6);
+            document.getElementById('invoiceNumber').value = invoiceNum;
+        });
+    </script>   
+</body>
+</html>
