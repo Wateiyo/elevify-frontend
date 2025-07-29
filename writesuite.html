@@ -1367,7 +1367,7 @@
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
 // ============================================================================
-// PART 1: CONFIGURATION AND GLOBAL FUNCTIONS - FIXED AI SUGGESTIONS
+// SECTION 1: CONFIGURATION AND UTILITY FUNCTIONS
 // ============================================================================
 
 const CONFIG = {
@@ -1386,15 +1386,222 @@ const CONFIG = {
     TOOL_NAME: 'AI Writers Suite'
 };
 
+// Get API base URL with fallback
+function getApiBaseUrl() {
+    // Check if we're in development
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'http://localhost:3000';
+    }
+    return CONFIG.API_BASE_URL;
+}
+
 const API_BASE_URL = getApiBaseUrl();
 console.log('🌐 API Base URL:', API_BASE_URL);
 console.log('🌐 Frontend URL:', window.location.origin);
 
+// Utility Functions
+function showError(message) {
+    console.error('Error:', message);
+    
+    // Create a more user-friendly error display
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'alert alert-danger alert-dismissible fade show';
+    errorDiv.innerHTML = `
+        <i class="fas fa-exclamation-circle me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    // Insert at the top of the active tab content
+    const activeTab = document.querySelector('.tab-content.active');
+    if (activeTab) {
+        activeTab.insertBefore(errorDiv, activeTab.firstChild);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (errorDiv.parentNode) {
+                errorDiv.remove();
+            }
+        }, 5000);
+    } else {
+        // Fallback to alert
+        alert(message);
+    }
+}
+
+function showLoading() {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'block';
+        console.log('Loading spinner shown');
+    }
+    if (resultsContainer) {
+        resultsContainer.style.display = 'none';
+    }
+}
+
+function hideLoading() {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    if (loadingSpinner) {
+        loadingSpinner.style.display = 'none';
+        console.log('Loading spinner hidden');
+    }
+}
+
+function formatContent(content) {
+    if (!content) return '';
+    return content
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+}
+
+// Check for successful purchase redirect
+function checkForSuccessfulPurchase() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('wanted') && urlParams.get('wanted').includes('writesuite')) {
+        // Show success message
+        const successAlert = document.createElement('div');
+        successAlert.className = 'alert alert-success alert-dismissible fade show';
+        successAlert.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>Purchase Successful!</strong> You now have full access to WriteSuite. Welcome to unlimited AI writing assistance!
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.querySelector('.container').insertBefore(successAlert, document.querySelector('.container').firstChild);
+        
+        // Reset usage tracking to unlimited
+        resetUsageAfterPurchase();
+        
+        // Clean up URL
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+    }
+}
+
+function resetUsageAfterPurchase() {
+    const usageKey = 'writesuite_usage';
+    const usage = { remaining: 999, limit: 999, month: 'unlimited', isPaid: true };
+    localStorage.setItem(usageKey, JSON.stringify(usage));
+    updateUsageDisplay(usage);
+}
 // ============================================================================
-// GLOBAL AI SUGGESTIONS FUNCTIONS - MOVED OUTSIDE DOMContentLoaded
+// SECTION 2: USAGE TRACKING AND AI SUGGESTIONS
 // ============================================================================
 
-// AI SUGGESTIONS FUNCTIONS - FIXED TO BE GLOBALLY ACCESSIBLE
+// Usage Tracking Functions
+function initializeUsageTracking() {
+    const usageKey = 'writesuite_usage';
+    const resetKey = 'writesuite_reset';
+    const now = new Date();
+    const currentMonth = now.getFullYear() + '-' + (now.getMonth() + 1);
+    
+    let usage = JSON.parse(localStorage.getItem(usageKey)) || { remaining: 20, limit: 20, month: currentMonth };
+    let lastReset = localStorage.getItem(resetKey);
+    
+    // Reset if new month (unless it's a paid account)
+    if (usage.month !== currentMonth && !usage.isPaid) {
+        usage = { remaining: 20, limit: 20, month: currentMonth };
+        localStorage.setItem(usageKey, JSON.stringify(usage));
+        localStorage.setItem(resetKey, now.toISOString());
+    }
+    
+    updateUsageDisplay(usage);
+}
+
+function updateUsageDisplay(usage) {
+    const remainingUsesEl = document.getElementById('remainingUses');
+    const usageTracker = document.getElementById('usageTracker');
+    
+    if (remainingUsesEl) {
+        remainingUsesEl.textContent = usage.isPaid ? 'Unlimited' : (usage.remaining || 0);
+    }
+    
+    if (usageTracker) {
+        usageTracker.classList.remove('alert-info', 'alert-warning', 'alert-danger', 'alert-success');
+        
+        if (usage.isPaid) {
+            usageTracker.classList.add('alert-success');
+            usageTracker.innerHTML = '<i class="fas fa-crown me-2"></i><div class="flex-grow-1"><strong>Pro Access Active!</strong><div class="small mt-1">Unlimited uses this month</div></div><button class="btn btn-outline-success" onclick="showUpgradeModal()">Manage Plan</button>';
+        } else if (usage.remaining === 0) {
+            usageTracker.classList.add('alert-danger');
+            usageTracker.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i><div class="flex-grow-1"><strong>No free uses remaining this month!</strong><div class="small mt-1">Upgrade to continue using this tool</div></div><button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade</button>';
+        } else if (usage.remaining <= 2) {
+            usageTracker.classList.add('alert-warning');
+        } else {
+            usageTracker.classList.add('alert-info');
+        }
+    }
+    
+    // Update reset date
+    const resetDateEl = document.getElementById('resetDate');
+    if (resetDateEl) {
+        if (usage.isPaid) {
+            resetDateEl.textContent = 'Never (Unlimited)';
+        } else {
+            const nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
+            resetDateEl.textContent = nextMonth.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        }
+    }
+}
+
+function decrementUsage() {
+    // TESTING MODE: Always return true to bypass usage limits
+    const TESTING_MODE = true; // Set to false to re-enable usage tracking
+    
+    if (TESTING_MODE) {
+        console.log('⚠️ Testing mode: Usage tracking disabled');
+        return true;
+    }
+    
+    // Check if user has paid access
+    const usageKey = 'writesuite_usage';
+    let usage = JSON.parse(localStorage.getItem(usageKey)) || { 
+        remaining: 20, 
+        limit: 20, 
+        month: new Date().getFullYear() + '-' + (new Date().getMonth() + 1) 
+    };
+    
+    if (usage.isPaid) {
+        console.log('✅ Paid user - unlimited access');
+        return true;
+    }
+    
+    // Original usage tracking code
+    if (usage.remaining > 0) {
+        usage.remaining--;
+        localStorage.setItem(usageKey, JSON.stringify(usage));
+        updateUsageDisplay(usage);
+        console.log('Usage decremented. Remaining:', usage.remaining);
+        return true;
+    }
+    
+    console.log('No usage remaining');
+    return false;
+}
+
+function restoreUsage() {
+    const TESTING_MODE = true; // Set to false to re-enable usage tracking
+    
+    if (TESTING_MODE) {
+        console.log('⚠️ Testing mode: Usage restore disabled');
+        return;
+    }
+    
+    const usageKey = 'writesuite_usage';
+    let usage = JSON.parse(localStorage.getItem(usageKey));
+    if (usage && usage.remaining < usage.limit && !usage.isPaid) {
+        usage.remaining++;
+        localStorage.setItem(usageKey, JSON.stringify(usage));
+        updateUsageDisplay(usage);
+        console.log('Usage restored. Remaining:', usage.remaining);
+    }
+}
+
+// AI Suggestions Functions
 async function generateAISuggestions(content, contentType = 'general') {
     const suggestionsList = document.getElementById('suggestionsList');
     if (!suggestionsList) {
@@ -1442,12 +1649,6 @@ async function generateAISuggestions(content, contentType = 'general') {
         if (data.success && data.suggestions && data.suggestions.length > 0) {
             console.log(`✅ Got ${data.suggestions.length} AI suggestions`);
             displayAISuggestions(data.suggestions);
-            
-            if (!data.note) {
-                console.log('✅ Using real AI suggestions from Cohere');
-            } else {
-                console.log('⚠️ Using fallback suggestions:', data.note);
-            }
         } else {
             console.log('⚠️ No suggestions returned, using fallback');
             displayFallbackSuggestions();
@@ -1585,99 +1786,20 @@ function showSuggestionTooltip(type) {
     }, 3000);
 }
 
-// Test function for AI suggestions
-async function testAISuggestions() {
-    console.log('🧪 Testing AI suggestions endpoint...');
-    
-    const testContent = "This is a sample text for testing AI suggestions. It contains some content that might need improvement.";
-    
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/writesuite/suggestions`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                content: testContent,
-                contentType: 'general'
-            })
-        });
-        
-        console.log('🧪 Test response status:', response.status);
-        
-        if (response.ok) {
-            const data = await response.json();
-            console.log('🧪 Test response data:', data);
-            return data;
-        } else {
-            const errorText = await response.text();
-            console.error('🧪 Test failed:', response.status, errorText);
-            return null;
-        }
-    } catch (error) {
-        console.error('🧪 Test request failed:', error);
-        return null;
-    }
-}
-
 // Make functions globally accessible
 window.generateAISuggestions = generateAISuggestions;
 window.displayAISuggestions = displayAISuggestions;
 window.highlightSuggestion = highlightSuggestion;
 window.showSuggestionTooltip = showSuggestionTooltip;
-window.testAISuggestions = testAISuggestions;
 // ============================================================================
-// PART 2: DOM INITIALIZATION AND FORM HANDLERS
+// SECTION 3: DOM SETUP AND EVENT LISTENERS
 // ============================================================================
 
-// WriteSuite JavaScript - Fixed for Backend Integration
+// Main DOM Content Loaded Event Listener
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing WriteSuite with Backend API...');
+    console.log('DOM loaded, initializing WriteSuite...');
     
-    const TOOL_ID = 'writesuite';
-    
-    // DOM Elements
-    let featureCards, selectedContentTypeInput, toolTabs, loadingSpinner, 
-        resultsContainer, contentPreview, toneOptions, selectedToneInput,
-        lengthSlider, lengthLabel;
-    
-    // Initialize immediately without setTimeout
-    console.log('Setting up WriteSuite functionality with Backend API integration...');
-    
-    featureCards = document.querySelectorAll('.feature-card');
-    selectedContentTypeInput = document.getElementById('selectedContentType');
-    toolTabs = document.querySelectorAll('.tool-tab');
-    loadingSpinner = document.getElementById('loadingSpinner');
-    resultsContainer = document.getElementById('resultsContainer');
-    contentPreview = document.getElementById('contentPreview');
-    toneOptions = document.querySelectorAll('.tone-option');
-    selectedToneInput = document.getElementById('selectedTone');
-    lengthSlider = document.getElementById('lengthSlider');
-    lengthLabel = document.getElementById('lengthLabel');
-    
-    console.log('Backend API integration ready. Elements found:', {
-        featureCards: featureCards?.length || 0,
-        toneOptions: toneOptions?.length || 0,
-        toolTabs: toolTabs?.length || 0,
-        suggestionsPanel: !!document.getElementById('suggestionsPanel'),
-        suggestionsList: !!document.getElementById('suggestionsList')
-    });
-    
-    // Test AI suggestions endpoint after DOM is loaded
-    setTimeout(() => {
-        testAISuggestions().then(result => {
-            if (result && result.success) {
-                console.log('✅ AI suggestions endpoint is working correctly');
-            } else {
-                console.log('⚠️ AI suggestions endpoint test failed - will use fallback');
-            }
-        });
-    }, 2000);
-    
-    // Debug elements status
-    debugElementsStatus();
-    
-    // Initialize all functions
+    // Initialize immediately
     initializeUsageTracking();
     setupFeatureSelection();
     setupToneSelection();
@@ -1686,1325 +1808,855 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFormSubmissions();
     setupExportOptions();
     setupEditButtons();
+    setupPricingModal(); // Add this line
     checkForSuccessfulPurchase();
     
     console.log('🚀 WriteSuite initialization complete');
-    console.log('📊 Final element count:', {
-        featureCards: document.querySelectorAll('.feature-card').length,
-        toneOptions: document.querySelectorAll('.tone-option').length,
-        toolTabs: document.querySelectorAll('.tool-tab').length,
-        forms: document.querySelectorAll('form').length
+});
+
+// Feature Selection Setup (Content Type Cards)
+function setupFeatureSelection() {
+    const featureCards = document.querySelectorAll('.feature-card[data-type]');
+    const selectedContentTypeInput = document.getElementById('selectedContentType');
+    
+    console.log('Setting up feature selection for', featureCards.length, 'cards');
+    
+    featureCards.forEach((card, index) => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Feature card clicked:', this.getAttribute('data-type'));
+            
+            // Remove selected class from all cards in the same container
+            const container = this.closest('.row');
+            const allCards = container.querySelectorAll('.feature-card[data-type]');
+            allCards.forEach(c => c.classList.remove('selected'));
+            
+            // Add selected class to clicked card
+            this.classList.add('selected');
+            
+            const type = this.getAttribute('data-type');
+            if (selectedContentTypeInput) {
+                selectedContentTypeInput.value = type;
+                console.log('✅ Selected content type:', type);
+            } else {
+                console.log('⚠️ selectedContentTypeInput not found');
+            }
+        });
     });
+    
+    console.log('✅ Feature selection setup complete');
+}
 
-    // Test the write form specifically
-    const testWriteForm = document.getElementById('writeForm');
-    if (testWriteForm) {
-        console.log('✅ Write form ready for testing');
-        
-        // Add a test click handler to the generate button
-        const generateBtn = testWriteForm.querySelector('button[type="submit"]');
-        if (generateBtn) {
-            console.log('✅ Generate button found');
-            
-            // Test button click
-            generateBtn.addEventListener('click', function(e) {
-                console.log('🔥 Generate button clicked!');
-            });
-        } else {
-            console.log('❌ Generate button not found');
-        }
-    } else {
-        console.log('❌ Write form not found - this is the main issue!');
-    }
+// Tone Selection Setup
+function setupToneSelection() {
+    const toneOptions = document.querySelectorAll('.tone-option');
     
-    // Check for successful purchase redirect
-    function checkForSuccessfulPurchase() {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('wanted') && urlParams.get('wanted').includes('writesuite')) {
-            // Show success message
-            const successAlert = document.createElement('div');
-            successAlert.className = 'alert alert-success alert-dismissible fade show';
-            successAlert.innerHTML = `
-                <i class="fas fa-check-circle me-2"></i>
-                <strong>Purchase Successful!</strong> You now have full access to WriteSuite. Welcome to unlimited AI writing assistance!
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            document.querySelector('.container').insertBefore(successAlert, document.querySelector('.container').firstChild);
-            
-            // Reset usage tracking to unlimited
-            resetUsageAfterPurchase();
-            
-            // Clean up URL
-            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            window.history.replaceState({}, document.title, newUrl);
-        }
-    }
+    console.log('Setting up tone selection for', toneOptions.length, 'options');
     
-    function resetUsageAfterPurchase() {
-        const usageKey = 'writesuite_usage';
-        const usage = { remaining: 999, limit: 999, month: 'unlimited', isPaid: true };
-        localStorage.setItem(usageKey, JSON.stringify(usage));
-        updateUsageDisplay(usage);
-    }
-    
-    // ADD this debugging function to check if all elements are loaded
-    function debugElementsStatus() {
-        const elements = {
-            'writeForm': document.getElementById('writeForm'),
-            'selectedContentType': document.getElementById('selectedContentType'),
-            'writePrompt': document.getElementById('writePrompt'),
-            'selectedTone': document.getElementById('selectedTone'),
-            'lengthSlider': document.getElementById('lengthSlider'),
-            'loadingSpinner': document.getElementById('loadingSpinner'),
-            'resultsContainer': document.getElementById('resultsContainer'),
-            'contentPreview': document.getElementById('contentPreview'),
-            'featureCards': document.querySelectorAll('.feature-card'),
-            'suggestionsPanel': document.getElementById('suggestionsPanel'),
-            'suggestionsList': document.getElementById('suggestionsList')
-        };
-        
-        console.log('🔍 Element Status Check:');
-        Object.entries(elements).forEach(([name, element]) => {
-            if (element) {
-                if (element.length !== undefined) {
-                    console.log(`✅ ${name}: ${element.length} elements found`);
-                } else {
-                    console.log(`✅ ${name}: Found`);
-                }
-            } else {
-                console.log(`❌ ${name}: Not found`);
+    toneOptions.forEach((option) => {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Tone option clicked:', this.getAttribute('data-tone') || this.getAttribute('data-summary') || this.getAttribute('data-rewrite'));
+            
+            // Remove selected class from all options in the same container
+            const container = this.closest('.row');
+            const allOptions = container.querySelectorAll('.tone-option');
+            allOptions.forEach(o => o.classList.remove('selected'));
+            
+            // Add selected class to clicked option
+            this.classList.add('selected');
+            
+            const tone = this.getAttribute('data-tone');
+            const summary = this.getAttribute('data-summary');
+            const rewrite = this.getAttribute('data-rewrite');
+            
+            if (tone) {
+                const selectedToneInput = document.getElementById('selectedTone');
+                if (selectedToneInput) selectedToneInput.value = tone;
+                console.log('✅ Selected tone:', tone);
             }
-        });
-    }
-    
-    function initializeUsageTracking() {
-        // Since backend uses frontend tracking, use localStorage
-        const usageKey = 'writesuite_usage';
-        const resetKey = 'writesuite_reset';
-        const now = new Date();
-        const currentMonth = now.getFullYear() + '-' + (now.getMonth() + 1);
-        
-        let usage = JSON.parse(localStorage.getItem(usageKey)) || { remaining: 20, limit: 20, month: currentMonth };
-        let lastReset = localStorage.getItem(resetKey);
-        
-        // Reset if new month (unless it's a paid account)
-        if (usage.month !== currentMonth && !usage.isPaid) {
-            usage = { remaining: 20, limit: 20, month: currentMonth };
-            localStorage.setItem(usageKey, JSON.stringify(usage));
-            localStorage.setItem(resetKey, now.toISOString());
-        }
-        
-        updateUsageDisplay(usage);
-    }
-    
-    function updateUsageDisplay(usage) {
-        const remainingUsesEl = document.getElementById('remainingUses');
-        const usageTracker = document.getElementById('usageTracker');
-        
-        if (remainingUsesEl) {
-            remainingUsesEl.textContent = usage.isPaid ? 'Unlimited' : (usage.remaining || 0);
-        }
-        
-        if (usageTracker) {
-            usageTracker.classList.remove('alert-info', 'alert-warning', 'alert-danger', 'alert-success');
-            
-            if (usage.isPaid) {
-                usageTracker.classList.add('alert-success');
-                usageTracker.innerHTML = '<i class="fas fa-crown me-2"></i><div class="flex-grow-1"><strong>Pro Access Active!</strong><div class="small mt-1">Unlimited uses this month</div></div><button class="btn btn-outline-success" onclick="showUpgradeModal()">Manage Plan</button>';
-            } else if (usage.remaining === 0) {
-                usageTracker.classList.add('alert-danger');
-                usageTracker.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i><div class="flex-grow-1"><strong>No free uses remaining this month!</strong><div class="small mt-1">Upgrade to continue using this tool</div></div><button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade</button>';
-            } else if (usage.remaining <= 2) {
-                usageTracker.classList.add('alert-warning');
-            } else {
-                usageTracker.classList.add('alert-info');
-            }
-        }
-        
-        // Update reset date
-        const resetDateEl = document.getElementById('resetDate');
-        if (resetDateEl) {
-            if (usage.isPaid) {
-                resetDateEl.textContent = 'Never (Unlimited)';
-            } else {
-                const nextMonth = new Date();
-                nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
-                resetDateEl.textContent = nextMonth.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-            }
-        }
-    }
-    
-    // ENHANCED decrementUsage function
-    function decrementUsage() {
-        // TESTING MODE: Always return true to bypass usage limits
-        const TESTING_MODE = true; // Set to false to re-enable usage tracking
-        
-        if (TESTING_MODE) {
-            console.log('⚠️ Testing mode: Usage tracking disabled');
-            return true;
-        }
-        
-        // Check if user has paid access
-        const usageKey = 'writesuite_usage';
-        let usage = JSON.parse(localStorage.getItem(usageKey)) || { 
-            remaining: 20, 
-            limit: 20, 
-            month: new Date().getFullYear() + '-' + (new Date().getMonth() + 1) 
-        };
-        
-        if (usage.isPaid) {
-            console.log('✅ Paid user - unlimited access');
-            return true;
-        }
-        
-        // Original usage tracking code
-        if (usage.remaining > 0) {
-            usage.remaining--;
-            localStorage.setItem(usageKey, JSON.stringify(usage));
-            updateUsageDisplay(usage);
-            console.log('Usage decremented. Remaining:', usage.remaining);
-            return true;
-        }
-        
-        console.log('No usage remaining');
-        return false;
-    }
-
-    // ENHANCED restoreUsage function
-    function restoreUsage() {
-        const TESTING_MODE = true; // Set to false to re-enable usage tracking
-        
-        if (TESTING_MODE) {
-            console.log('⚠️ Testing mode: Usage restore disabled');
-            return;
-        }
-        
-        const usageKey = 'writesuite_usage';
-        let usage = JSON.parse(localStorage.getItem(usageKey));
-        if (usage && usage.remaining < usage.limit && !usage.isPaid) {
-            usage.remaining++;
-            localStorage.setItem(usageKey, JSON.stringify(usage));
-            updateUsageDisplay(usage);
-            console.log('Usage restored. Remaining:', usage.remaining);
-        }
-    }
-    
-    // ENHANCED setupFeatureSelection function
-    function setupFeatureSelection() {
-        if (!featureCards || featureCards.length === 0) {
-            console.log('⚠️ No feature cards found');
-            return;
-        }
-        
-        console.log('Setting up feature selection for', featureCards.length, 'cards');
-        
-        featureCards.forEach((card, index) => {
-            card.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Remove selected class from all cards in the same container
-                const container = this.closest('.row') || this.parentElement;
-                const allCards = container.querySelectorAll('.feature-card');
-                allCards.forEach(c => c.classList.remove('selected'));
-                
-                // Add selected class to clicked card
-                this.classList.add('selected');
-                
-                const type = this.getAttribute('data-type');
-                if (selectedContentTypeInput) {
-                    selectedContentTypeInput.value = type;
-                    console.log('✅ Selected content type:', type);
-                } else {
-                    console.log('⚠️ selectedContentTypeInput not found');
-                }
-            });
-        });
-    }
-    
-    function setupToneSelection() {
-        if (!toneOptions || toneOptions.length === 0) return;
-        
-        toneOptions.forEach((option) => {
-            option.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Remove selected class from all options in the same container
-                const container = this.closest('.row') || this.parentElement;
-                const allOptions = container.querySelectorAll('.tone-option');
-                allOptions.forEach(o => o.classList.remove('selected'));
-                
-                // Add selected class to clicked option
-                this.classList.add('selected');
-                
-                const tone = this.getAttribute('data-tone');
-                const summary = this.getAttribute('data-summary');
-                const rewrite = this.getAttribute('data-rewrite');
-                
-                if (tone && selectedToneInput) {
-                    selectedToneInput.value = tone;
-                }
-                if (summary) {
-                    const summaryInput = document.getElementById('selectedSummaryType');
-                    if (summaryInput) summaryInput.value = summary;
-                }
-                if (rewrite) {
-                    const rewriteInput = document.getElementById('selectedRewriteGoal');
-                    if (rewriteInput) rewriteInput.value = rewrite;
-                }
-                
-                console.log('Selected option:', tone || summary || rewrite);
-            });
-        });
-    }
-    
-    function setupTabSwitching() {
-        if (!toolTabs || toolTabs.length === 0) return;
-        
-        toolTabs.forEach((tab) => {
-            tab.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetTab = this.getAttribute('data-tab');
-                
-                console.log('Switching to tab:', targetTab);
-                
-                // Update active tab
-                toolTabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Show/hide content sections
-                const allSections = document.querySelectorAll('.tab-content');
-                allSections.forEach(section => {
-                    section.classList.remove('active');
-                });
-                
-                const targetSection = document.getElementById(targetTab + 'Section');
-                if (targetSection) {
-                    targetSection.classList.add('active');
-                }
-                
-                // Hide results when switching tabs
-                if (resultsContainer) {
-                    resultsContainer.style.display = 'none';
-                }
-            });
-        });
-    }
-    
-    function setupLengthSlider() {
-        if (!lengthSlider || !lengthLabel) return;
-        
-        lengthSlider.addEventListener('input', function() {
-            const value = parseInt(this.value);
-            const labels = ['Short', 'Medium', 'Long'];
-            lengthLabel.textContent = labels[value - 1] || 'Medium';
-        });
-    }
-    
-    // ENHANCED setupFormSubmissions function
-    function setupFormSubmissions() {
-        const writeForm = document.getElementById('writeForm');
-        const proofreadForm = document.getElementById('proofreadForm');
-        const summarizeForm = document.getElementById('summarizeForm');
-        const editForm = document.getElementById('editForm');
-        const rewriteForm = document.getElementById('rewriteForm');
-        
-        console.log('Setting up form submissions:', {
-            writeForm: !!writeForm,
-            proofreadForm: !!proofreadForm,
-            summarizeForm: !!summarizeForm,
-            editForm: !!editForm,
-            rewriteForm: !!rewriteForm
-        });
-        
-        if (writeForm) {
-            writeForm.addEventListener('submit', handleWrite);
-            console.log('✅ Write form handler attached');
-        } else {
-            console.log('⚠️ Write form not found');
-        }
-        
-        if (proofreadForm) proofreadForm.addEventListener('submit', handleProofread);
-        if (summarizeForm) summarizeForm.addEventListener('submit', handleSummarize);
-        if (editForm) editForm.addEventListener('submit', handleEdit);
-        if (rewriteForm) rewriteForm.addEventListener('submit', handleRewrite);
-    }
-    
-    function setupExportOptions() {
-        const exportWord = document.getElementById('exportWord');
-        const copyContent = document.getElementById('copyContent');
-        const exportPDF = document.getElementById('exportPDF');
-        
-        if (exportWord) exportWord.addEventListener('click', exportToWord);
-        if (copyContent) copyContent.addEventListener('click', copyToClipboard);
-        if (exportPDF) exportPDF.addEventListener('click', exportToPDF);
-    }
-    
-    function setupEditButtons() {
-        const editResultBtn = document.getElementById('editResultBtn');
-        const newTaskBtn = document.getElementById('newTaskBtn');
-        
-        if (editResultBtn) {
-            editResultBtn.addEventListener('click', function() {
-                // Enable inline editing of the generated content
-                enableInlineEditing();
-            });
-        }
-        
-        if (newTaskBtn) {
-            newTaskBtn.addEventListener('click', function() {
-                // Hide results
-                if (resultsContainer) resultsContainer.style.display = 'none';
-                
-                // Reset all forms and selections (existing code)
-                const forms = document.querySelectorAll('form');
-                forms.forEach(form => form.reset());
-                
-                document.querySelectorAll('.feature-card, .tone-option').forEach(el => {
-                    el.classList.remove('selected');
-                });
-                
-                // Set defaults
-                const defaultTone = document.querySelector('[data-tone="professional"]');
-                if (defaultTone) defaultTone.classList.add('selected');
-                
-                const defaultSummary = document.querySelector('[data-summary="paragraph"]');
-                if (defaultSummary) defaultSummary.classList.add('selected');
-                
-                const defaultRewrite = document.querySelector('[data-rewrite="readability"]');
-                if (defaultRewrite) defaultRewrite.classList.add('selected');
-                
-                // Reset hidden inputs
-                if (selectedToneInput) selectedToneInput.value = 'professional';
-                if (selectedContentTypeInput) selectedContentTypeInput.value = '';
-                
+            if (summary) {
                 const summaryInput = document.getElementById('selectedSummaryType');
-                if (summaryInput) summaryInput.value = 'paragraph';
-                
+                if (summaryInput) summaryInput.value = summary;
+                console.log('✅ Selected summary type:', summary);
+            }
+            if (rewrite) {
                 const rewriteInput = document.getElementById('selectedRewriteGoal');
-                if (rewriteInput) rewriteInput.value = 'readability';
-                
-                // Switch to Write tab
-                const writeTab = document.querySelector('[data-tab="write"]');
-                if (writeTab) writeTab.click();
-                
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-        }
-    }
-    // ============================================================================
-    // PART 3: API HANDLERS AND FORM PROCESSING
-    // ============================================================================
-    
-    // COMPLETE handleWrite function - FIXED AND ENHANCED
-    async function handleWrite(e) {
-        e.preventDefault();
-        
-        console.log('handleWrite function called');
-        
-        // Get form elements
-        const selectedContentTypeInput = document.getElementById('selectedContentType');
-        const writePrompt = document.getElementById('writePrompt');
-        const selectedToneInput = document.getElementById('selectedTone');
-        const lengthSlider = document.getElementById('lengthSlider');
-        
-        console.log('Form elements:', {
-            contentType: selectedContentTypeInput?.value,
-            prompt: writePrompt?.value,
-            tone: selectedToneInput?.value,
-            length: lengthSlider?.value
-        });
-        
-        // Validation
-        if (!selectedContentTypeInput?.value) {
-            showError('Please select a content type first.');
-            return;
-        }
-        
-        if (!writePrompt?.value.trim()) {
-            showError('Please enter a writing prompt.');
-            return;
-        }
-        
-        // TESTING MODE: Skip usage check for now
-        const TESTING_MODE = true; // Set to false to re-enable usage tracking
-        
-        if (!TESTING_MODE) {
-            if (!decrementUsage()) {
-                displayUsageExhaustedError();
-                return;
-            }
-        } else {
-            console.log('⚠️ Testing mode: Usage tracking disabled');
-        }
-        
-        showLoading();
-        
-        try {
-            const requestData = {
-                writePrompt: `Create ${selectedContentTypeInput.value} content about: ${writePrompt.value}
-                
-                Requirements:
-                - Generate complete, finished content without any questions or incomplete sections
-                - Use ${selectedToneInput.value} tone
-                - No meta-commentary or placeholders
-                - Provide ready-to-use content only
-                
-                Topic: ${writePrompt.value}`,
-                contentType: selectedContentTypeInput.value,
-                tone: selectedToneInput.value,
-                length: parseInt(lengthSlider.value)
-            };
-            
-            console.log('Sending request to backend:', `${API_BASE_URL}/api/writesuite/generate`);
-            console.log('Request data:', requestData);
-            
-            // Extended timeout for backend cold starts
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
-            
-            const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData),
-                signal: controller.signal
-            });
-            
-            clearTimeout(timeoutId);
-            
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
-            
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Response error:', response.status, errorText);
-                throw new Error(`Backend error (${response.status}): ${errorText}`);
-            }
-            
-            const data = await response.json();
-            console.log('Success response from backend:', data);
-            
-            if (data.success) {
-                // FIXED: This will now properly call AI suggestions
-                displayResults('Generated Content', data.content, true);
-            } else {
-                handleApiError(data, response.status);
-            }
-        } catch (error) {
-            console.error('Request failed:', error);
-            
-            if (error.name === 'AbortError') {
-                displayError('Request timed out. The backend may be starting up (this can take 30+ seconds on first use). Please try again.');
-            } else if (error.message.includes('CORS')) {
-                displayError('CORS error: Please check if the backend allows requests from this domain.');
-            } else if (error.message.includes('fetch')) {
-                displayError('Cannot reach backend. Please check if the backend service is running.');
-            } else {
-                displayError(`Network error: ${error.message}`);
-            }
-            
-            // Restore usage on error (only if not in testing mode)
-            if (!TESTING_MODE) {
-                restoreUsage();
-            }
-        } finally {
-            hideLoading();
-        }
-    }
-    
-    async function handleProofread(e) {
-        e.preventDefault();
-        
-        const text = document.getElementById('proofreadText').value;
-        if (!text.trim()) {
-            showError('Please enter text to proofread.');
-            return;
-        }
-        
-        if (!decrementUsage()) {
-            displayUsageExhaustedError();
-            return;
-        }
-        
-        showLoading();
-        
-        try {
-            const checkGrammar = document.getElementById('checkGrammar').checked;
-            const checkStyle = document.getElementById('checkStyle').checked;
-            const checkTone = document.getElementById('checkTone').checked;
-            
-            let focusAreas = [];
-            if (checkGrammar) focusAreas.push('grammar and spelling');
-            if (checkStyle) focusAreas.push('style and clarity');
-            if (checkTone) focusAreas.push('tone consistency');
-            
-            const requestData = {
-                writePrompt: `Proofread and correct the following text. Focus on: ${focusAreas.join(', ')}.
-                
-                Provide the corrected version without any commentary, questions, or incomplete sections. Make necessary improvements while preserving the original meaning.
-                
-                Text to proofread:
-                ${text}`,
-                contentType: 'proofread',
-                tone: 'professional',
-                length: 2
-            };
-            
-            console.log('Sending proofread request:', `${API_BASE_URL}/api/writesuite/generate`);
-            
-            const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                displayResults('Proofread Results', data.content, true);
-            } else {
-                handleApiError(data, response.status);
-            }
-        } catch (error) {
-            console.error('Proofread error:', error);
-            displayError('Failed to proofread text. Please try again.');
-            restoreUsage();
-        } finally {
-            hideLoading();
-        }
-    }
-        
-    async function handleSummarize(e) {
-        e.preventDefault();
-        
-        const text = document.getElementById('summarizeText').value;
-        if (!text.trim()) {
-            showError('Please enter text to summarize.');
-            return;
-        }
-        
-        if (!decrementUsage()) {
-            displayUsageExhaustedError();
-            return;
-        }
-        
-        showLoading();
-        
-        try {
-            const summaryType = document.getElementById('selectedSummaryType').value;
-            const summaryLength = document.getElementById('summaryLength').value;
-            
-            const requestData = {
-                writePrompt: `Please create a ${summaryLength} ${summaryType} summary of this text: ${text}`,
-                contentType: 'summary',
-                tone: 'professional',
-                length: summaryLength === 'brief' ? 1 : summaryLength === 'detailed' ? 3 : 2
-            };
-            
-            console.log('Sending summarize request:', `${API_BASE_URL}/api/writesuite/generate`);
-            
-            const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                displayResults('Summary', data.content, true);
-            } else {
-                handleApiError(data, response.status);
-            }
-        } catch (error) {
-            console.error('Summarize error:', error);
-            displayError('Failed to summarize text. Please try again.');
-            // Restore usage on error
-            let usage = JSON.parse(localStorage.getItem('writesuite_usage'));
-            if (usage) {
-                usage.remaining++;
-                localStorage.setItem('writesuite_usage', JSON.stringify(usage));
-                updateUsageDisplay(usage);
-            }
-        } finally {
-            hideLoading();
-        }
-    }
-    
-    async function handleEdit(e) {
-        e.preventDefault();
-        
-        const text = document.getElementById('editText').value;
-        const instructions = document.getElementById('editInstructions').value;
-        
-        if (!text.trim()) {
-            showError('Please provide text to edit.');
-            return;
-        }
-        
-        if (!instructions.trim()) {
-            showError('Please provide editing instructions.');
-            return;
-        }
-        
-        if (!decrementUsage()) {
-            displayUsageExhaustedError();
-            return;
-        }
-        
-        showLoading();
-        
-        try {
-            const preserveMeaning = document.getElementById('preserveMeaning').checked;
-            const showInlineEdits = document.getElementById('showInlineEdits').checked;
-            
-            const requestData = {
-                writePrompt: `Edit the following text according to these specific instructions: "${instructions}". 
-                
-                ${preserveMeaning ? 'IMPORTANT: Preserve the original meaning and main ideas.' : ''}
-                ${showInlineEdits ? 'Show clear improvements and changes.' : ''}
-                
-                Provide only the edited version without any commentary, questions, or incomplete sections.
-                
-                Text to edit:
-                ${text}`,
-                contentType: 'edit',
-                tone: 'professional',
-                length: 2
-            };
-            
-            console.log('Sending edit request:', `${API_BASE_URL}/api/writesuite/generate`);
-            
-            const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                displayResults('Edited Text', data.content, true);
-            } else {
-                handleApiError(data, response.status);
-            }
-        } catch (error) {
-            console.error('Edit error:', error);
-            displayError('Failed to edit text. Please try again.');
-            restoreUsage();
-        } finally {
-            hideLoading();
-        }
-    }
-        
-    async function handleRewrite(e) {
-        e.preventDefault();
-        
-        const text = document.getElementById('rewriteText').value;
-        if (!text.trim()) {
-            showError('Please enter text to rewrite.');
-            return;
-        }
-        
-        if (!decrementUsage()) {
-            displayUsageExhaustedError();
-            return;
-        }
-        
-        showLoading();
-        
-        try {
-            const rewriteGoal = document.getElementById('selectedRewriteGoal').value;
-            const multipleOptions = document.getElementById('multipleOptions').checked;
-            const preserveLength = document.getElementById('preserveLength').checked;
-            
-            const requestData = {
-                writePrompt: `Please rewrite this text to ${rewriteGoal.replace('_', ' ')}. ${multipleOptions ? 'Provide the best version. ' : ''}${preserveLength ? 'Keep similar length. ' : ''}Text to rewrite: ${text}`,
-                contentType: 'rewrite',
-                tone: 'professional',
-                length: 2
-            };
-            
-            console.log('Sending rewrite request:', `${API_BASE_URL}/api/writesuite/generate`);
-            
-            const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                displayResults('Rewritten Text', data.content, true);
-            } else {
-                handleApiError(data, response.status);
-            }
-        } catch (error) {
-            console.error('Rewrite error:', error);
-            displayError('Failed to rewrite text. Please try again.');
-            // Restore usage on error
-            let usage = JSON.parse(localStorage.getItem('writesuite_usage'));
-            if (usage) {
-                usage.remaining++;
-                localStorage.setItem('writesuite_usage', JSON.stringify(usage));
-                updateUsageDisplay(usage);
-            }
-        } finally {
-            hideLoading();
-        }
-    }
-    // ============================================================================
-    // PART 4: ERROR HANDLING, DISPLAY, EXPORT, AND PRICING FUNCTIONS
-    // ============================================================================
-    
-    // Enhanced error handling function
-    function handleApiError(data, statusCode) {
-        console.log('API Error:', data);
-        
-        if (statusCode === 403) {
-            // Handle usage limit errors
-            if (data.error === 'usage_limit_exceeded') {
-                displayUsageExhaustedError();
-                return;
-            }
-            
-            if (data.error === 'rate_limit_exceeded') {
-                displayRateLimitError();
-                return;
-            }
-            
-            if (data.error && data.error.includes('suspicious_activity')) {
-                displaySuspiciousActivityError();
-                return;
-            }
-        }
-        
-        // Generic error handling
-        const errorMessage = data.message || data.error || 'An unexpected error occurred. Please try again.';
-        displayError(errorMessage);
-    }
-    
-    function displayUsageExhaustedError() {
-        const resultsTitle = document.getElementById('resultsTitle');
-        if (resultsTitle) resultsTitle.textContent = 'Usage Limit Reached';
-        
-        if (contentPreview) {
-            contentPreview.innerHTML = `
-                <div class="alert alert-usage-exhausted">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fas fa-exclamation-triangle me-3" style="font-size: 2rem;"></i>
-                        <div>
-                            <h5 class="mb-1">Free Monthly Limit Reached</h5>
-                            <p class="mb-0">You've used all 20 free uses for this month.</p>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <a href="/#pricing" class="btn btn-primary me-2">
-                            <i class="fas fa-crown me-1"></i> Upgrade to Pro
-                        </a>
-                        <small class="text-muted">Unlimited uses • Priority support • Advanced features</small>
-                    </div>
-                </div>
-            `;
-        }
-        
-        if (resultsContainer) {
-            resultsContainer.style.display = 'block';
-            resultsContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-    
-    function displayRateLimitError() {
-        const resultsTitle = document.getElementById('resultsTitle');
-        if (resultsTitle) resultsTitle.textContent = 'Too Many Requests';
-        
-        if (contentPreview) {
-            contentPreview.innerHTML = `
-                <div class="alert alert-warning">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fas fa-clock me-3" style="font-size: 2rem;"></i>
-                        <div>
-                            <h5 class="mb-1">Please Slow Down</h5>
-                            <p class="mb-0">You're making requests too quickly. Please wait a moment before trying again.</p>
-                        </div>
-                    </div>
-                    <div class="retry-suggestion">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <strong>Tip:</strong> Wait 30-60 seconds between requests to avoid rate limiting.
-                    </div>
-                </div>
-            `;
-        }
-        
-        if (resultsContainer) {
-            resultsContainer.style.display = 'block';
-            resultsContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-    
-    function displaySuspiciousActivityError() {
-        const resultsTitle = document.getElementById('resultsTitle');
-        if (resultsTitle) resultsTitle.textContent = 'Request Blocked';
-        
-        if (contentPreview) {
-            contentPreview.innerHTML = `
-                <div class="alert alert-warning">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fas fa-shield-alt me-3" style="font-size: 2rem;"></i>
-                        <div>
-                            <h5 class="mb-1">Security Check</h5>
-                            <p class="mb-0">Your request was temporarily blocked for security reasons.</p>
-                        </div>
-                    </div>
-                    <div class="retry-suggestion">
-                        <strong>What to try:</strong>
-                        <ul class="mt-2 mb-0">
-                            <li>Refresh the page and try again</li>
-                            <li>Make sure JavaScript is enabled</li>
-                            <li>Wait a few minutes before making another request</li>
-                            <li>Use a standard web browser</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
-        }
-        
-        if (resultsContainer) {
-            resultsContainer.style.display = 'block';
-            resultsContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-    
-    // ENHANCED showError function
-    function showError(message) {
-        console.error('Error:', message);
-        
-        // Create a more user-friendly error display
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'alert alert-danger alert-dismissible fade show';
-        errorDiv.innerHTML = `
-            <i class="fas fa-exclamation-circle me-2"></i>
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        
-        // Insert at the top of the active tab content
-        const activeTab = document.querySelector('.tab-content.active');
-        if (activeTab) {
-            activeTab.insertBefore(errorDiv, activeTab.firstChild);
-            
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (errorDiv.parentNode) {
-                    errorDiv.remove();
-                }
-            }, 5000);
-        } else {
-            // Fallback to alert
-            alert(message);
-        }
-    }
-    
-    function showLoading() {
-        if (loadingSpinner) {
-            loadingSpinner.style.display = 'block';
-            console.log('Loading spinner shown');
-        }
-        if (resultsContainer) {
-            resultsContainer.style.display = 'none';
-        }
-    }
-    
-    function hideLoading() {
-        if (loadingSpinner) {
-            loadingSpinner.style.display = 'none';
-            console.log('Loading spinner hidden');
-        }
-    }
-    
-    // ENHANCED displayResults function - FIXED to use AI suggestions
-    function displayResults(title, content, showSuggestions = false) {
-        const resultsTitle = document.getElementById('resultsTitle');
-        const suggestionsPanel = document.getElementById('suggestionsPanel');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const contentPreview = document.getElementById('contentPreview');
-        
-        console.log('📋 Displaying results:', { 
-            title, 
-            contentLength: content?.length || 0, 
-            showSuggestions,
-            suggestionsPanel: !!suggestionsPanel,
-            suggestionsList: !!document.getElementById('suggestionsList')
-        });
-        
-        if (resultsTitle) {
-            resultsTitle.textContent = title;
-        } else {
-            console.log('⚠️ resultsTitle element not found');
-        }
-        
-        if (contentPreview) {
-            contentPreview.innerHTML = formatContent(content);
-        } else {
-            console.log('⚠️ contentPreview element not found');
-        }
-        
-        if (showSuggestions && suggestionsPanel) {
-            console.log('🎯 Showing suggestions panel...');
-            suggestionsPanel.style.display = 'block';
-            
-            // Get current content type for better suggestions
-            const contentType = document.getElementById('selectedContentType')?.value || 'general';
-            console.log('🎯 Content type for suggestions:', contentType);
-            
-            // FIXED: Generate AI suggestions with actual content and small delay
-            setTimeout(() => {
-                console.log('🚀 Calling generateAISuggestions with content:', content?.substring(0, 100) + '...');
-                generateAISuggestions(content, contentType);
-            }, 500); // Small delay to ensure DOM is ready
-        } else if (suggestionsPanel) {
-            console.log('🎯 Hiding suggestions panel');
-            suggestionsPanel.style.display = 'none';
-        }
-        
-        if (resultsContainer) {
-            resultsContainer.style.display = 'block';
-            resultsContainer.scrollIntoView({ behavior: 'smooth' });
-            console.log('✅ Results displayed successfully');
-        } else {
-            console.log('⚠️ resultsContainer element not found');
-        }
-    }
-    
-    function displayError(message) {
-        const resultsTitle = document.getElementById('resultsTitle');
-        if (resultsTitle) resultsTitle.textContent = 'Error';
-        
-        if (contentPreview) {
-            contentPreview.innerHTML = `<div class="alert alert-danger">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                ${message}
-            </div>`;
-        }
-        
-        if (resultsContainer) {
-            resultsContainer.style.display = 'block';
-            resultsContainer.scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        console.error('Error displayed:', message);
-    }
-    
-    function formatContent(content) {
-        if (!content) return '';
-        return content
-            .replace(/\n/g, '<br>')
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>');
-    }
-    
-    // Enhanced enableInlineEditing function that preserves formatting
-    function enableInlineEditing() {
-        if (!contentPreview) return;
-        
-        const currentContent = contentPreview.innerHTML;
-        
-        // Create a rich text editor using contentEditable
-        const editableArea = document.createElement('div');
-        editableArea.contentEditable = true;
-        editableArea.className = 'form-control rich-text-editor';
-        editableArea.style.minHeight = '300px';
-        editableArea.style.width = '100%';
-        editableArea.style.fontFamily = 'inherit';
-        editableArea.style.fontSize = 'inherit';
-        editableArea.style.lineHeight = '1.5';
-        editableArea.style.padding = '12px';
-        editableArea.style.border = '2px solid #007bff';
-        editableArea.style.borderRadius = '5px';
-        editableArea.style.outline = 'none';
-        editableArea.style.backgroundColor = '#f8f9fa';
-        editableArea.innerHTML = currentContent;
-        
-        // Create formatting toolbar
-        const toolbar = document.createElement('div');
-        toolbar.className = 'editing-toolbar mb-2 p-2 bg-light rounded';
-        toolbar.innerHTML = `
-            <div class="btn-group btn-group-sm me-3" role="group">
-                <button type="button" class="btn btn-outline-secondary" data-command="bold" title="Bold (Ctrl+B)">
-                    <i class="fas fa-bold"></i>
-                </button>
-                <button type="button" class="btn btn-outline-secondary" data-command="italic" title="Italic (Ctrl+I)">
-                    <i class="fas fa-italic"></i>
-                </button>
-                <button type="button" class="btn btn-outline-secondary" data-command="underline" title="Underline (Ctrl+U)">
-                    <i class="fas fa-underline"></i>
-                </button>
-            </div>
-            <div class="btn-group btn-group-sm me-3" role="group">
-                <button type="button" class="btn btn-outline-secondary" data-command="justifyLeft" title="Align Left">
-                    <i class="fas fa-align-left"></i>
-                </button>
-                <button type="button" class="btn btn-outline-secondary" data-command="justifyCenter" title="Align Center">
-                    <i class="fas fa-align-center"></i>
-                </button>
-                <button type="button" class="btn btn-outline-secondary" data-command="justifyRight" title="Align Right">
-                    <i class="fas fa-align-right"></i>
-                </button>
-            </div>
-            <div class="btn-group btn-group-sm me-3" role="group">
-                <button type="button" class="btn btn-outline-secondary" data-command="insertUnorderedList" title="Bullet List">
-                    <i class="fas fa-list-ul"></i>
-                </button>
-                <button type="button" class="btn btn-outline-secondary" data-command="insertOrderedList" title="Numbered List">
-                    <i class="fas fa-list-ol"></i>
-                </button>
-            </div>
-            <div class="btn-group btn-group-sm" role="group">
-                <button type="button" class="btn btn-outline-secondary" data-command="undo" title="Undo (Ctrl+Z)">
-                    <i class="fas fa-undo"></i>
-                </button>
-                <button type="button" class="btn btn-outline-secondary" data-command="redo" title="Redo (Ctrl+Y)">
-                    <i class="fas fa-redo"></i>
-                </button>
-            </div>
-        `;
-        
-        // Create control buttons
-        const buttonContainer = document.createElement('div');
-        buttonContainer.className = 'mt-3 d-flex gap-2';
-        buttonContainer.innerHTML = `
-            <button type="button" class="btn btn-success" id="saveEditBtn">
-                <i class="fas fa-save me-1"></i>Save Changes
-            </button>
-            <button type="button" class="btn btn-secondary" id="cancelEditBtn">
-                <i class="fas fa-times me-1"></i>Cancel
-            </button>
-            <button type="button" class="btn btn-info" id="previewEditBtn">
-                <i class="fas fa-eye me-1"></i>Preview
-            </button>
-        `;
-        
-        // Store the original content
-        const originalContent = currentContent;
-        
-        // Replace content with editable area
-        contentPreview.innerHTML = '';
-        contentPreview.appendChild(toolbar);
-        contentPreview.appendChild(editableArea);
-        contentPreview.appendChild(buttonContainer);
-        
-        // Set up toolbar functionality
-        setupToolbar(toolbar, editableArea);
-        
-        // Focus on the editable area
-        editableArea.focus();
-        
-        // Handle save button
-        document.getElementById('saveEditBtn').addEventListener('click', function() {
-            const editedContent = editableArea.innerHTML;
-            contentPreview.innerHTML = editedContent;
-            showEditSuccessMessage();
-        });
-        
-        // Handle cancel button
-        document.getElementById('cancelEditBtn').addEventListener('click', function() {
-            contentPreview.innerHTML = originalContent;
-        });
-        
-        // Handle preview button
-        document.getElementById('previewEditBtn').addEventListener('click', function() {
-            togglePreview(editableArea, toolbar, buttonContainer);
-        });
-        
-        // Handle keyboard shortcuts
-        editableArea.addEventListener('keydown', function(e) {
-            // Ctrl+S or Cmd+S to save
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                document.getElementById('saveEditBtn').click();
-            }
-            
-            // Escape to cancel
-            if (e.key === 'Escape') {
-                document.getElementById('cancelEditBtn').click();
+                if (rewriteInput) rewriteInput.value = rewrite;
+                console.log('✅ Selected rewrite goal:', rewrite);
             }
         });
-        
-        // Auto-save to localStorage every 30 seconds
-        const autoSaveInterval = setInterval(() => {
-            localStorage.setItem('writesuite_autosave', editableArea.innerHTML);
-        }, 30000);
-        
-        // Clear auto-save when done
-        const originalSaveHandler = document.getElementById('saveEditBtn').onclick;
-        const originalCancelHandler = document.getElementById('cancelEditBtn').onclick;
-        
-        document.getElementById('saveEditBtn').onclick = function() {
-            clearInterval(autoSaveInterval);
-            localStorage.removeItem('writesuite_autosave');
-            if (originalSaveHandler) originalSaveHandler.call(this);
+    });
+    
+    console.log('✅ Tone selection setup complete');
+}
+
+// Tab Switching Setup
+function setupTabSwitching() {
+    const toolTabs = document.querySelectorAll('.tool-tab[data-tab]');
+    
+    console.log('Setting up tab switching for', toolTabs.length, 'tabs');
+    
+    toolTabs.forEach((tab) => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetTab = this.getAttribute('data-tab');
+            
+            console.log('Tab clicked:', targetTab);
+            
+            // Update active tab
+            toolTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show/hide content sections
+            const allSections = document.querySelectorAll('.tab-content');
+            allSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.getElementById(targetTab + 'Section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+                console.log('✅ Switched to tab:', targetTab);
+            } else {
+                console.log('⚠️ Target section not found:', targetTab + 'Section');
+            }
+            
+            // Hide results when switching tabs
+            const resultsContainer = document.getElementById('resultsContainer');
+            if (resultsContainer) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+    });
+    
+    console.log('✅ Tab switching setup complete');
+}
+
+// Length Slider Setup
+function setupLengthSlider() {
+    const lengthSlider = document.getElementById('lengthSlider');
+    const lengthLabel = document.getElementById('lengthLabel');
+    
+    if (!lengthSlider || !lengthLabel) {
+        console.log('⚠️ Length slider or label not found');
+        return;
+    }
+    
+    lengthSlider.addEventListener('input', function() {
+        const value = parseInt(this.value);
+        const labels = ['Short', 'Medium', 'Long'];
+        lengthLabel.textContent = labels[value - 1] || 'Medium';
+        console.log('Length changed to:', labels[value - 1]);
+    });
+    
+    console.log('✅ Length slider setup complete');
+}
+
+// Form Submissions Setup
+function setupFormSubmissions() {
+    const writeForm = document.getElementById('writeForm');
+    const proofreadForm = document.getElementById('proofreadForm');
+    const summarizeForm = document.getElementById('summarizeForm');
+    const editForm = document.getElementById('editForm');
+    const rewriteForm = document.getElementById('rewriteForm');
+    
+    console.log('Setting up form submissions:', {
+        writeForm: !!writeForm,
+        proofreadForm: !!proofreadForm,
+        summarizeForm: !!summarizeForm,
+        editForm: !!editForm,
+        rewriteForm: !!rewriteForm
+    });
+    
+    if (writeForm) {
+        writeForm.addEventListener('submit', handleWrite);
+        console.log('✅ Write form handler attached');
+    }
+    if (proofreadForm) {
+        proofreadForm.addEventListener('submit', handleProofread);
+        console.log('✅ Proofread form handler attached');
+    }
+    if (summarizeForm) {
+        summarizeForm.addEventListener('submit', handleSummarize);
+        console.log('✅ Summarize form handler attached');
+    }
+    if (editForm) {
+        editForm.addEventListener('submit', handleEdit);
+        console.log('✅ Edit form handler attached');
+    }
+    if (rewriteForm) {
+        rewriteForm.addEventListener('submit', handleRewrite);
+        console.log('✅ Rewrite form handler attached');
+    }
+    
+    console.log('✅ Form submissions setup complete');
+}
+
+// Export Options Setup
+function setupExportOptions() {
+    const exportWord = document.getElementById('exportWord');
+    const copyContent = document.getElementById('copyContent');
+    const exportPDF = document.getElementById('exportPDF');
+    
+    if (exportWord) {
+        exportWord.addEventListener('click', exportToWord);
+        console.log('✅ Export Word handler attached');
+    }
+    if (copyContent) {
+        copyContent.addEventListener('click', copyToClipboard);
+        console.log('✅ Copy content handler attached');
+    }
+    if (exportPDF) {
+        exportPDF.addEventListener('click', exportToPDF);
+        console.log('✅ Export PDF handler attached');
+    }
+    
+    console.log('✅ Export options setup complete');
+}
+
+// Edit Buttons Setup
+function setupEditButtons() {
+    const editResultBtn = document.getElementById('editResultBtn');
+    const newTaskBtn = document.getElementById('newTaskBtn');
+    
+    if (editResultBtn) {
+        editResultBtn.addEventListener('click', function() {
+            console.log('Edit result button clicked');
+            enableInlineEditing();
+        });
+        console.log('✅ Edit result button handler attached');
+    }
+    
+    if (newTaskBtn) {
+        newTaskBtn.addEventListener('click', function() {
+            console.log('New task button clicked');
+            
+            // Hide results
+            const resultsContainer = document.getElementById('resultsContainer');
+            if (resultsContainer) resultsContainer.style.display = 'none';
+            
+            // Reset all forms and selections
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => form.reset());
+            
+            document.querySelectorAll('.feature-card, .tone-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Set defaults
+            const defaultTone = document.querySelector('[data-tone="professional"]');
+            if (defaultTone) defaultTone.classList.add('selected');
+            
+            const defaultSummary = document.querySelector('[data-summary="paragraph"]');
+            if (defaultSummary) defaultSummary.classList.add('selected');
+            
+            const defaultRewrite = document.querySelector('[data-rewrite="readability"]');
+            if (defaultRewrite) defaultRewrite.classList.add('selected');
+            
+            // Reset hidden inputs
+            const selectedToneInput = document.getElementById('selectedTone');
+            const selectedContentTypeInput = document.getElementById('selectedContentType');
+            const summaryInput = document.getElementById('selectedSummaryType');
+            const rewriteInput = document.getElementById('selectedRewriteGoal');
+            
+            if (selectedToneInput) selectedToneInput.value = 'professional';
+            if (selectedContentTypeInput) selectedContentTypeInput.value = '';
+            if (summaryInput) summaryInput.value = 'paragraph';
+            if (rewriteInput) rewriteInput.value = 'readability';
+            
+            // Switch to Write tab
+            const writeTab = document.querySelector('[data-tab="write"]');
+            if (writeTab) writeTab.click();
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        console.log('✅ New task button handler attached');
+    }
+    
+    console.log('✅ Edit buttons setup complete');
+}
+// ============================================================================
+// SECTION 4: FORM HANDLERS AND API CALLS
+// ============================================================================
+
+// Write Form Handler
+async function handleWrite(e) {
+    e.preventDefault();
+    
+    console.log('handleWrite function called');
+    
+    // Get form elements
+    const selectedContentTypeInput = document.getElementById('selectedContentType');
+    const writePrompt = document.getElementById('writePrompt');
+    const selectedToneInput = document.getElementById('selectedTone');
+    const lengthSlider = document.getElementById('lengthSlider');
+    
+    console.log('Form elements:', {
+        contentType: selectedContentTypeInput?.value,
+        prompt: writePrompt?.value,
+        tone: selectedToneInput?.value,
+        length: lengthSlider?.value
+    });
+    
+    // Validation
+    if (!selectedContentTypeInput?.value) {
+        showError('Please select a content type first.');
+        return;
+    }
+    
+    if (!writePrompt?.value.trim()) {
+        showError('Please enter a writing prompt.');
+        return;
+    }
+    
+    // Check usage (disabled for testing)
+    if (!decrementUsage()) {
+        displayUsageExhaustedError();
+        return;
+    }
+    
+    showLoading();
+    
+    try {
+        const requestData = {
+            writePrompt: `Create ${selectedContentTypeInput.value} content about: ${writePrompt.value}
+            
+            Requirements:
+            - Generate complete, finished content without any questions or incomplete sections
+            - Use ${selectedToneInput.value} tone
+            - No meta-commentary or placeholders
+            - Provide ready-to-use content only
+            
+            Topic: ${writePrompt.value}`,
+            contentType: selectedContentTypeInput.value,
+            tone: selectedToneInput.value,
+            length: parseInt(lengthSlider.value)
         };
         
-        document.getElementById('cancelEditBtn').onclick = function() {
-            clearInterval(autoSaveInterval);
-            localStorage.removeItem('writesuite_autosave');
-            if (originalCancelHandler) originalCancelHandler.call(this);
-        };
-    }
-
-    // Setup toolbar functionality
-    function setupToolbar(toolbar, editableArea) {
-        const buttons = toolbar.querySelectorAll('[data-command]');
+        console.log('Sending request to backend:', `${API_BASE_URL}/api/writesuite/generate`);
+        console.log('Request data:', requestData);
         
-        buttons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const command = this.getAttribute('data-command');
-                
-                // Execute the formatting command
-                document.execCommand(command, false, null);
-                
-                // Update button states
-                updateToolbarStates(toolbar);
-                
-                // Keep focus on editable area
-                editableArea.focus();
-            });
+        // Extended timeout for backend cold starts
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+        
+        const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData),
+            signal: controller.signal
         });
         
-        // Update toolbar states when selection changes
-        editableArea.addEventListener('selectionchange', () => updateToolbarStates(toolbar));
-        editableArea.addEventListener('keyup', () => updateToolbarStates(toolbar));
-        editableArea.addEventListener('mouseup', () => updateToolbarStates(toolbar));
-    }
-
-    // Update toolbar button states based on current formatting
-    function updateToolbarStates(toolbar) {
-        const commands = ['bold', 'italic', 'underline', 'justifyLeft', 'justifyCenter', 'justifyRight'];
+        clearTimeout(timeoutId);
         
-        commands.forEach(command => {
-            const button = toolbar.querySelector(`[data-command="${command}"]`);
-            if (button) {
-                if (document.queryCommandState(command)) {
-                    button.classList.add('active');
-                } else {
-                    button.classList.remove('active');
-                }
-            }
-        });
-    }
-
-    // Toggle between edit and preview mode
-    function togglePreview(editableArea, toolbar, buttonContainer) {
-        const previewBtn = document.getElementById('previewEditBtn');
+        console.log('Response status:', response.status);
         
-        if (editableArea.contentEditable === 'true') {
-            // Switch to preview mode
-            editableArea.contentEditable = false;
-            editableArea.style.backgroundColor = '#ffffff';
-            editableArea.style.border = '1px solid #dee2e6';
-            toolbar.style.display = 'none';
-            previewBtn.innerHTML = '<i class="fas fa-edit me-1"></i>Edit';
-            previewBtn.className = 'btn btn-warning';
-        } else {
-            // Switch back to edit mode
-            editableArea.contentEditable = true;
-            editableArea.style.backgroundColor = '#f8f9fa';
-            editableArea.style.border = '2px solid #007bff';
-            toolbar.style.display = 'block';
-            previewBtn.innerHTML = '<i class="fas fa-eye me-1"></i>Preview';
-            previewBtn.className = 'btn btn-info';
-            editableArea.focus();
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Response error:', response.status, errorText);
+            throw new Error(`Backend error (${response.status}): ${errorText}`);
         }
-    }
-
-    // ENHANCED showEditSuccessMessage function
-    function showEditSuccessMessage(message = 'Content updated successfully!') {
-        const successDiv = document.createElement('div');
-        successDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
-        successDiv.innerHTML = `
-            <i class="fas fa-check-circle me-2"></i>
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
         
-        const contentPreview = document.getElementById('contentPreview');
-        if (contentPreview && contentPreview.parentNode) {
-            contentPreview.parentNode.insertBefore(successDiv, contentPreview.nextSibling);
+        const data = await response.json();
+        console.log('Success response from backend:', data);
+        
+        if (data.success) {
+            displayResults('Generated Content', data.content, true);
+        } else {
+            handleApiError(data, response.status);
+        }
+    } catch (error) {
+        console.error('Request failed:', error);
+        
+        if (error.name === 'AbortError') {
+            displayError('Request timed out. The backend may be starting up (this can take 30+ seconds on first use). Please try again.');
+        } else if (error.message.includes('CORS')) {
+            displayError('CORS error: Please check if the backend allows requests from this domain.');
+        } else if (error.message.includes('fetch')) {
+            displayError('Cannot reach backend. Please check if the backend service is running.');
+        } else {
+            displayError(`Network error: ${error.message}`);
+        }
+        
+        restoreUsage();
+    } finally {
+        hideLoading();
+    }
+}
+
+// Proofread Form Handler
+async function handleProofread(e) {
+    e.preventDefault();
+    
+    const text = document.getElementById('proofreadText').value;
+    if (!text.trim()) {
+        showError('Please enter text to proofread.');
+        return;
+    }
+    
+    if (!decrementUsage()) {
+        displayUsageExhaustedError();
+        return;
+    }
+    
+    showLoading();
+    
+    try {
+        const checkGrammar = document.getElementById('checkGrammar').checked;
+        const checkStyle = document.getElementById('checkStyle').checked;
+        const checkTone = document.getElementById('checkTone').checked;
+        
+        let focusAreas = [];
+        if (checkGrammar) focusAreas.push('grammar and spelling');
+        if (checkStyle) focusAreas.push('style and clarity');
+        if (checkTone) focusAreas.push('tone consistency');
+        
+        const requestData = {
+            writePrompt: `Proofread and correct the following text. Focus on: ${focusAreas.join(', ')}.
             
-            // Auto-remove after 3 seconds
-            setTimeout(() => {
-                if (successDiv.parentNode) {
-                    successDiv.remove();
-                }
-            }, 3000);
+            Provide the corrected version without any commentary, questions, or incomplete sections. Make necessary improvements while preserving the original meaning.
+            
+            Text to proofread:
+            ${text}`,
+            contentType: 'proofread',
+            tone: 'professional',
+            length: 2
+        };
+        
+        const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            displayResults('Proofread Results', data.content, true);
+        } else {
+            handleApiError(data, response.status);
+        }
+    } catch (error) {
+        console.error('Proofread error:', error);
+        displayError('Failed to proofread text. Please try again.');
+        restoreUsage();
+    } finally {
+        hideLoading();
+    }
+}
+
+// Summarize Form Handler
+async function handleSummarize(e) {
+    e.preventDefault();
+    
+    const text = document.getElementById('summarizeText').value;
+    if (!text.trim()) {
+        showError('Please enter text to summarize.');
+        return;
+    }
+    
+    if (!decrementUsage()) {
+        displayUsageExhaustedError();
+        return;
+    }
+    
+    showLoading();
+    
+    try {
+        const summaryType = document.getElementById('selectedSummaryType').value;
+        const summaryLength = document.getElementById('summaryLength').value;
+        
+        const requestData = {
+            writePrompt: `Please create a ${summaryLength} ${summaryType} summary of this text: ${text}`,
+            contentType: 'summary',
+            tone: 'professional',
+            length: summaryLength === 'brief' ? 1 : summaryLength === 'detailed' ? 3 : 2
+        };
+        
+        const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            displayResults('Summary', data.content, true);
+        } else {
+            handleApiError(data, response.status);
+        }
+    } catch (error) {
+        console.error('Summarize error:', error);
+        displayError('Failed to summarize text. Please try again.');
+        restoreUsage();
+    } finally {
+        hideLoading();
+    }
+}
+
+// Edit Form Handler
+async function handleEdit(e) {
+    e.preventDefault();
+    
+    const text = document.getElementById('editText').value;
+    const instructions = document.getElementById('editInstructions').value;
+    
+    if (!text.trim()) {
+        showError('Please provide text to edit.');
+        return;
+    }
+    
+    if (!instructions.trim()) {
+        showError('Please provide editing instructions.');
+        return;
+    }
+    
+    if (!decrementUsage()) {
+        displayUsageExhaustedError();
+        return;
+    }
+    
+    showLoading();
+    
+    try {
+        const preserveMeaning = document.getElementById('preserveMeaning').checked;
+        const showInlineEdits = document.getElementById('showInlineEdits').checked;
+        
+        const requestData = {
+            writePrompt: `Edit the following text according to these specific instructions: "${instructions}". 
+            
+            ${preserveMeaning ? 'IMPORTANT: Preserve the original meaning and main ideas.' : ''}
+            ${showInlineEdits ? 'Show clear improvements and changes.' : ''}
+            
+            Provide only the edited version without any commentary, questions, or incomplete sections.
+            
+            Text to edit:
+            ${text}`,
+            contentType: 'edit',
+            tone: 'professional',
+            length: 2
+        };
+        
+        const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            displayResults('Edited Text', data.content, true);
+        } else {
+            handleApiError(data, response.status);
+        }
+    } catch (error) {
+        console.error('Edit error:', error);
+        displayError('Failed to edit text. Please try again.');
+        restoreUsage();
+    } finally {
+        hideLoading();
+    }
+}
+
+// Rewrite Form Handler
+async function handleRewrite(e) {
+    e.preventDefault();
+    
+    const text = document.getElementById('rewriteText').value;
+    if (!text.trim()) {
+        showError('Please enter text to rewrite.');
+        return;
+    }
+    
+    if (!decrementUsage()) {
+        displayUsageExhaustedError();
+        return;
+    }
+    
+    showLoading();
+    
+    try {
+        const rewriteGoal = document.getElementById('selectedRewriteGoal').value;
+        const multipleOptions = document.getElementById('multipleOptions').checked;
+        const preserveLength = document.getElementById('preserveLength').checked;
+        
+        const requestData = {
+            writePrompt: `Please rewrite this text to ${rewriteGoal.replace('_', ' ')}. ${multipleOptions ? 'Provide the best version. ' : ''}${preserveLength ? 'Keep similar length. ' : ''}Text to rewrite: ${text}`,
+            contentType: 'rewrite',
+            tone: 'professional',
+            length: 2
+        };
+        
+        const response = await fetch(`${API_BASE_URL}/api/writesuite/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            displayResults('Rewritten Text', data.content, true);
+        } else {
+            handleApiError(data, response.status);
+        }
+    } catch (error) {
+        console.error('Rewrite error:', error);
+        displayError('Failed to rewrite text. Please try again.');
+        restoreUsage();
+    } finally {
+        hideLoading();
+    }
+}
+
+// Enhanced error handling function
+function handleApiError(data, statusCode) {
+    console.log('API Error:', data);
+    
+    if (statusCode === 403) {
+        // Handle usage limit errors
+        if (data.error === 'usage_limit_exceeded') {
+            displayUsageExhaustedError();
+            return;
+        }
+        
+        if (data.error === 'rate_limit_exceeded') {
+            displayRateLimitError();
+            return;
+        }
+        
+        if (data.error && data.error.includes('suspicious_activity')) {
+            displaySuspiciousActivityError();
+            return;
         }
     }
     
-    function exportToWord() {
-        if (!contentPreview) return;
+    // Generic error handling
+    const errorMessage = data.message || data.error || 'An unexpected error occurred. Please try again.';
+    displayError(errorMessage);
+}
+// ============================================================================
+// SECTION 5: DISPLAY FUNCTIONS, EXPORT, AND EDITOR
+// ============================================================================
+
+// Display Results Function
+function displayResults(title, content, showSuggestions = false) {
+    const resultsTitle = document.getElementById('resultsTitle');
+    const suggestionsPanel = document.getElementById('suggestionsPanel');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const contentPreview = document.getElementById('contentPreview');
+    
+    console.log('📋 Displaying results:', { 
+        title, 
+        contentLength: content?.length || 0, 
+        showSuggestions,
+        suggestionsPanel: !!suggestionsPanel,
+        suggestionsList: !!document.getElementById('suggestionsList')
+    });
+    
+    if (resultsTitle) {
+        resultsTitle.textContent = title;
+    }
+    
+    if (contentPreview) {
+        contentPreview.innerHTML = formatContent(content);
+    }
+    
+    if (showSuggestions && suggestionsPanel) {
+        console.log('🎯 Showing suggestions panel...');
+        suggestionsPanel.style.display = 'block';
         
-        const content = contentPreview.innerHTML || contentPreview.textContent;
-        const currentDate = new Date().toLocaleDateString();
-        const fileName = 'writesuite-content-' + new Date().toISOString().slice(0,10) + '.doc';
-        // Create a proper Word document structure
-        const wordContent = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        // Get current content type for better suggestions
+        const contentType = document.getElementById('selectedContentType')?.value || 'general';
+        console.log('🎯 Content type for suggestions:', contentType);
+        
+        // Generate AI suggestions with small delay
+        setTimeout(() => {
+            console.log('🚀 Calling generateAISuggestions with content');
+            generateAISuggestions(content, contentType);
+        }, 500);
+    } else if (suggestionsPanel) {
+        console.log('🎯 Hiding suggestions panel');
+        suggestionsPanel.style.display = 'none';
+    }
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        console.log('✅ Results displayed successfully');
+    }
+}
+
+// Error Display Functions
+function displayError(message) {
+    const resultsTitle = document.getElementById('resultsTitle');
+    const contentPreview = document.getElementById('contentPreview');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    if (resultsTitle) resultsTitle.textContent = 'Error';
+    
+    if (contentPreview) {
+        contentPreview.innerHTML = `<div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            ${message}
+        </div>`;
+    }
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    console.error('Error displayed:', message);
+}
+
+function displayUsageExhaustedError() {
+    const resultsTitle = document.getElementById('resultsTitle');
+    const contentPreview = document.getElementById('contentPreview');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    if (resultsTitle) resultsTitle.textContent = 'Usage Limit Reached';
+    
+    if (contentPreview) {
+        contentPreview.innerHTML = `
+            <div class="alert alert-danger">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-exclamation-triangle me-3" style="font-size: 2rem;"></i>
+                    <div>
+                        <h5 class="mb-1">Free Monthly Limit Reached</h5>
+                        <p class="mb-0">You've used all 20 free uses for this month.</p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-primary me-2" onclick="showUpgradeModal()">
+                        <i class="fas fa-crown me-1"></i> Upgrade to Pro
+                    </button>
+                    <small class="text-muted">Unlimited uses • Priority support • Advanced features</small>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function displayRateLimitError() {
+    const resultsTitle = document.getElementById('resultsTitle');
+    const contentPreview = document.getElementById('contentPreview');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    if (resultsTitle) resultsTitle.textContent = 'Too Many Requests';
+    
+    if (contentPreview) {
+        contentPreview.innerHTML = `
+            <div class="alert alert-warning">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-clock me-3" style="font-size: 2rem;"></i>
+                    <div>
+                        <h5 class="mb-1">Please Slow Down</h5>
+                        <p class="mb-0">You're making requests too quickly. Please wait a moment before trying again.</p>
+                    </div>
+                </div>
+                <div class="retry-suggestion">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Tip:</strong> Wait 30-60 seconds between requests to avoid rate limiting.
+                </div>
+            </div>
+        `;
+    }
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function displaySuspiciousActivityError() {
+    const resultsTitle = document.getElementById('resultsTitle');
+    const contentPreview = document.getElementById('contentPreview');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    if (resultsTitle) resultsTitle.textContent = 'Request Blocked';
+    
+    if (contentPreview) {
+        contentPreview.innerHTML = `
+            <div class="alert alert-warning">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fas fa-shield-alt me-3" style="font-size: 2rem;"></i>
+                    <div>
+                        <h5 class="mb-1">Security Check</h5>
+                        <p class="mb-0">Your request was temporarily blocked for security reasons.</p>
+                    </div>
+                </div>
+                <div class="retry-suggestion">
+                    <strong>What to try:</strong>
+                    <ul class="mt-2 mb-0">
+                        <li>Refresh the page and try again</li>
+                        <li>Make sure JavaScript is enabled</li>
+                        <li>Wait a few minutes before making another request</li>
+                        <li>Use a standard web browser</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Export Functions
+function exportToWord() {
+    const contentPreview = document.getElementById('contentPreview');
+    if (!contentPreview) return;
+    
+    const content = contentPreview.innerHTML || contentPreview.textContent;
+    const currentDate = new Date().toLocaleDateString();
+    const fileName = 'writesuite-content-' + new Date().toISOString().slice(0,10) + '.doc';
+    
+    const wordContent = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
 <head>
 <meta charset='utf-8'>
 <title>WriteSuite Content</title>
-<!--[if gte mso 9]>
-<xml>
-<w:WordDocument>
-<w:View>Print</w:View>
-<w:Zoom>90</w:Zoom>
-<w:DoNotPromptForConvert/>
-<w:DoNotShowInsertionsAndDeletions/>
-</w:WordDocument>
-</xml>
-<![endif]-->
 <style>
-@page {
-margin: 1in;
-}
-body {
-font-family: Arial, sans-serif;
-font-size: 12pt;
-line-height: 1.5;
-margin: 0;
-padding: 0;
-}
-h1, h2, h3 {
-color: #333;
-}
-p {
-margin: 0 0 12pt 0;
-}
+@page { margin: 1in; }
+body { font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0; padding: 0; }
+h1, h2, h3 { color: #333; }
+p { margin: 0 0 12pt 0; }
 </style>
 </head>
 <body>
@@ -3016,186 +2668,126 @@ ${content}
 </div>
 </body>
 </html>`;
-        
-        const blob = new Blob([wordContent], { 
-            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
-        });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
     
-    // Enhanced copy function that preserves formatting
-    function copyToClipboard() {
-        if (!contentPreview) return;
-        
-        const range = document.createRange();
-        range.selectNodeContents(contentPreview);
-        const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-        
-        try {
-            // Try to copy with formatting first
-            const successful = document.execCommand('copy');
-            if (successful) {
-                showCopySuccessMessage('Content copied with formatting!');
-            } else {
-                // Fallback to plain text
-                fallbackCopyToClipboard(contentPreview.textContent);
-            }
-        } catch (err) {
-            console.error('Copy failed:', err);
-            fallbackCopyToClipboard(contentPreview.textContent);
-        } finally {
-            selection.removeAllRanges();
-        }
-    }
+    const blob = new Blob([wordContent], { 
+        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    console.log('✅ Content exported to Word');
+}
 
-    // Enhanced fallback copy function
-    function fallbackCopyToClipboard(text) {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text)
-                .then(() => showCopySuccessMessage('Content copied as plain text!'))
-                .catch(err => {
-                    console.error('Clipboard API failed:', err);
-                    legacyCopyToClipboard(text);
-                });
+function copyToClipboard() {
+    const contentPreview = document.getElementById('contentPreview');
+    if (!contentPreview) return;
+    
+    const range = document.createRange();
+    range.selectNodeContents(contentPreview);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showCopySuccessMessage('Content copied with formatting!');
         } else {
-            legacyCopyToClipboard(text);
+            fallbackCopyToClipboard(contentPreview.textContent);
         }
+    } catch (err) {
+        console.error('Copy failed:', err);
+        fallbackCopyToClipboard(contentPreview.textContent);
+    } finally {
+        selection.removeAllRanges();
     }
+}
 
-    // Legacy copy method
-    function legacyCopyToClipboard(text) {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.opacity = '0';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        
-        try {
-            document.execCommand('copy');
-            showCopySuccessMessage('Content copied!');
-        } catch (err) {
-            console.error('Legacy copy failed:', err);
-            alert('Failed to copy content. Please select and copy manually.');
-        }
-        
-        document.body.removeChild(textArea);
+function fallbackCopyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text)
+            .then(() => showCopySuccessMessage('Content copied as plain text!'))
+            .catch(err => {
+                console.error('Clipboard API failed:', err);
+                legacyCopyToClipboard(text);
+            });
+    } else {
+        legacyCopyToClipboard(text);
     }
+}
 
-    // Show copy success message
-    function showCopySuccessMessage(message) {
-        const successAlert = document.createElement('div');
-        successAlert.className = 'alert alert-success alert-dismissible fade show position-fixed';
-        successAlert.style.top = '20px';
-        successAlert.style.right = '20px';
-        successAlert.style.zIndex = '9999';
-        successAlert.style.minWidth = '300px';
-        successAlert.innerHTML = `
-            <i class="fas fa-check-circle me-2"></i>
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        
-        document.body.appendChild(successAlert);
-        
-        // Auto-remove after 3 seconds
-        setTimeout(() => {
-            if (successAlert.parentNode) {
-                successAlert.remove();
-            }
-        }, 3000);
+function legacyCopyToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showCopySuccessMessage('Content copied!');
+    } catch (err) {
+        console.error('Legacy copy failed:', err);
+        alert('Failed to copy content. Please select and copy manually.');
     }
     
-    function exportToPDF() {
-        if (!contentPreview) return;
-        
-        const content = contentPreview.innerHTML || contentPreview.textContent;
-        const currentDate = new Date().toLocaleDateString();
-        
-        // Create a new window for PDF generation
-        const printWindow = window.open('', '_blank');
-        const pdfContent = `<!DOCTYPE html>
+    document.body.removeChild(textArea);
+}
+
+function showCopySuccessMessage(message) {
+    const successAlert = document.createElement('div');
+    successAlert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    successAlert.style.top = '20px';
+    successAlert.style.right = '20px';
+    successAlert.style.zIndex = '9999';
+    successAlert.style.minWidth = '300px';
+    successAlert.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(successAlert);
+    
+    setTimeout(() => {
+        if (successAlert.parentNode) {
+            successAlert.remove();
+        }
+    }, 3000);
+}
+
+function exportToPDF() {
+    const contentPreview = document.getElementById('contentPreview');
+    if (!contentPreview) return;
+    
+    const content = contentPreview.innerHTML || contentPreview.textContent;
+    const currentDate = new Date().toLocaleDateString();
+    
+    const printWindow = window.open('', '_blank');
+    const pdfContent = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <title>WriteSuite Content - PDF Export</title>
 <style>
 @media print {
-@page {
-margin: 1in;
-size: A4;
+@page { margin: 1in; size: A4; }
+body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
-body {
--webkit-print-color-adjust: exact;
-print-color-adjust: exact;
-}
-}
-body {
-font-family: 'Times New Roman', Times, serif;
-font-size: 12pt;
-line-height: 1.6;
-color: #333;
-max-width: 8.5in;
-margin: 0 auto;
-padding: 0.5in;
-background: white;
-}
-h1, h2, h3 {
-color: #14697D;
-margin-top: 24pt;
-margin-bottom: 12pt;
-}
-h1 {
-font-size: 18pt;
-border-bottom: 2px solid #14697D;
-padding-bottom: 6pt;
-}
-h2 {
-font-size: 16pt;
-}
-h3 {
-font-size: 14pt;
-}
-p {
-margin: 0 0 12pt 0;
-text-align: justify;
-}
-.header {
-text-align: center;
-margin-bottom: 24pt;
-border-bottom: 1px solid #ccc;
-padding-bottom: 12pt;
-}
-.footer {
-margin-top: 24pt;
-padding-top: 12pt;
-border-top: 1px solid #ccc;
-font-size: 10pt;
-color: #666;
-text-align: center;
-}
-strong {
-font-weight: bold;
-}
-em {
-font-style: italic;
-}
-.error-highlight {
-background-color: #ffebee;
-padding: 2px 4px;
-border-radius: 3px;
-border-bottom: 2px solid #f44336;
-}
+body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.6; color: #333; max-width: 8.5in; margin: 0 auto; padding: 0.5in; background: white; }
+h1, h2, h3 { color: #14697D; margin-top: 24pt; margin-bottom: 12pt; }
+h1 { font-size: 18pt; border-bottom: 2px solid #14697D; padding-bottom: 6pt; }
+p { margin: 0 0 12pt 0; text-align: justify; }
+.header { text-align: center; margin-bottom: 24pt; border-bottom: 1px solid #ccc; padding-bottom: 12pt; }
+.footer { margin-top: 24pt; padding-top: 12pt; border-top: 1px solid #ccc; font-size: 10pt; color: #666; text-align: center; }
 </style>
 </head>
 <body>
@@ -3223,18 +2815,351 @@ window.close();
 <\/script>
 </body>
 </html>`;
+    
+    printWindow.document.write(pdfContent);
+    printWindow.document.close();
+    
+    console.log('✅ Content exported to PDF');
+}
+
+// Inline Editor Functions
+function enableInlineEditing() {
+    const contentPreview = document.getElementById('contentPreview');
+    if (!contentPreview) return;
+    
+    console.log('🖊️ Enabling inline editing');
+    
+    const currentContent = contentPreview.innerHTML;
+    
+    // Create a rich text editor using contentEditable
+    const editableArea = document.createElement('div');
+    editableArea.contentEditable = true;
+    editableArea.className = 'form-control rich-text-editor';
+    editableArea.style.minHeight = '300px';
+    editableArea.style.width = '100%';
+    editableArea.style.fontFamily = 'inherit';
+    editableArea.style.fontSize = 'inherit';
+    editableArea.style.lineHeight = '1.5';
+    editableArea.style.padding = '12px';
+    editableArea.style.border = '2px solid #007bff';
+    editableArea.style.borderRadius = '5px';
+    editableArea.style.outline = 'none';
+    editableArea.style.backgroundColor = '#f8f9fa';
+    editableArea.innerHTML = currentContent;
+    
+    // Create formatting toolbar
+    const toolbar = document.createElement('div');
+    toolbar.className = 'editing-toolbar mb-2 p-2 bg-light rounded';
+    toolbar.innerHTML = `
+        <div class="btn-group btn-group-sm me-3" role="group">
+            <button type="button" class="btn btn-outline-secondary" data-command="bold" title="Bold (Ctrl+B)">
+                <i class="fas fa-bold"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-command="italic" title="Italic (Ctrl+I)">
+                <i class="fas fa-italic"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-command="underline" title="Underline (Ctrl+U)">
+                <i class="fas fa-underline"></i>
+            </button>
+        </div>
+        <div class="btn-group btn-group-sm me-3" role="group">
+            <button type="button" class="btn btn-outline-secondary" data-command="justifyLeft" title="Align Left">
+                <i class="fas fa-align-left"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-command="justifyCenter" title="Align Center">
+                <i class="fas fa-align-center"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-command="justifyRight" title="Align Right">
+                <i class="fas fa-align-right"></i>
+            </button>
+        </div>
+        <div class="btn-group btn-group-sm me-3" role="group">
+            <button type="button" class="btn btn-outline-secondary" data-command="insertUnorderedList" title="Bullet List">
+                <i class="fas fa-list-ul"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-command="insertOrderedList" title="Numbered List">
+                <i class="fas fa-list-ol"></i>
+            </button>
+        </div>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-secondary" data-command="undo" title="Undo (Ctrl+Z)">
+                <i class="fas fa-undo"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-command="redo" title="Redo (Ctrl+Y)">
+                <i class="fas fa-redo"></i>
+            </button>
+        </div>
+    `;
+    
+    // Create control buttons
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'mt-3 d-flex gap-2';
+    buttonContainer.innerHTML = `
+        <button type="button" class="btn btn-success" id="saveEditBtn">
+            <i class="fas fa-save me-1"></i>Save Changes
+        </button>
+        <button type="button" class="btn btn-secondary" id="cancelEditBtn">
+            <i class="fas fa-times me-1"></i>Cancel
+        </button>
+        <button type="button" class="btn btn-info" id="previewEditBtn">
+            <i class="fas fa-eye me-1"></i>Preview
+        </button>
+    `;
+    
+    // Store the original content
+    const originalContent = currentContent;
+    
+    // Replace content with editable area
+    contentPreview.innerHTML = '';
+    contentPreview.appendChild(toolbar);
+    contentPreview.appendChild(editableArea);
+    contentPreview.appendChild(buttonContainer);
+    
+    // Set up toolbar functionality
+    setupToolbar(toolbar, editableArea);
+    
+    // Focus on the editable area
+    editableArea.focus();
+    
+    // Handle save button
+    document.getElementById('saveEditBtn').addEventListener('click', function() {
+        const editedContent = editableArea.innerHTML;
+        contentPreview.innerHTML = editedContent;
+        showEditSuccessMessage();
+        console.log('✅ Content saved successfully');
+    });
+    
+    // Handle cancel button
+    document.getElementById('cancelEditBtn').addEventListener('click', function() {
+        contentPreview.innerHTML = originalContent;
+        console.log('🚫 Edit cancelled, content restored');
+    });
+    
+    // Handle preview button
+    document.getElementById('previewEditBtn').addEventListener('click', function() {
+        togglePreview(editableArea, toolbar, buttonContainer);
+    });
+    
+    // Handle keyboard shortcuts
+    editableArea.addEventListener('keydown', function(e) {
+        // Ctrl+S or Cmd+S to save
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            document.getElementById('saveEditBtn').click();
+        }
         
-        printWindow.document.write(pdfContent);
-        printWindow.document.close();
+        // Escape to cancel
+        if (e.key === 'Escape') {
+            document.getElementById('cancelEditBtn').click();
+        }
+    });
+    
+    console.log('✅ Inline editing enabled');
+}
+
+// Setup toolbar functionality
+function setupToolbar(toolbar, editableArea) {
+    const buttons = toolbar.querySelectorAll('[data-command]');
+    
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const command = this.getAttribute('data-command');
+            
+            // Execute the formatting command
+            document.execCommand(command, false, null);
+            
+            // Update button states
+            updateToolbarStates(toolbar);
+            
+            // Keep focus on editable area
+            editableArea.focus();
+        });
+    });
+    
+    // Update toolbar states when selection changes
+    editableArea.addEventListener('keyup', () => updateToolbarStates(toolbar));
+    editableArea.addEventListener('mouseup', () => updateToolbarStates(toolbar));
+}
+
+// Update toolbar button states based on current formatting
+function updateToolbarStates(toolbar) {
+    const commands = ['bold', 'italic', 'underline', 'justifyLeft', 'justifyCenter', 'justifyRight'];
+    
+    commands.forEach(command => {
+        const button = toolbar.querySelector(`[data-command="${command}"]`);
+        if (button) {
+            if (document.queryCommandState(command)) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        }
+    });
+}
+
+// Toggle between edit and preview mode
+function togglePreview(editableArea, toolbar, buttonContainer) {
+    const previewBtn = document.getElementById('previewEditBtn');
+    
+    if (editableArea.contentEditable === 'true') {
+        // Switch to preview mode
+        editableArea.contentEditable = false;
+        editableArea.style.backgroundColor = '#ffffff';
+        editableArea.style.border = '1px solid #dee2e6';
+        toolbar.style.display = 'none';
+        previewBtn.innerHTML = '<i class="fas fa-edit me-1"></i>Edit';
+        previewBtn.className = 'btn btn-warning';
+        console.log('📖 Switched to preview mode');
+    } else {
+        // Switch back to edit mode
+        editableArea.contentEditable = true;
+        editableArea.style.backgroundColor = '#f8f9fa';
+        editableArea.style.border = '2px solid #007bff';
+        toolbar.style.display = 'block';
+        previewBtn.innerHTML = '<i class="fas fa-eye me-1"></i>Preview';
+        previewBtn.className = 'btn btn-info';
+        editableArea.focus();
+        console.log('✏️ Switched to edit mode');
+    }
+}
+
+// Show edit success message
+function showEditSuccessMessage(message = 'Content updated successfully!') {
+    const successDiv = document.createElement('div');
+    successDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
+    successDiv.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const contentPreview = document.getElementById('contentPreview');
+    if (contentPreview && contentPreview.parentNode) {
+        contentPreview.parentNode.insertBefore(successDiv, contentPreview.nextSibling);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            if (successDiv.parentNode) {
+                successDiv.remove();
+            }
+        }, 3000);
+    }
+}
+
+// Pricing Modal Functions
+function showUpgradeModal() {
+    const upgradeModal = new bootstrap.Modal(document.getElementById('upgradeModal'));
+    upgradeModal.show();
+    console.log('💳 Upgrade modal shown');
+}
+
+// Setup Pricing Modal (called from main initialization)
+function setupPricingModal() {
+    // Pricing card selection in modal
+    document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove selected class from all pricing cards with animation
+            document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(c => {
+                c.classList.remove('selected');
+                c.style.zIndex = '1';
+            });
+            
+            // Add selected class to clicked card with enhanced animation
+            this.classList.add('selected');
+            this.style.zIndex = '10';
+            
+            // Update hidden input
+            const selectedPricingTier = document.getElementById('selectedPricingTier');
+            if (selectedPricingTier) {
+                selectedPricingTier.value = this.dataset.tier;
+            }
+            
+            // Enable the Get button with animation
+            const getButton = document.getElementById('getSelectedPlan');
+            if (getButton) {
+                getButton.disabled = false;
+                
+                // Update button text based on selection
+                const tier = this.dataset.tier;
+                const tierNames = {
+                    'payasyougo': 'Get Pay-As-You-Go - $1',
+                    '24hourpass': 'Get 24-Hour Pass - $2',
+                    'pro': 'Get Pro Monthly - $15'
+                };
+                
+                // Animate button text change
+                getButton.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    getButton.innerHTML = `<i class="fas fa-shopping-cart me-2"></i>${tierNames[tier]}`;
+                    getButton.style.transform = 'scale(1)';
+                }, 100);
+            }
+            
+            console.log('💰 Selected pricing tier:', tier);
+        });
+    });
+    
+    // Handle Get Selected Plan button click
+    const getSelectedPlanBtn = document.getElementById('getSelectedPlan');
+    if (getSelectedPlanBtn) {
+        getSelectedPlanBtn.addEventListener('click', function() {
+            const selectedCard = document.querySelector('#upgradeModal .pricing-tier-card.selected');
+            
+            if (selectedCard) {
+                const url = selectedCard.dataset.url;
+                
+                // Add click animation
+                this.style.transform = 'scale(0.98)';
+                
+                setTimeout(() => {
+                    // Close the modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('upgradeModal'));
+                    if (modal) modal.hide();
+                    
+                    // Redirect to Gumroad
+                    window.open(url, '_blank');
+                    console.log('🛒 Redirecting to:', url);
+                }, 150);
+            }
+        });
     }
     
-    // Make displayResults globally accessible
-    window.displayResults = displayResults;
+    // Reset modal state when closed
+    const upgradeModal = document.getElementById('upgradeModal');
+    if (upgradeModal) {
+        upgradeModal.addEventListener('hidden.bs.modal', function() {
+            // Remove all selections with reset animation
+            document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(c => {
+                c.classList.remove('selected');
+                c.style.zIndex = '1';
+                c.style.transform = '';
+            });
+            
+            // Clear hidden input
+            const selectedPricingTier = document.getElementById('selectedPricingTier');
+            if (selectedPricingTier) {
+                selectedPricingTier.value = '';
+            }
+            
+            // Disable and reset the Get button
+            const getButton = document.getElementById('getSelectedPlan');
+            if (getButton) {
+                getButton.disabled = true;
+                getButton.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>Get Selected Plan';
+                getButton.style.transform = '';
+            }
+            
+            console.log('🔄 Pricing modal reset');
+        });
+    }
     
-    console.log('🚀 WriteSuite initialization complete with fixed AI suggestions');
-});
+    console.log('✅ Pricing modal setup complete');
+}
 
-// Add scroll effect to header
+// Additional Event Listeners
 window.addEventListener('scroll', function() {
     const header = document.querySelector('header');
     if (header) {
@@ -3273,109 +3198,13 @@ window.addEventListener('load', async function() {
     }
 });
 
-// Pricing tier selection with enhanced animation
-document.addEventListener('DOMContentLoaded', function() {
-    // Pricing card selection in modal
-    document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(card => {
-        card.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Remove selected class from all pricing cards with animation
-            document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(c => {
-                c.classList.remove('selected');
-                c.style.zIndex = '1';
-            });
-            
-            // Add selected class to clicked card with enhanced animation
-            this.classList.add('selected');
-            this.style.zIndex = '10';
-            
-            // Update hidden input
-            document.getElementById('selectedPricingTier').value = this.dataset.tier;
-            
-            // Enable the Get button with animation
-            const getButton = document.getElementById('getSelectedPlan');
-            getButton.disabled = false;
-            
-            // Update button text based on selection
-            const tier = this.dataset.tier;
-            const tierNames = {
-                'payasyougo': 'Get Pay-As-You-Go - $1',
-                '24hourpass': 'Get 24-Hour Pass - $2',
-                'pro': 'Get Pro Monthly - $15'
-            };
-            
-            // Animate button text change
-            getButton.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                getButton.innerHTML = `<i class="fas fa-shopping-cart me-2"></i>${tierNames[tier]}`;
-                getButton.style.transform = 'scale(1)';
-            }, 100);
-        });
-        
-        // Add subtle hover effect enhancement
-        card.addEventListener('mouseenter', function() {
-            if (!this.classList.contains('selected')) {
-                this.style.transform = 'translateY(-3px)';
-            }
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            if (!this.classList.contains('selected')) {
-                this.style.transform = 'translateY(0)';
-            }
-        });
-    });
-});
+// Make key functions globally accessible for debugging
+window.displayResults = displayResults;
+window.showUpgradeModal = showUpgradeModal;
+window.enableInlineEditing = enableInlineEditing;
 
-// Handle Get Selected Plan button click
-document.getElementById('getSelectedPlan').addEventListener('click', function() {
-    const selectedCard = document.querySelector('#upgradeModal .pricing-tier-card.selected');
-    
-    if (selectedCard) {
-        const url = selectedCard.dataset.url;
-        
-        // Add click animation
-        this.style.transform = 'scale(0.98)';
-        
-        setTimeout(() => {
-            // Close the modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('upgradeModal'));
-            modal.hide();
-            
-            // Redirect to Gumroad
-            window.open(url, '_blank');
-        }, 150);
-    }
-});
-
-// Show upgrade modal function
-function showUpgradeModal() {
-    const upgradeModal = new bootstrap.Modal(document.getElementById('upgradeModal'));
-    upgradeModal.show();
-}
-
-// Reset modal state when closed
-document.getElementById('upgradeModal').addEventListener('hidden.bs.modal', function() {
-    // Remove all selections with reset animation
-    document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(c => {
-        c.classList.remove('selected');
-        c.style.zIndex = '1';
-        c.style.transform = '';
-    });
-    
-    // Clear hidden input
-    document.getElementById('selectedPricingTier').value = '';
-    
-    // Disable and reset the Get button
-    const getButton = document.getElementById('getSelectedPlan');
-    getButton.disabled = true;
-    getButton.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>Get Selected Plan';
-    getButton.style.transform = '';
-});
-
-// Add CSS for suggestion animations and enhanced styling
-const suggestionCSS = `
+// Add CSS for enhanced styling and animations
+const enhancedCSS = `
 @keyframes fadeInOut {
     0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
     20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -3420,30 +3249,6 @@ const suggestionCSS = `
     font-weight: 600;
 }
 
-.suggestions-list {
-    background: #f8f9fa;
-    border-radius: 15px;
-    padding: 20px;
-    margin-top: 20px;
-    border: 1px solid #e9ecef;
-}
-
-.suggestions-list h6 {
-    color: #14697D;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-.spinner-border-sm {
-    width: 1rem;
-    height: 1rem;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
 .rich-text-editor {
     transition: all 0.3s ease;
 }
@@ -3476,22 +3281,66 @@ const suggestionCSS = `
         opacity: 1;
     }
 }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.tool-tab {
+    cursor: pointer;
+}
+
+.feature-card {
+    cursor: pointer;
+}
+
+.tone-option {
+    cursor: pointer;
+}
 `;
 
-// Add the CSS to your document
+// Add the enhanced CSS to the document
 const style = document.createElement('style');
-style.textContent = suggestionCSS;
+style.textContent = enhancedCSS;
 document.head.appendChild(style);
 
-// Make functions globally accessible for console testing
-window.testAISuggestions = testAISuggestions;
-window.generateAISuggestions = generateAISuggestions;
-window.displayAISuggestions = displayAISuggestions;
-window.highlightSuggestion = highlightSuggestion;
+console.log('🎨 Enhanced CSS styles added');
+console.log('🚀 WriterSuite fully initialized and ready to use');
 
-console.log('🌐 AI Base URL:', API_BASE_URL);
-console.log('🧪 Test AI suggestions by running: testAISuggestions()');
-console.log('🎯 Generate AI suggestions by running: generateAISuggestions("your content", "content_type")');
+// Test functions for debugging
+window.testAISuggestions = async function() {
+    console.log('🧪 Testing AI suggestions endpoint...');
+    const testContent = "This is a sample text for testing AI suggestions. It contains some content that might need improvement.";
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/writesuite/suggestions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: testContent,
+                contentType: 'general'
+            })
+        });
+        
+        console.log('🧪 Test response status:', response.status);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('🧪 Test response data:', data);
+            return data;
+        } else {
+            const errorText = await response.text();
+            console.error('🧪 Test failed:', response.status, errorText);
+            return null;
+        }
+    } catch (error) {
+        console.error('🧪 Test request failed:', error);
+        return null;
+    }
+};
 </script>
 
 </body>
