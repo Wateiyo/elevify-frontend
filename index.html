@@ -774,9 +774,8 @@ class ElevifyPaymentManager {
 
     async checkToolAccess(toolId) {
     try {
-        // COMPLETE tool ID mapping - including all possible variations
+        // Tool ID mapping - frontend to backend
         const toolIdMapping = {
-            // Exact matches from your backend
             'writesuite': 'writesuite',
             'legalease': 'legalease', 
             'researchmate': 'researchmate',
@@ -793,34 +792,22 @@ class ElevifyPaymentManager {
             'meeting_assistant': 'meeting_assistant',
             'invoice_generator': 'invoice_generator',
             'brand_builder': 'brand_builder',
-            
-            // Frontend variations that need mapping
-            'data_visualization': 'data_viz',  // Backend uses 'data_viz'
-            'market_research_assistant': 'market_assistant', // Backend uses 'market_assistant'
-            
-            // Alternative names that might exist in your HTML
-            'data_viz': 'data_viz',  // Direct backend name
-            'market_assistant': 'market_assistant'  // Direct backend name
+            'data_visualization': 'data_viz',  // Fixed mapping
+            'market_research_assistant': 'market_assistant', // Fixed mapping
+            'data_viz': 'data-viz',
+            'market_assistant': 'market_assistant'
         };
 
-        // Log what we're trying to map
-        console.log('🔍 Checking access for frontend toolId:', toolId);
-
-        // Convert frontend toolId to backend tool_id
         const backendToolId = toolIdMapping[toolId];
         
         if (!backendToolId) {
-            console.warn('❌ No mapping found for toolId:', toolId);
-            console.log('Available mappings:', Object.keys(toolIdMapping));
             return { 
                 can_use: false, 
                 access_reason: 'unmapped_tool_id',
                 error: `No mapping found for tool: ${toolId}`,
-                skip_request: true  // Don't make API call
+                skip_request: true
             };
         }
-        
-        console.log('✅ Mapped to backend toolId:', backendToolId);
 
         const response = await fetch(`${this.API_BASE_URL}/api/check-tool-access`, {
             method: 'POST',
@@ -829,36 +816,19 @@ class ElevifyPaymentManager {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                tool_id: backendToolId  // Use the correctly mapped tool_id
+                tool_id: backendToolId
             })
         });
 
-        // Check if response is ok before parsing JSON
         if (!response.ok) {
-            console.error(`❌ Tool access check failed: ${response.status} ${response.statusText}`);
-            
-            // Try to get error details
             try {
                 const errorData = await response.json();
-                console.error('Error details:', errorData);
-                
-                // Show available tools for debugging
-                if (errorData.available_tools) {
-                    console.log('Available backend tools:', errorData.available_tools);
-                    console.log('We sent:', backendToolId);
-                    console.log('Is our tool in the list?', errorData.available_tools.includes(backendToolId));
-                }
-                
                 return { 
                     can_use: false, 
                     access_reason: 'http_error',
                     error: errorData.error || `HTTP ${response.status}`
                 };
             } catch (jsonError) {
-                console.error('Could not parse error response as JSON');
-                const textError = await response.text();
-                console.error('Raw error response:', textError);
-                
                 return { 
                     can_use: false, 
                     access_reason: 'http_error',
@@ -868,11 +838,9 @@ class ElevifyPaymentManager {
         }
 
         const data = await response.json();
-        console.log('✅ Access check successful for:', backendToolId, data);
         return data;
         
     } catch (error) {
-        console.error('❌ Failed to check tool access:', error);
         return { 
             can_use: false, 
             access_reason: 'network_error',
@@ -1051,34 +1019,21 @@ class ElevifyPaymentManager {
     async updateUIBasedOnSubscriptions() {
     if (!this.userSubscriptions) return;
 
-    console.log('🔄 Updating UI based on subscriptions...');
-
     // Update tool buttons based on subscription status
     const elementsWithDataTool = document.querySelectorAll('[data-tool]');
-    console.log(`Found ${elementsWithDataTool.length} elements with data-tool attribute`);
 
     for (const element of elementsWithDataTool) {
         const toolName = element.dataset.tool;
         
-        console.log('Processing element:', {
-            toolName,
-            className: element.className,
-            isToolBtn: element.classList.contains('tool-btn')
-        });
-        
         // Only check access for buttons that are NOT "Try Free" buttons on main page
         if (!element.classList.contains('tool-btn')) {
-            console.log('⏭️  Skipping non-tool-btn element:', toolName);
             continue;
         }
-        
-        console.log('🔍 Checking access for tool-btn:', toolName);
         
         const access = await this.checkToolAccess(toolName);
         
         // Skip updating UI if we couldn't map the tool
         if (access.skip_request) {
-            console.log('⏭️  Skipping UI update for unmapped tool:', toolName);
             continue;
         }
         
@@ -1089,23 +1044,19 @@ class ElevifyPaymentManager {
             if (reason === 'pro' || reason === '24h_all_access' || reason === 'pay_as_you_go') {
                 element.classList.add('tool-paid');
                 element.title = `Available via ${reason}`;
-                console.log('✅ Tool marked as paid:', toolName, reason);
             } else {
                 element.classList.add('tool-free');
                 if (access.usage) {
                     element.title = `${access.usage.remaining} free uses remaining`;
                 }
-                console.log('✅ Tool marked as free:', toolName);
             }
         } else {
             element.classList.add('tool-blocked');
             element.title = 'Upgrade to continue using this tool';
-            console.log('🚫 Tool marked as blocked:', toolName);
         }
     }
 
     this.updateSubscriptionDisplay();
-    console.log('✅ UI update complete');
 }
 
     setupEventListeners() {
