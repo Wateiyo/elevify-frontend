@@ -5393,18 +5393,6 @@ if (typeof window !== 'undefined') {
     console.log('🔧 Debug tools available: window.LegalEaseDebug');
 }
 
-// Service Worker registration (if available)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js')
-            .then(function(registration) {
-                console.log('ServiceWorker registration successful');
-            })
-            .catch(function(err) {
-                console.log('ServiceWorker registration failed');
-            });
-    });
-}
 
 // Final console message
 console.log(`
