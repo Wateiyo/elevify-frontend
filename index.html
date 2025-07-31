@@ -475,7 +475,7 @@
                             <div class="card-body">
                                 <div class="bg-info px-2 py-1 d-inline-block rounded mb-2 text-white">Popular</div>
                                 <h3>24-Hour All Access</h3>
-                                <div class="pricing-card-title">$2</div>
+                                <div class="pricing-card-title">$4</div>
                                 <p>One-time payment, full access</p>
                                 <button onclick="window.open('https://elevify.gumroad.com/l/hngcmx', '_blank')"class="btn btn-primary w-100 purchase-btn" data-tier="24h_all_access">Buy Now</button>
                                 <ul class="mt-4">
@@ -493,7 +493,7 @@
                         <div class="pricing-card">
                             <div class="card-body">
                                 <h3>Pro</h3>
-                                <div class="pricing-card-title">$15</div>
+                                <div class="pricing-card-title">$18</div>
                                 <p>Every month</p>
                                 <p>Unlimited use of all of Elevify's AI tool suite.</p>
                                 <button onclick="window.open('https://elevify.gumroad.com/l/flbal', '_blank')" class="btn btn-primary w-100 purchase-btn" data-tier="pro">Buy Now</button>
@@ -512,7 +512,7 @@
                             <div class="card-body">
                                 <div class="bg-warning px-2 py-1 d-inline-block rounded mb-2">Best Value</div>
                                 <h3>Pay-As-You-Go</h3>
-                                <div class="pricing-card-title">$1</div>
+                                <div class="pricing-card-title">$2</div>
                                 <p>Per tool, 24-hour access</p>
                                 <button disabled class="btn btn-primary w-100 purchase-btn" data-tier="pay_as_you_go">Buy Now</button>
                                 <ul class="mt-4">
@@ -650,7 +650,7 @@
             <div class="upgrade-options">
                 <div class="upgrade-option">
                     <h4>Pay-As-You-Go</h4>
-                    <div class="price">$1</div>
+                    <div class="price">$2</div>
                     <p>24-hour access to <span class="tool-name"></span></p>
                     <button disabled class="purchase-btn" data-tier="pay_as_you_go" data-tool="">
                         Get 24h Access
@@ -659,7 +659,7 @@
                 
                 <div class="upgrade-option recommended">
                     <h4>24-Hour All Access</h4>
-                    <div class="price">$2</div>
+                    <div class="price">$4</div>
                     <p>24-hour access to all 18 tools</p>
                     <button class="purchase-btn" data-tier="24h_all_access">
                         Get All Tools
@@ -668,7 +668,7 @@
                 
                 <div class="upgrade-option">
                     <h4>Pro</h4>
-                    <div class="price">$15/month</div>
+                    <div class="price">$18/month</div>
                     <p>Unlimited access to everything</p>
                     <button class="purchase-btn" data-tier="pro">
                         Go Pro
@@ -698,537 +698,586 @@
     
     <!-- Elevify Payment Management Script -->
    <script>
-        // Elevify Payment Manager Class - Updated for Render Deployment
-        class ElevifyPaymentManager {
-            constructor() {
-                // Updated API base URL for Render backend
-                this.API_BASE_URL = 'https://elevify.onrender.com';
-                this.pricingTiers = null;
-                this.userSubscriptions = null;
-                this.init();
-            }
-
-            async init() {
-                await this.loadPricingTiers();
-                await this.loadUserSubscriptions();
-                this.setupEventListeners();
-                this.updateUIBasedOnSubscriptions();
-            }
-
-            async loadPricingTiers() {
-                try {
-                    const response = await fetch(`${this.API_BASE_URL}/api/pricing/tiers`, {
-                        method: 'GET',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        this.pricingTiers = data.tiers;
-                    }
-                } catch (error) {
-                    console.error('Failed to load pricing tiers:', error);
-                }
-            }
-
-            async loadUserSubscriptions() {
-                try {
-                    const response = await fetch(`${this.API_BASE_URL}/api/user/subscription-status`, {
-                        method: 'GET',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
-                    const data = await response.json();
-                    this.userSubscriptions = data;
-                    this.updateSubscriptionDisplay();
-                } catch (error) {
-                    console.error('Failed to load user subscriptions:', error);
-                }
-            }
-
-            async checkToolAccess(toolId) {
-                try {
-                    const response = await fetch(`${this.API_BASE_URL}/api/check-tool-access`, {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            tool_id: toolId
-                        })
-                    });
-                    const data = await response.json();
-                    return data;
-                } catch (error) {
-                    console.error('Failed to check tool access:', error);
-                    return { can_use: false, access_reason: 'error' };
-                }
-            }
-
-            async initiatePayment(tierType, toolName = null) {
-                try {
-                    const response = await fetch(`${this.API_BASE_URL}/api/payment/initiate`, {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            tier_type: tierType,
-                            tool_name: toolName
-                        })
-                    });
-
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Redirect to Gumroad
-                        window.open(data.gumroad_url, '_blank');
-                        
-                        // Show success message
-                        this.showMessage(`Payment initiated for ${data.tier_info.name} (${data.tier_info.price}). Complete your purchase in the new window to activate your subscription.`);
-                    } else {
-                        throw new Error(data.error);
-                    }
-                } catch (error) {
-                    console.error('Payment initiation failed:', error);
-                    this.showError(error.message);
-                }
-            }
-
-            // Handle tool clicks for main page navigation
-            async handleToolClick(toolName, href) {
-                // For "Try Free" buttons on the main page, always allow navigation to the tool
-                // The usage check will happen within the tool page itself
-                window.location.href = href;
-                return true;
-            }
-
-            // Method specifically for handling upgrade button clicks within tool pages
-            async handleUpgradeClick(toolName) {
-                this.showUpgradeModal(toolName);
-            }
-
-            async handlePurchase(tierType, toolName = null) {
-                // Check if user already has this subscription
-                if (this.hasActiveTier(tierType)) {
-                    this.showMessage('You already have an active subscription for this tier!');
-                    return;
-                }
-
-                if (tierType === 'pay_as_you_go' && !toolName) {
-                    this.showToolSelector();
-                } else {
-                    await this.initiatePayment(tierType, toolName);
-                }
-            }
-
-            showToolSelector() {
-                const tools = [
-                    'writesuite', 'legalease', 'researchmate', 'socialboost', 
-                    'resume_optimizer', 'content_repurposer', 'seo_optimizer',
-                    'email_assistant', 'portfolio_generator', 'job_tracker',
-                    'data_visualization', 'survey_builder', 'market_research_assistant',
-                    'banner_creator', 'mockup_generator', 'meeting_assistant',
-                    'invoice_generator', 'brand_builder'
-                ];
-
-                const modal = document.getElementById('tool-selector-modal');
-                const toolsGrid = modal.querySelector('.tools-grid');
-                
-                toolsGrid.innerHTML = tools.map(tool => `
-                    <button class="tool-option" onclick="elevifyPayments.selectTool('${tool}')">
-                        ${this.formatToolName(tool)}
-                    </button>
-                `).join('');
-
-                modal.style.display = 'block';
-            }
-
-            async selectTool(toolName) {
-                // Close modal
-                const modal = document.getElementById('tool-selector-modal');
-                modal.style.display = 'none';
-
-                // Initiate payment for specific tool
-                await this.initiatePayment('pay_as_you_go', toolName);
-            }
-
-            showUpgradeModal(toolName) {
-                const modal = document.getElementById('upgrade-modal');
-                const toolNameElements = modal.querySelectorAll('.tool-name');
-                
-                toolNameElements.forEach(el => {
-                    el.textContent = this.formatToolName(toolName);
-                });
-
-                // Update pay-as-you-go button with correct tool
-                const payAsYouGoBtn = modal.querySelector('[data-tier="pay_as_you_go"]');
-                if (payAsYouGoBtn) {
-                    payAsYouGoBtn.dataset.tool = toolName;
-                }
-
-                modal.style.display = 'block';
-            }
-
-            formatToolName(toolName) {
-                return toolName.split('_').map(word => 
-                    word.charAt(0).toUpperCase() + word.slice(1)
-                ).join(' ');
-            }
-
-            hasActiveTier(tierType) {
-                if (!this.userSubscriptions) return false;
-                
-                const summary = this.userSubscriptions.subscription_summary;
-                
-                switch (tierType) {
-                    case 'pro':
-                        return summary?.pro;
-                    case '24h_all_access':
-                        return summary?.['24h_all_access'];
-                    case 'pay_as_you_go':
-                        return false; // Always allow new tool purchases
-                    default:
-                        return false;
-                }
-            }
-
-            updateSubscriptionDisplay() {
-                const statusContainer = document.getElementById('subscription-status');
-                if (!statusContainer || !this.userSubscriptions) return;
-
-                const summary = this.userSubscriptions.subscription_summary;
-                let statusHTML = '';
-                
-                if (summary?.pro) {
-                    statusHTML = '<span class="badge bg-success">PRO</span>';
-                } else if (summary?.['24h_all_access']) {
-                    statusHTML = '<span class="badge bg-info">24H ALL ACCESS</span>';
-                } else if (summary?.pay_as_you_go_tools?.length > 0) {
-                    statusHTML = '<span class="badge bg-warning">PAY-AS-YOU-GO</span>';
-                } else {
-                    statusHTML = '<span class="badge bg-secondary">FREE</span>';
-                }
-                
-                statusContainer.innerHTML = statusHTML;
-            }
-
-            async updateUIBasedOnSubscriptions() {
-                if (!this.userSubscriptions) return;
-
-                // Update tool buttons based on subscription status
-                document.querySelectorAll('[data-tool]').forEach(async (element) => {
-                    const toolName = element.dataset.tool;
-                    
-                    // Only check access for buttons that are NOT "Try Free" buttons on main page
-                    if (!element.classList.contains('tool-btn')) return;
-                    
-                    const access = await this.checkToolAccess(toolName);
-                    
-                    element.classList.remove('tool-free', 'tool-paid', 'tool-blocked');
-                    
-                    if (access.can_use) {
-                        const reason = access.access_reason;
-                        if (reason === 'pro' || reason === '24h_all_access' || reason === 'pay_as_you_go') {
-                            element.classList.add('tool-paid');
-                            element.title = `Available via ${reason}`;
-                        } else {
-                            element.classList.add('tool-free');
-                            if (access.usage) {
-                                element.title = `${access.usage.remaining} free uses remaining`;
-                            }
-                        }
-                    } else {
-                        element.classList.add('tool-blocked');
-                        element.title = 'Upgrade to continue using this tool';
-                    }
-                });
-
-                this.updateSubscriptionDisplay();
-            }
-
-            setupEventListeners() {
-                // Listen for payment completion (refresh when user returns to tab)
-                window.addEventListener('focus', () => {
-                    setTimeout(() => {
-                        this.loadUserSubscriptions();
-                    }, 2000);
-                });
-
-                // Set up purchase button handlers
-                document.addEventListener('click', (e) => {
-                    if (e.target.matches('.purchase-btn')) {
-                        e.preventDefault();
-                        const tierType = e.target.dataset.tier;
-                        const toolName = e.target.dataset.tool || null;
-                        this.handlePurchase(tierType, toolName);
-                    }
-                });
-
-                // Handle upgrade button clicks (within tool pages)
-                document.addEventListener('click', (e) => {
-                    if (e.target.matches('[href="/#pricing"]') && e.target.textContent.includes('Upgrade')) {
-                        e.preventDefault();
-                        // Get tool name from the page or a data attribute
-                        const toolName = this.getCurrentToolName();
-                        if (toolName) {
-                            this.handleUpgradeClick(toolName);
-                        } else {
-                            // Fallback to pricing page
-                            window.location.href = '/#pricing';
-                        }
-                        return;
-                    }
-
-                    // For "Try Free" buttons on main page, allow normal navigation
-                    if (e.target.matches('.tool-btn')) {
-                        // Let the click proceed normally - the tool page will handle usage checking
-                        return true;
-                    }
-                });
-
-                // Modal close handlers
-                document.addEventListener('click', (e) => {
-                    if (e.target.matches('.close-modal')) {
-                        e.target.closest('.upgrade-modal, .tool-selector-modal').style.display = 'none';
-                    }
-                });
-
-                // Close modals when clicking outside
-                document.addEventListener('click', (e) => {
-                    if (e.target.matches('.upgrade-modal, .tool-selector-modal')) {
-                        e.target.style.display = 'none';
-                    }
-                });
-
-                // Refresh subscriptions periodically
-                setInterval(() => {
-                    this.loadUserSubscriptions();
-                }, 60000); // Every minute
-            }
-
-            // Method to determine current tool name from the page
-            getCurrentToolName() {
-                // Try to get tool name from URL
-                const path = window.location.pathname;
-                if (path.includes('.html')) {
-                    const toolFile = path.split('/').pop();
-                    const toolMappings = {
-                        'writesuite.html': 'writesuite',
-                        'socialboost.html': 'socialboost',
-                        'researchmate.html': 'researchmate',
-                        'resume-optimizer.html': 'resume_optimizer',
-                        'content-repurposer.html': 'content_repurposer',
-                        'seo-optimizer.html': 'seo_optimizer',
-                        'email-assistant.html': 'email_assistant',
-                        'portfolio-generator.html': 'portfolio_generator',
-                        'job-tracker.html': 'job_tracker',
-                        'data-viz.html': 'data_visualization',
-                        'survey-builder.html': 'survey_builder',
-                        'market-assistant.html': 'market_research_assistant',
-                        'banner-creator.html': 'banner_creator',
-                        'mockup-generator.html': 'mockup_generator',
-                        'meeting-assistant.html': 'meeting_assistant',
-                        'invoice-generator.html': 'invoice_generator',
-                        'brand-builder.html': 'brand_builder',
-                        'legalease.html': 'legalease'
-                    };
-                    return toolMappings[toolFile];
-                }
-                
-                // Try to get from a data attribute on the body or a global variable
-                if (window.CURRENT_TOOL_ID) {
-                    return window.CURRENT_TOOL_ID;
-                }
-                
-                // Fallback - return null
-                return null;
-            }
-
-            showMessage(message) {
-                const toast = document.createElement('div');
-                toast.className = 'alert alert-info alert-dismissible fade show';
-                toast.setAttribute('role', 'alert');
-                toast.innerHTML = `
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                `;
-                
-                const container = document.getElementById('toast-container');
-                if (container) {
-                    container.appendChild(toast);
-                    
-                    setTimeout(() => {
-                        if (toast.parentNode) {
-                            toast.remove();
-                        }
-                    }, 5000);
-                }
-            }
-
-            showError(message) {
-                const toast = document.createElement('div');
-                toast.className = 'alert alert-danger alert-dismissible fade show';
-                toast.setAttribute('role', 'alert');
-                toast.innerHTML = `
-                    Error: ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                `;
-                
-                const container = document.getElementById('toast-container');
-                if (container) {
-                    container.appendChild(toast);
-                    
-                    setTimeout(() => {
-                        if (toast.parentNode) {
-                            toast.remove();
-                        }
-                    }, 5000);
-                }
-            }
-        }
-
-        // Global function to manually trigger upgrade modal from tool pages
-        window.showUpgradeModal = function(toolName) {
-            if (window.elevifyPayments) {
-                window.elevifyPayments.handleUpgradeClick(toolName);
+        // Elevify Payment Manager Class - Updated with New Pricing Structure
+class ElevifyPaymentManager {
+    constructor() {
+        // Updated API base URL for Render backend
+        this.API_BASE_URL = 'https://elevify.onrender.com';
+        
+        // Updated pricing tiers with new prices
+        this.pricingTiers = {
+            'pay_as_you_go': { 
+                name: 'Pay-As-You-Go', 
+                price: '$2', 
+                duration: '24h',
+                description: '24-hour access to one tool'
+            },
+            '24h_all_access': { 
+                name: '24-Hour All Access', 
+                price: '$4', 
+                duration: '24h',
+                description: '24-hour access to all tools'
+            },
+            'pro': { 
+                name: 'Pro', 
+                price: '$18', 
+                duration: 'monthly',
+                description: 'Unlimited access to everything'
             }
         };
+        
+        this.userSubscriptions = null;
+        this.init();
+    }
 
-        // Initialize payment manager when DOM is loaded
-        let elevifyPayments;
-        document.addEventListener('DOMContentLoaded', function() {
-            elevifyPayments = new ElevifyPaymentManager();
+    async init() {
+        await this.loadPricingTiers();
+        await this.loadUserSubscriptions();
+        this.setupEventListeners();
+        this.updateUIBasedOnSubscriptions();
+    }
+
+    async loadPricingTiers() {
+        try {
+            const response = await fetch(`${this.API_BASE_URL}/api/pricing/tiers`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            const data = await response.json();
+            if (data.success) {
+                this.pricingTiers = data.tiers;
+            }
+        } catch (error) {
+            console.error('Failed to load pricing tiers:', error);
+        }
+    }
+
+    async loadUserSubscriptions() {
+        try {
+            const response = await fetch(`${this.API_BASE_URL}/api/user/subscription-status`, {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            const data = await response.json();
+            this.userSubscriptions = data;
+            this.updateSubscriptionDisplay();
+        } catch (error) {
+            console.error('Failed to load user subscriptions:', error);
+        }
+    }
+
+    async checkToolAccess(toolId) {
+    try {
+        const response = await fetch(`${this.API_BASE_URL}/api/check-tool-access`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                tool_id: toolId
+            })
         });
-    </script>
 
-    <script>
-        // Add scrolled class to header on scroll
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('header');
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
+        // Check if response is ok before parsing JSON
+        if (!response.ok) {
+            console.error(`Tool access check failed: ${response.status} ${response.statusText}`);
+            
+            // Try to get error details
+            try {
+                const errorData = await response.json();
+                console.error('Error details:', errorData);
+            } catch (jsonError) {
+                console.error('Could not parse error response as JSON');
+                const textError = await response.text();
+                console.error('Raw error response:', textError);
+            }
+            
+            return { 
+                can_use: false, 
+                access_reason: 'http_error',
+                error: `HTTP ${response.status}`
+            };
+        }
+
+        const data = await response.json();
+        return data;
+        
+    } catch (error) {
+        console.error('Failed to check tool access:', error);
+        return { 
+            can_use: false, 
+            access_reason: 'network_error',
+            error: error.message 
+        };
+    }
+}
+
+    async initiatePayment(tierType, toolName = null) {
+        try {
+            const response = await fetch(`${this.API_BASE_URL}/api/payment/initiate`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    tier_type: tierType,
+                    tool_name: toolName
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                // Redirect to Gumroad
+                window.open(data.gumroad_url, '_blank');
+                
+                // Show success message
+                this.showMessage(`Payment initiated for ${data.tier_info.name} (${data.tier_info.price}). Complete your purchase in the new window to activate your subscription.`);
             } else {
-                header.classList.remove('scrolled');
+                throw new Error(data.error);
+            }
+        } catch (error) {
+            console.error('Payment initiation failed:', error);
+            this.showError(error.message);
+        }
+    }
+
+    // Handle tool clicks for main page navigation
+    async handleToolClick(toolName, href) {
+        // For "Try Free" buttons on the main page, always allow navigation to the tool
+        // The usage check will happen within the tool page itself
+        window.location.href = href;
+        return true;
+    }
+
+    // Method specifically for handling upgrade button clicks within tool pages
+    async handleUpgradeClick(toolName) {
+        this.showUpgradeModal(toolName);
+    }
+
+    async handlePurchase(tierType, toolName = null) {
+        // Check if user already has this subscription
+        if (this.hasActiveTier(tierType)) {
+            this.showMessage('You already have an active subscription for this tier!');
+            return;
+        }
+
+        if (tierType === 'pay_as_you_go' && !toolName) {
+            this.showToolSelector();
+        } else {
+            await this.initiatePayment(tierType, toolName);
+        }
+    }
+
+    showToolSelector() {
+        const tools = [
+            'writesuite', 'legalease', 'researchmate', 'socialboost', 
+            'resume_optimizer', 'content_repurposer', 'seo_optimizer',
+            'email_assistant', 'portfolio_generator', 'job_tracker',
+            'data_visualization', 'survey_builder', 'market_research_assistant',
+            'banner_creator', 'mockup_generator', 'meeting_assistant',
+            'invoice_generator', 'brand_builder'
+        ];
+
+        const modal = document.getElementById('tool-selector-modal');
+        const toolsGrid = modal.querySelector('.tools-grid');
+        
+        toolsGrid.innerHTML = tools.map(tool => `
+            <button class="tool-option" onclick="elevifyPayments.selectTool('${tool}')">
+                ${this.formatToolName(tool)}
+            </button>
+        `).join('');
+
+        modal.style.display = 'block';
+    }
+
+    async selectTool(toolName) {
+        // Close modal
+        const modal = document.getElementById('tool-selector-modal');
+        modal.style.display = 'none';
+
+        // Initiate payment for specific tool
+        await this.initiatePayment('pay_as_you_go', toolName);
+    }
+
+    showUpgradeModal(toolName) {
+        const modal = document.getElementById('upgrade-modal');
+        const toolNameElements = modal.querySelectorAll('.tool-name');
+        
+        toolNameElements.forEach(el => {
+            el.textContent = this.formatToolName(toolName);
+        });
+
+        // Update pay-as-you-go button with correct tool
+        const payAsYouGoBtn = modal.querySelector('[data-tier="pay_as_you_go"]');
+        if (payAsYouGoBtn) {
+            payAsYouGoBtn.dataset.tool = toolName;
+        }
+
+        modal.style.display = 'block';
+    }
+
+    formatToolName(toolName) {
+        return toolName.split('_').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ');
+    }
+
+    hasActiveTier(tierType) {
+        if (!this.userSubscriptions) return false;
+        
+        const summary = this.userSubscriptions.subscription_summary;
+        
+        switch (tierType) {
+            case 'pro':
+                return summary?.pro;
+            case '24h_all_access':
+                return summary?.['24h_all_access'];
+            case 'pay_as_you_go':
+                return false; // Always allow new tool purchases
+            default:
+                return false;
+        }
+    }
+
+    updateSubscriptionDisplay() {
+        const statusContainer = document.getElementById('subscription-status');
+        if (!statusContainer || !this.userSubscriptions) return;
+
+        const summary = this.userSubscriptions.subscription_summary;
+        let statusHTML = '';
+        
+        if (summary?.pro) {
+            statusHTML = '<span class="badge bg-success">PRO</span>';
+        } else if (summary?.['24h_all_access']) {
+            statusHTML = '<span class="badge bg-info">24H ALL ACCESS</span>';
+        } else if (summary?.pay_as_you_go_tools?.length > 0) {
+            statusHTML = '<span class="badge bg-warning">PAY-AS-YOU-GO</span>';
+        } else {
+            statusHTML = '<span class="badge bg-secondary">FREE</span>';
+        }
+        
+        statusContainer.innerHTML = statusHTML;
+    }
+
+    async updateUIBasedOnSubscriptions() {
+        if (!this.userSubscriptions) return;
+
+        // Update tool buttons based on subscription status
+        document.querySelectorAll('[data-tool]').forEach(async (element) => {
+            const toolName = element.dataset.tool;
+            
+            // Only check access for buttons that are NOT "Try Free" buttons on main page
+            if (!element.classList.contains('tool-btn')) return;
+            
+            const access = await this.checkToolAccess(toolName);
+            
+            element.classList.remove('tool-free', 'tool-paid', 'tool-blocked');
+            
+            if (access.can_use) {
+                const reason = access.access_reason;
+                if (reason === 'pro' || reason === '24h_all_access' || reason === 'pay_as_you_go') {
+                    element.classList.add('tool-paid');
+                    element.title = `Available via ${reason}`;
+                } else {
+                    element.classList.add('tool-free');
+                    if (access.usage) {
+                        element.title = `${access.usage.remaining} free uses remaining`;
+                    }
+                }
+            } else {
+                element.classList.add('tool-blocked');
+                element.title = 'Upgrade to continue using this tool';
             }
         });
-        
-        // Card click animation
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', function() {
-                this.classList.add('card-clicked');
-                setTimeout(() => {
-                    this.classList.remove('card-clicked');
-                }, 300);
-            });
-        });
-    </script>
 
-    <!-- Category filtering and search script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get all tab buttons and tools
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const allTools = document.querySelectorAll('.ai-tool-card');
-            
-            // Initialize counters to show how many tools are in each category
-            const categoryCounter = {};
-            allTools.forEach(tool => {
-                const categories = tool.getAttribute('data-categories').split(',');
-                categories.forEach(category => {
-                    if (!categoryCounter[category]) {
-                        categoryCounter[category] = 0;
-                    }
-                    categoryCounter[category]++;
-                });
-            });
-            
-            console.log('Tools per category:', categoryCounter);
-            
-            // Add click event listener to each tab button
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Get the category to filter by
-                    const categoryToShow = button.getAttribute('data-category');
-                    
-                    // Remove active class from all buttons
-                    tabButtons.forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    
-                    // Add active class to clicked button
-                    button.classList.add('active');
-                    
-                    // Filter tools based on category
-                    allTools.forEach(tool => {
-                        if (categoryToShow === 'all') {
-                            tool.style.display = '';
-                        } else {
-                            const toolCategories = tool.getAttribute('data-categories').split(',');
-                            if (toolCategories.includes(categoryToShow)) {
-                                tool.style.display = '';
-                            } else {
-                                tool.style.display = 'none';
-                            }
-                        }
-                    });
-                });
-            });
-            
-            // Search functionality
-            const searchInput = document.querySelector('.search-input');
-            searchInput.addEventListener('keyup', () => {
-                const searchTerm = searchInput.value.toLowerCase();
-                
-                // If search is empty and a tab is selected, just show that tab's items
-                if (searchTerm === '') {
-                    const activeTab = document.querySelector('.tab-button.active');
-                    const activeCategory = activeTab.getAttribute('data-category');
-                    
-                    allTools.forEach(tool => {
-                        if (activeCategory === 'all') {
-                            tool.style.display = '';
-                        } else {
-                            const toolCategories = tool.getAttribute('data-categories').split(',');
-                            if (toolCategories.includes(activeCategory)) {
-                                tool.style.display = '';
-                            } else {
-                                tool.style.display = 'none';
-                            }
-                        }
-                    });
-                    return;
+        this.updateSubscriptionDisplay();
+    }
+
+    setupEventListeners() {
+        // Listen for payment completion (refresh when user returns to tab)
+        window.addEventListener('focus', () => {
+            setTimeout(() => {
+                this.loadUserSubscriptions();
+            }, 2000);
+        });
+
+        // Set up purchase button handlers
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.purchase-btn')) {
+                e.preventDefault();
+                const tierType = e.target.dataset.tier;
+                const toolName = e.target.dataset.tool || null;
+                this.handlePurchase(tierType, toolName);
+            }
+        });
+
+        // Handle upgrade button clicks (within tool pages)
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('[href="/#pricing"]') && e.target.textContent.includes('Upgrade')) {
+                e.preventDefault();
+                // Get tool name from the page or a data attribute
+                const toolName = this.getCurrentToolName();
+                if (toolName) {
+                    this.handleUpgradeClick(toolName);
+                } else {
+                    // Fallback to pricing page
+                    window.location.href = '/#pricing';
                 }
-                
-                // If searching, filter within the current category
-                const activeTab = document.querySelector('.tab-button.active');
-                const activeCategory = activeTab.getAttribute('data-category');
-                
-                allTools.forEach(tool => {
-                    const title = tool.querySelector('.ai-tool-title').textContent.toLowerCase();
-                    const description = tool.querySelector('.ai-tool-description').textContent.toLowerCase();
+                return;
+            }
+
+            // For "Try Free" buttons on main page, allow normal navigation
+            if (e.target.matches('.tool-btn')) {
+                // Let the click proceed normally - the tool page will handle usage checking
+                return true;
+            }
+        });
+
+        // Modal close handlers
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.close-modal')) {
+                e.target.closest('.upgrade-modal, .tool-selector-modal').style.display = 'none';
+            }
+        });
+
+        // Close modals when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('.upgrade-modal, .tool-selector-modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+
+        // Refresh subscriptions periodically
+        setInterval(() => {
+            this.loadUserSubscriptions();
+        }, 60000); // Every minute
+    }
+
+    // Method to determine current tool name from the page
+    getCurrentToolName() {
+        // Try to get tool name from URL
+        const path = window.location.pathname;
+        if (path.includes('.html')) {
+            const toolFile = path.split('/').pop();
+            const toolMappings = {
+                'writesuite.html': 'writesuite',
+                'socialboost.html': 'socialboost',
+                'researchmate.html': 'researchmate',
+                'resume-optimizer.html': 'resume_optimizer',
+                'content-repurposer.html': 'content_repurposer',
+                'seo-optimizer.html': 'seo_optimizer',
+                'email-assistant.html': 'email_assistant',
+                'portfolio-generator.html': 'portfolio_generator',
+                'job-tracker.html': 'job_tracker',
+                'data-viz.html': 'data_visualization',
+                'survey-builder.html': 'survey_builder',
+                'market-assistant.html': 'market_research_assistant',
+                'banner-creator.html': 'banner_creator',
+                'mockup-generator.html': 'mockup_generator',
+                'meeting-assistant.html': 'meeting_assistant',
+                'invoice-generator.html': 'invoice_generator',
+                'brand-builder.html': 'brand_builder',
+                'legalease.html': 'legalease'
+            };
+            return toolMappings[toolFile];
+        }
+        
+        // Try to get from a data attribute on the body or a global variable
+        if (window.CURRENT_TOOL_ID) {
+            return window.CURRENT_TOOL_ID;
+        }
+        
+        // Fallback - return null
+        return null;
+    }
+
+    showMessage(message) {
+        const toast = document.createElement('div');
+        toast.className = 'alert alert-info alert-dismissible fade show';
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        const container = document.getElementById('toast-container');
+        if (container) {
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 5000);
+        }
+    }
+
+    showError(message) {
+        const toast = document.createElement('div');
+        toast.className = 'alert alert-danger alert-dismissible fade show';
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+            Error: ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        const container = document.getElementById('toast-container');
+        if (container) {
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 5000);
+        }
+    }
+}
+
+// Global function to manually trigger upgrade modal from tool pages
+window.showUpgradeModal = function(toolName) {
+    if (window.elevifyPayments) {
+        window.elevifyPayments.handleUpgradeClick(toolName);
+    }
+};
+
+// Initialize payment manager when DOM is loaded
+let elevifyPayments;
+document.addEventListener('DOMContentLoaded', function() {
+    elevifyPayments = new ElevifyPaymentManager();
+});
+
+// Add scrolled class to header on scroll
+window.addEventListener('scroll', function() {
+    const header = document.querySelector('header');
+    if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
+    }
+});
+
+// Card click animation
+document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', function() {
+        this.classList.add('card-clicked');
+        setTimeout(() => {
+            this.classList.remove('card-clicked');
+        }, 300);
+    });
+});
+
+// Category filtering and search script
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all tab buttons and tools
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const allTools = document.querySelectorAll('.ai-tool-card');
+    
+    // Initialize counters to show how many tools are in each category
+    const categoryCounter = {};
+    allTools.forEach(tool => {
+        const categories = tool.getAttribute('data-categories').split(',');
+        categories.forEach(category => {
+            if (!categoryCounter[category]) {
+                categoryCounter[category] = 0;
+            }
+            categoryCounter[category]++;
+        });
+    });
+    
+    console.log('Tools per category:', categoryCounter);
+    
+    // Add click event listener to each tab button
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Get the category to filter by
+            const categoryToShow = button.getAttribute('data-category');
+            
+            // Remove active class from all buttons
+            tabButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked button
+            button.classList.add('active');
+            
+            // Filter tools based on category
+            allTools.forEach(tool => {
+                if (categoryToShow === 'all') {
+                    tool.style.display = '';
+                } else {
                     const toolCategories = tool.getAttribute('data-categories').split(',');
-                    
-                    const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
-                    const matchesCategory = activeCategory === 'all' || toolCategories.includes(activeCategory);
-                    
-                    if (matchesSearch && matchesCategory) {
+                    if (toolCategories.includes(categoryToShow)) {
                         tool.style.display = '';
                     } else {
                         tool.style.display = 'none';
                     }
-                });
+                }
             });
-            
-            // Initially filter to show "For You" (all) tools
-            tabButtons[0].click();
         });
+    });
+    
+    // Search functionality
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            // If search is empty and a tab is selected, just show that tab's items
+            if (searchTerm === '') {
+                const activeTab = document.querySelector('.tab-button.active');
+                const activeCategory = activeTab.getAttribute('data-category');
+                
+                allTools.forEach(tool => {
+                    if (activeCategory === 'all') {
+                        tool.style.display = '';
+                    } else {
+                        const toolCategories = tool.getAttribute('data-categories').split(',');
+                        if (toolCategories.includes(activeCategory)) {
+                            tool.style.display = '';
+                        } else {
+                            tool.style.display = 'none';
+                        }
+                    }
+                });
+                return;
+            }
+            
+            // If searching, filter within the current category
+            const activeTab = document.querySelector('.tab-button.active');
+            const activeCategory = activeTab.getAttribute('data-category');
+            
+            allTools.forEach(tool => {
+                const title = tool.querySelector('.ai-tool-title').textContent.toLowerCase();
+                const description = tool.querySelector('.ai-tool-description').textContent.toLowerCase();
+                const toolCategories = tool.getAttribute('data-categories').split(',');
+                
+                const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+                const matchesCategory = activeCategory === 'all' || toolCategories.includes(activeCategory);
+                
+                if (matchesSearch && matchesCategory) {
+                    tool.style.display = '';
+                } else {
+                    tool.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    // Initially filter to show "For You" (all) tools
+    if (tabButtons.length > 0) {
+        tabButtons[0].click();
+    }
+});
     </script>
     <style>
         /* Additional CSS for payment UI elements */
