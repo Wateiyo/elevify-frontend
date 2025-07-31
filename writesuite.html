@@ -1653,7 +1653,7 @@ function trackPaymentEvent(eventName, data = {}) {
     }
 }
 // ============================================================================
-// WRITESUITE PART 2: USAGE TRACKING AND UI FUNCTIONS
+// WRITESUITE PART 2: USAGE TRACKING AND UI FUNCTIONS (COMPLETE)
 // ============================================================================
 
 // Usage Tracking Functions
@@ -1803,15 +1803,18 @@ function showPaymentModal() {
     const modal = document.createElement('div');
     modal.className = 'modal fade';
     modal.id = 'paymentModal';
+    modal.setAttribute('tabindex', '-1');
+    modal.setAttribute('aria-labelledby', 'paymentModalLabel');
+    modal.setAttribute('aria-hidden', 'true');
     modal.innerHTML = `
         <div class="modal-dialog modal-lg">
             <div class="modal-content" style="border-radius: 15px;">
                 <div class="modal-header" style="border-bottom: 1px solid #e0e0e0;">
-                    <h5 class="modal-title">
+                    <h5 class="modal-title" id="paymentModalLabel">
                         <i class="fas fa-rocket me-2" style="color: #14697D;"></i>
                         Unlock WriteSuite
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="text-center mb-4">
@@ -1916,7 +1919,10 @@ function showPaymentModal() {
     `;
     
     document.body.appendChild(modal);
-    const bootstrapModal = new bootstrap.Modal(modal);
+    const bootstrapModal = new bootstrap.Modal(modal, {
+        backdrop: 'static', // Prevent closing by clicking outside
+        keyboard: true // Allow ESC to close
+    });
     bootstrapModal.show();
     
     // Handle payment option selection
@@ -1942,20 +1948,50 @@ function showPaymentModal() {
             'pro_monthly': '$15 - Pro Monthly'
         };
         proceedBtn.innerHTML = `<i class="fas fa-credit-card me-2"></i>Pay ${prices[option]}`;
+        
+        console.log('💰 Selected payment option:', option);
     };
     
     // Handle proceed to payment
     modal.querySelector('#proceedToPayment').addEventListener('click', function() {
         if (selectedOption) {
+            // Remove focus from button before hiding modal
+            this.blur();
+            
+            // Hide modal properly
             bootstrapModal.hide();
-            initiatePayment(selectedOption);
+            
+            // Delay payment initiation to ensure modal is fully hidden
+            setTimeout(() => {
+                initiatePayment(selectedOption);
+            }, 300);
         }
+    });
+    
+    // Handle modal close button
+    modal.querySelector('.btn-close').addEventListener('click', function() {
+        // Remove focus before closing
+        this.blur();
     });
     
     // Clean up modal after it's hidden
     modal.addEventListener('hidden.bs.modal', function() {
-        modal.remove();
+        // Clean up the selection function
         delete window.selectPaymentOption;
+        
+        // Remove modal from DOM
+        modal.remove();
+        
+        // Clear any remaining focus
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+    });
+    
+    // Handle modal show event to ensure proper focus management
+    modal.addEventListener('shown.bs.modal', function() {
+        // Focus on the modal dialog for accessibility
+        modal.querySelector('.modal-dialog').focus();
     });
 }
 
