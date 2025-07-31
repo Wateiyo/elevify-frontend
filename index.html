@@ -698,7 +698,7 @@
     
     <!-- Elevify Payment Management Script -->
    <script>
-        // Elevify Payment Manager Class - Updated with New Pricing Structure
+        // Elevify Payment Manager Class - Updated with Fixed Tool Access
 class ElevifyPaymentManager {
     constructor() {
         // Updated API base URL for Render backend
@@ -773,51 +773,89 @@ class ElevifyPaymentManager {
     }
 
     async checkToolAccess(toolId) {
-    try {
-        const response = await fetch(`${this.API_BASE_URL}/api/check-tool-access`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                tool_id: toolId
-            })
-        });
+        try {
+            // FIXED: Map HTML data-tool attributes to backend tool_ids
+            const toolIdMapping = {
+                'writesuite': 'writesuite',
+                'legalease': 'legalease', 
+                'researchmate': 'researchmate',
+                'socialboost': 'socialboost',
+                'resume_optimizer': 'resume_optimizer',
+                'content_repurposer': 'content_repurposer',
+                'seo_optimizer': 'seo_optimizer',
+                'email_assistant': 'email_assistant',
+                'portfolio_generator': 'portfolio_generator',
+                'job_tracker': 'job_tracker',
+                'data_visualization': 'data_viz',  // Backend uses 'data_viz'
+                'survey_builder': 'survey_builder',
+                'market_research_assistant': 'market_assistant', // Backend uses 'market_assistant'
+                'banner_creator': 'banner_creator',
+                'mockup_generator': 'mockup_generator',
+                'meeting_assistant': 'meeting_assistant',
+                'invoice_generator': 'invoice_generator',
+                'brand_builder': 'brand_builder'
+            };
 
-        // Check if response is ok before parsing JSON
-        if (!response.ok) {
-            console.error(`Tool access check failed: ${response.status} ${response.statusText}`);
+            // Convert frontend toolId to backend tool_id
+            const backendToolId = toolIdMapping[toolId] || toolId;
             
-            // Try to get error details
-            try {
-                const errorData = await response.json();
-                console.error('Error details:', errorData);
-            } catch (jsonError) {
-                console.error('Could not parse error response as JSON');
-                const textError = await response.text();
-                console.error('Raw error response:', textError);
+            console.log('Checking access for tool:', toolId, '-> backend:', backendToolId); // Debug log
+
+            const response = await fetch(`${this.API_BASE_URL}/api/check-tool-access`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    tool_id: backendToolId  // Use the correctly mapped tool_id
+                })
+            });
+
+            // Check if response is ok before parsing JSON
+            if (!response.ok) {
+                console.error(`Tool access check failed: ${response.status} ${response.statusText}`);
+                
+                // Try to get error details
+                try {
+                    const errorData = await response.json();
+                    console.error('Error details:', errorData);
+                    
+                    // Show available tools for debugging
+                    if (errorData.available_tools) {
+                        console.log('Available backend tools:', errorData.available_tools);
+                    }
+                    
+                    return { 
+                        can_use: false, 
+                        access_reason: 'http_error',
+                        error: errorData.error || `HTTP ${response.status}`
+                    };
+                } catch (jsonError) {
+                    console.error('Could not parse error response as JSON');
+                    const textError = await response.text();
+                    console.error('Raw error response:', textError);
+                    
+                    return { 
+                        can_use: false, 
+                        access_reason: 'http_error',
+                        error: `HTTP ${response.status}`
+                    };
+                }
             }
+
+            const data = await response.json();
+            return data;
             
+        } catch (error) {
+            console.error('Failed to check tool access:', error);
             return { 
                 can_use: false, 
-                access_reason: 'http_error',
-                error: `HTTP ${response.status}`
+                access_reason: 'network_error',
+                error: error.message 
             };
         }
-
-        const data = await response.json();
-        return data;
-        
-    } catch (error) {
-        console.error('Failed to check tool access:', error);
-        return { 
-            can_use: false, 
-            access_reason: 'network_error',
-            error: error.message 
-        };
     }
-}
 
     async initiatePayment(tierType, toolName = null) {
         try {
@@ -882,7 +920,7 @@ class ElevifyPaymentManager {
             'writesuite', 'legalease', 'researchmate', 'socialboost', 
             'resume_optimizer', 'content_repurposer', 'seo_optimizer',
             'email_assistant', 'portfolio_generator', 'job_tracker',
-            'data_visualization', 'survey_builder', 'market_research_assistant',
+            'data_viz', 'survey_builder', 'market_assistant',
             'banner_creator', 'mockup_generator', 'meeting_assistant',
             'invoice_generator', 'brand_builder'
         ];
@@ -926,7 +964,25 @@ class ElevifyPaymentManager {
     }
 
     formatToolName(toolName) {
-        return toolName.split('_').map(word => 
+        // Handle special cases for tool name formatting
+        const specialNames = {
+            'data_viz': 'Data Analyzer & Visualizer',
+            'market_assistant': 'Market Research Assistant',
+            'resume_optimizer': 'Resume Optimizer',
+            'content_repurposer': 'Content Repurposer',
+            'seo_optimizer': 'SEO Optimizer',
+            'email_assistant': 'Email Assistant',
+            'portfolio_generator': 'Portfolio Generator',
+            'job_tracker': 'Job Tracker',
+            'survey_builder': 'Survey Builder',
+            'banner_creator': 'Banner Creator',
+            'mockup_generator': 'Mockup Generator',
+            'meeting_assistant': 'Meeting Assistant',
+            'invoice_generator': 'Invoice Generator',
+            'brand_builder': 'Brand Builder'
+        };
+
+        return specialNames[toolName] || toolName.split('_').map(word => 
             word.charAt(0).toUpperCase() + word.slice(1)
         ).join(' ');
     }
@@ -1078,9 +1134,9 @@ class ElevifyPaymentManager {
                 'email-assistant.html': 'email_assistant',
                 'portfolio-generator.html': 'portfolio_generator',
                 'job-tracker.html': 'job_tracker',
-                'data-viz.html': 'data_visualization',
+                'data-viz.html': 'data_viz',  // Use backend name
                 'survey-builder.html': 'survey_builder',
-                'market-assistant.html': 'market_research_assistant',
+                'market-assistant.html': 'market_assistant',  // Use backend name
                 'banner-creator.html': 'banner_creator',
                 'mockup-generator.html': 'mockup_generator',
                 'meeting-assistant.html': 'meeting_assistant',
