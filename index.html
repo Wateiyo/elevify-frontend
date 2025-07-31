@@ -773,89 +773,113 @@ class ElevifyPaymentManager {
     }
 
     async checkToolAccess(toolId) {
-        try {
-            // FIXED: Map HTML data-tool attributes to backend tool_ids
-            const toolIdMapping = {
-                'writesuite': 'writesuite',
-                'legalease': 'legalease', 
-                'researchmate': 'researchmate',
-                'socialboost': 'socialboost',
-                'resume_optimizer': 'resume_optimizer',
-                'content_repurposer': 'content_repurposer',
-                'seo_optimizer': 'seo_optimizer',
-                'email_assistant': 'email_assistant',
-                'portfolio_generator': 'portfolio_generator',
-                'job_tracker': 'job_tracker',
-                'data_visualization': 'data_viz',  // Backend uses 'data_viz'
-                'survey_builder': 'survey_builder',
-                'market_research_assistant': 'market_assistant', // Backend uses 'market_assistant'
-                'banner_creator': 'banner_creator',
-                'mockup_generator': 'mockup_generator',
-                'meeting_assistant': 'meeting_assistant',
-                'invoice_generator': 'invoice_generator',
-                'brand_builder': 'brand_builder'
-            };
-
-            // Convert frontend toolId to backend tool_id
-            const backendToolId = toolIdMapping[toolId] || toolId;
+    try {
+        // COMPLETE tool ID mapping - including all possible variations
+        const toolIdMapping = {
+            // Exact matches from your backend
+            'writesuite': 'writesuite',
+            'legalease': 'legalease', 
+            'researchmate': 'researchmate',
+            'socialboost': 'socialboost',
+            'resume_optimizer': 'resume_optimizer',
+            'content_repurposer': 'content_repurposer',
+            'seo_optimizer': 'seo_optimizer',
+            'email_assistant': 'email_assistant',
+            'portfolio_generator': 'portfolio_generator',
+            'job_tracker': 'job_tracker',
+            'survey_builder': 'survey_builder',
+            'banner_creator': 'banner_creator',
+            'mockup_generator': 'mockup_generator',
+            'meeting_assistant': 'meeting_assistant',
+            'invoice_generator': 'invoice_generator',
+            'brand_builder': 'brand_builder',
             
-            console.log('Checking access for tool:', toolId, '-> backend:', backendToolId); // Debug log
-
-            const response = await fetch(`${this.API_BASE_URL}/api/check-tool-access`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    tool_id: backendToolId  // Use the correctly mapped tool_id
-                })
-            });
-
-            // Check if response is ok before parsing JSON
-            if (!response.ok) {
-                console.error(`Tool access check failed: ${response.status} ${response.statusText}`);
-                
-                // Try to get error details
-                try {
-                    const errorData = await response.json();
-                    console.error('Error details:', errorData);
-                    
-                    // Show available tools for debugging
-                    if (errorData.available_tools) {
-                        console.log('Available backend tools:', errorData.available_tools);
-                    }
-                    
-                    return { 
-                        can_use: false, 
-                        access_reason: 'http_error',
-                        error: errorData.error || `HTTP ${response.status}`
-                    };
-                } catch (jsonError) {
-                    console.error('Could not parse error response as JSON');
-                    const textError = await response.text();
-                    console.error('Raw error response:', textError);
-                    
-                    return { 
-                        can_use: false, 
-                        access_reason: 'http_error',
-                        error: `HTTP ${response.status}`
-                    };
-                }
-            }
-
-            const data = await response.json();
-            return data;
+            // Frontend variations that need mapping
+            'data_visualization': 'data_viz',  // Backend uses 'data_viz'
+            'market_research_assistant': 'market_assistant', // Backend uses 'market_assistant'
             
-        } catch (error) {
-            console.error('Failed to check tool access:', error);
+            // Alternative names that might exist in your HTML
+            'data_viz': 'data_viz',  // Direct backend name
+            'market_assistant': 'market_assistant'  // Direct backend name
+        };
+
+        // Log what we're trying to map
+        console.log('🔍 Checking access for frontend toolId:', toolId);
+
+        // Convert frontend toolId to backend tool_id
+        const backendToolId = toolIdMapping[toolId];
+        
+        if (!backendToolId) {
+            console.warn('❌ No mapping found for toolId:', toolId);
+            console.log('Available mappings:', Object.keys(toolIdMapping));
             return { 
                 can_use: false, 
-                access_reason: 'network_error',
-                error: error.message 
+                access_reason: 'unmapped_tool_id',
+                error: `No mapping found for tool: ${toolId}`,
+                skip_request: true  // Don't make API call
             };
         }
+        
+        console.log('✅ Mapped to backend toolId:', backendToolId);
+
+        const response = await fetch(`${this.API_BASE_URL}/api/check-tool-access`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                tool_id: backendToolId  // Use the correctly mapped tool_id
+            })
+        });
+
+        // Check if response is ok before parsing JSON
+        if (!response.ok) {
+            console.error(`❌ Tool access check failed: ${response.status} ${response.statusText}`);
+            
+            // Try to get error details
+            try {
+                const errorData = await response.json();
+                console.error('Error details:', errorData);
+                
+                // Show available tools for debugging
+                if (errorData.available_tools) {
+                    console.log('Available backend tools:', errorData.available_tools);
+                    console.log('We sent:', backendToolId);
+                    console.log('Is our tool in the list?', errorData.available_tools.includes(backendToolId));
+                }
+                
+                return { 
+                    can_use: false, 
+                    access_reason: 'http_error',
+                    error: errorData.error || `HTTP ${response.status}`
+                };
+            } catch (jsonError) {
+                console.error('Could not parse error response as JSON');
+                const textError = await response.text();
+                console.error('Raw error response:', textError);
+                
+                return { 
+                    can_use: false, 
+                    access_reason: 'http_error',
+                    error: `HTTP ${response.status}`
+                };
+            }
+        }
+
+        const data = await response.json();
+        console.log('✅ Access check successful for:', backendToolId, data);
+        return data;
+        
+    } catch (error) {
+        console.error('❌ Failed to check tool access:', error);
+        return { 
+            can_use: false, 
+            access_reason: 'network_error',
+            error: error.message 
+        };
     }
+}
 
     async initiatePayment(tierType, toolName = null) {
         try {
@@ -1025,38 +1049,64 @@ class ElevifyPaymentManager {
     }
 
     async updateUIBasedOnSubscriptions() {
-        if (!this.userSubscriptions) return;
+    if (!this.userSubscriptions) return;
 
-        // Update tool buttons based on subscription status
-        document.querySelectorAll('[data-tool]').forEach(async (element) => {
-            const toolName = element.dataset.tool;
-            
-            // Only check access for buttons that are NOT "Try Free" buttons on main page
-            if (!element.classList.contains('tool-btn')) return;
-            
-            const access = await this.checkToolAccess(toolName);
-            
-            element.classList.remove('tool-free', 'tool-paid', 'tool-blocked');
-            
-            if (access.can_use) {
-                const reason = access.access_reason;
-                if (reason === 'pro' || reason === '24h_all_access' || reason === 'pay_as_you_go') {
-                    element.classList.add('tool-paid');
-                    element.title = `Available via ${reason}`;
-                } else {
-                    element.classList.add('tool-free');
-                    if (access.usage) {
-                        element.title = `${access.usage.remaining} free uses remaining`;
-                    }
-                }
-            } else {
-                element.classList.add('tool-blocked');
-                element.title = 'Upgrade to continue using this tool';
-            }
+    console.log('🔄 Updating UI based on subscriptions...');
+
+    // Update tool buttons based on subscription status
+    const elementsWithDataTool = document.querySelectorAll('[data-tool]');
+    console.log(`Found ${elementsWithDataTool.length} elements with data-tool attribute`);
+
+    for (const element of elementsWithDataTool) {
+        const toolName = element.dataset.tool;
+        
+        console.log('Processing element:', {
+            toolName,
+            className: element.className,
+            isToolBtn: element.classList.contains('tool-btn')
         });
-
-        this.updateSubscriptionDisplay();
+        
+        // Only check access for buttons that are NOT "Try Free" buttons on main page
+        if (!element.classList.contains('tool-btn')) {
+            console.log('⏭️  Skipping non-tool-btn element:', toolName);
+            continue;
+        }
+        
+        console.log('🔍 Checking access for tool-btn:', toolName);
+        
+        const access = await this.checkToolAccess(toolName);
+        
+        // Skip updating UI if we couldn't map the tool
+        if (access.skip_request) {
+            console.log('⏭️  Skipping UI update for unmapped tool:', toolName);
+            continue;
+        }
+        
+        element.classList.remove('tool-free', 'tool-paid', 'tool-blocked');
+        
+        if (access.can_use) {
+            const reason = access.access_reason;
+            if (reason === 'pro' || reason === '24h_all_access' || reason === 'pay_as_you_go') {
+                element.classList.add('tool-paid');
+                element.title = `Available via ${reason}`;
+                console.log('✅ Tool marked as paid:', toolName, reason);
+            } else {
+                element.classList.add('tool-free');
+                if (access.usage) {
+                    element.title = `${access.usage.remaining} free uses remaining`;
+                }
+                console.log('✅ Tool marked as free:', toolName);
+            }
+        } else {
+            element.classList.add('tool-blocked');
+            element.title = 'Upgrade to continue using this tool';
+            console.log('🚫 Tool marked as blocked:', toolName);
+        }
     }
+
+    this.updateSubscriptionDisplay();
+    console.log('✅ UI update complete');
+}
 
     setupEventListeners() {
         // Listen for payment completion (refresh when user returns to tab)
