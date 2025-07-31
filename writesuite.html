@@ -1367,7 +1367,7 @@
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
 // ============================================================================
-// SECTION 1: CONFIGURATION AND UTILITY FUNCTIONS
+// WRITESUITE PART 1: CONFIGURATION AND PAYMENT SETUP
 // ============================================================================
 
 const CONFIG = {
@@ -1386,6 +1386,19 @@ const CONFIG = {
     TOOL_NAME: 'AI Writers Suite'
 };
 
+// Payment Configuration with your actual Gumroad URLs
+const PAYMENT_CONFIG = {
+    GUMROAD_URLS: {
+        WRITESUITE_24H: 'https://elevify.gumroad.com/l/writesuite24h',
+        ALL_ACCESS_24H: 'https://elevify.gumroad.com/l/all-access',
+        PRO_MONTHLY: 'https://elevify.gumroad.com/l/pro'
+    },
+    REDIRECT_URL: 'https://elevify.net/writesuite.html',
+    TOOL_NAME: 'WriteSuite',
+    ACCESS_DURATION_HOURS: 24,
+    FREE_USES_LIMIT: 10 // Changed from 20 to 10
+};
+
 // Get API base URL with fallback
 function getApiBaseUrl() {
     // Check if we're in development
@@ -1398,6 +1411,754 @@ function getApiBaseUrl() {
 const API_BASE_URL = getApiBaseUrl();
 console.log('🌐 API Base URL:', API_BASE_URL);
 console.log('🌐 Frontend URL:', window.location.origin);
+
+// ============================================================================
+// PAYMENT ACCESS MANAGEMENT
+// ============================================================================
+
+/**
+ * Check if user has valid 24-hour access
+ */
+function hasValidAccess() {
+    const accessData = getAccessData();
+    
+    if (!accessData || !accessData.purchaseTime || !accessData.expiryTime) {
+        console.log('🚫 No valid access data found');
+        return false;
+    }
+    
+    const now = new Date().getTime();
+    const hasAccess = now < accessData.expiryTime;
+    
+    console.log('🔍 Access check:', {
+        hasAccess,
+        timeRemaining: hasAccess ? Math.round((accessData.expiryTime - now) / (1000 * 60 * 60)) + ' hours' : '0 hours',
+        expiryTime: new Date(accessData.expiryTime).toLocaleString()
+    });
+    
+    return hasAccess;
+}
+
+/**
+ * Get access data from localStorage
+ */
+function getAccessData() {
+    try {
+        const data = localStorage.getItem('writesuite_24h_access');
+        return data ? JSON.parse(data) : null;
+    } catch (error) {
+        console.error('Error reading access data:', error);
+        return null;
+    }
+}
+
+/**
+ * Set 24-hour access after successful payment
+ */
+function grantAccess(purchaseData = {}) {
+    const now = new Date().getTime();
+    const expiryTime = now + (PAYMENT_CONFIG.ACCESS_DURATION_HOURS * 60 * 60 * 1000);
+    
+    const accessData = {
+        purchaseTime: now,
+        expiryTime: expiryTime,
+        transactionId: purchaseData.transactionId || generateTransactionId(),
+        productType: purchaseData.productType || 'writesuite_24h',
+        tool: PAYMENT_CONFIG.TOOL_NAME
+    };
+    
+    localStorage.setItem('writesuite_24h_access', JSON.stringify(accessData));
+    
+    console.log('✅ 24-hour access granted:', {
+        expiresAt: new Date(expiryTime).toLocaleString(),
+        transactionId: accessData.transactionId,
+        productType: accessData.productType
+    });
+    
+    return accessData;
+}
+
+/**
+ * Generate a simple transaction ID for tracking
+ */
+function generateTransactionId() {
+    return 'WS' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+}
+
+/**
+ * Remove expired access
+ */
+function revokeAccess() {
+    localStorage.removeItem('writesuite_24h_access');
+    console.log('🚫 Access revoked');
+    updateAccessDisplay();
+}
+
+/**
+ * Check if user can use the tool (24-hour access OR free uses)
+ */
+function canUseWriteSuite() {
+    // Check if user has 24-hour access first
+    if (hasValidAccess()) {
+        console.log('✅ User has valid 24-hour access');
+        return true;
+    }
+    
+    // Fall back to free usage system (10 uses instead of 20)
+    const usageKey = 'writesuite_usage';
+    let usage = JSON.parse(localStorage.getItem(usageKey)) || { 
+        remaining: PAYMENT_CONFIG.FREE_USES_LIMIT, 
+        limit: PAYMENT_CONFIG.FREE_USES_LIMIT, 
+        month: new Date().getFullYear() + '-' + (new Date().getMonth() + 1) 
+    };
+    
+    if (usage.remaining > 0) {
+        console.log('✅ User has free uses remaining:', usage.remaining);
+        return true;
+    }
+    
+    console.log('🚫 No access available');
+    return false;
+}
+
+/**
+ * Decrement usage only if user doesn't have 24-hour access
+ */
+function decrementUsageIfNeeded() {
+    // If user has 24-hour access, don't decrement
+    if (hasValidAccess()) {
+        return true;
+    }
+    
+    // Otherwise, use free usage system with 10 uses
+    const usageKey = 'writesuite_usage';
+    let usage = JSON.parse(localStorage.getItem(usageKey)) || { 
+        remaining: PAYMENT_CONFIG.FREE_USES_LIMIT, 
+        limit: PAYMENT_CONFIG.FREE_USES_LIMIT, 
+        month: new Date().getFullYear() + '-' + (new Date().getMonth() + 1) 
+    };
+    
+    if (usage.remaining > 0) {
+        usage.remaining--;
+        localStorage.setItem(usageKey, JSON.stringify(usage));
+        updateAccessDisplay();
+        return true;
+    }
+    
+    return false;
+}
+
+// ============================================================================
+// PAYMENT FLOW FUNCTIONS
+// ============================================================================
+
+/**
+ * Initiate payment process for specific product
+ */
+function initiatePayment(productType = 'writesuite_24h') {
+    console.log('💳 Initiating payment process for:', productType);
+    
+    // Get the appropriate Gumroad URL
+    let gumroadUrl;
+    switch(productType) {
+        case 'writesuite_24h':
+            gumroadUrl = PAYMENT_CONFIG.GUMROAD_URLS.WRITESUITE_24H;
+            break;
+        case 'all_access_24h':
+            gumroadUrl = PAYMENT_CONFIG.GUMROAD_URLS.ALL_ACCESS_24H;
+            break;
+        case 'pro_monthly':
+            gumroadUrl = PAYMENT_CONFIG.GUMROAD_URLS.PRO_MONTHLY;
+            break;
+        default:
+            gumroadUrl = PAYMENT_CONFIG.GUMROAD_URLS.WRITESUITE_24H;
+    }
+    
+    // Store the current URL for return
+    const returnUrl = encodeURIComponent(PAYMENT_CONFIG.REDIRECT_URL + `?payment=success&tool=writesuite&type=${productType}`);
+    
+    // Build Gumroad URL with return parameters
+    const finalUrl = `${gumroadUrl}?wanted=${returnUrl}`;
+    
+    console.log('🔗 Redirecting to Gumroad:', finalUrl);
+    
+    // Track payment initiation
+    trackPaymentEvent('payment_initiated', { productType });
+    
+    // Redirect to Gumroad
+    window.location.href = finalUrl;
+}
+
+/**
+ * Handle successful payment return from Gumroad
+ */
+function handlePaymentReturn() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const tool = urlParams.get('tool');
+    const productType = urlParams.get('type') || 'writesuite_24h';
+    
+    console.log('🔄 Handling payment return:', { paymentStatus, tool, productType });
+    
+    if (paymentStatus === 'success' && tool === 'writesuite') {
+        // Grant 24-hour access
+        const accessData = grantAccess({
+            transactionId: urlParams.get('transaction_id') || generateTransactionId(),
+            productType: productType
+        });
+        
+        // Show success message
+        showPaymentSuccessMessage(productType);
+        
+        // Clean up URL
+        cleanUpUrl();
+        
+        // Track successful payment
+        trackPaymentEvent('payment_completed', { productType });
+        
+        console.log('✅ Payment processed successfully');
+        
+        return true;
+    }
+    
+    return false;
+}
+
+/**
+ * Clean up URL parameters after processing
+ */
+function cleanUpUrl() {
+    const url = new URL(window.location);
+    url.searchParams.delete('payment');
+    url.searchParams.delete('tool');
+    url.searchParams.delete('type');
+    url.searchParams.delete('transaction_id');
+    url.searchParams.delete('wanted');
+    
+    window.history.replaceState({}, document.title, url.pathname);
+}
+
+/**
+ * Track payment-related events
+ */
+function trackPaymentEvent(eventName, data = {}) {
+    console.log('📊 Payment Event:', eventName, data);
+    
+    // Add your analytics tracking here
+    if (typeof gtag !== 'undefined') {
+        gtag('event', eventName, {
+            custom_parameter_1: data.productType || 'writesuite_24h',
+            custom_parameter_2: data.tool || 'writesuite'
+        });
+    }
+}
+// ============================================================================
+// WRITESUITE PART 2: USAGE TRACKING AND UI FUNCTIONS
+// ============================================================================
+
+// Usage Tracking Functions
+function initializeUsageTracking() {
+    const usageKey = 'writesuite_usage';
+    const resetKey = 'writesuite_reset';
+    const now = new Date();
+    const currentMonth = now.getFullYear() + '-' + (now.getMonth() + 1);
+    
+    let usage = JSON.parse(localStorage.getItem(usageKey)) || { 
+        remaining: PAYMENT_CONFIG.FREE_USES_LIMIT, 
+        limit: PAYMENT_CONFIG.FREE_USES_LIMIT, 
+        month: currentMonth 
+    };
+    
+    // Reset if new month (unless it's a paid account)
+    if (usage.month !== currentMonth && !usage.isPaid) {
+        usage = { 
+            remaining: PAYMENT_CONFIG.FREE_USES_LIMIT, 
+            limit: PAYMENT_CONFIG.FREE_USES_LIMIT, 
+            month: currentMonth 
+        };
+        localStorage.setItem(usageKey, JSON.stringify(usage));
+        localStorage.setItem(resetKey, now.toISOString());
+    }
+    
+    updateAccessDisplay(usage);
+}
+
+function updateAccessDisplay(usage) {
+    const remainingUsesEl = document.getElementById('remainingUses');
+    const usageTracker = document.getElementById('usageTracker');
+    
+    // Check for 24-hour access first
+    if (hasValidAccess()) {
+        const accessData = getAccessData();
+        const hoursRemaining = Math.ceil((accessData.expiryTime - new Date().getTime()) / (1000 * 60 * 60));
+        
+        if (usageTracker) {
+            usageTracker.className = 'alert alert-success d-flex align-items-center mb-4';
+            usageTracker.innerHTML = `
+                <i class="fas fa-crown me-2"></i>
+                <div class="flex-grow-1">
+                    <strong>24-Hour Access Active!</strong>
+                    <div class="small mt-1">${hoursRemaining} hours remaining • Unlimited uses</div>
+                </div>
+                <button class="btn btn-outline-success btn-sm" onclick="showAccessDetails()">
+                    <i class="fas fa-info-circle me-1"></i>Details
+                </button>
+            `;
+        }
+        return;
+    }
+    
+    // Original free usage display logic (updated for 10 uses)
+    if (!usage) {
+        usage = JSON.parse(localStorage.getItem('writesuite_usage')) || { 
+            remaining: PAYMENT_CONFIG.FREE_USES_LIMIT, 
+            limit: PAYMENT_CONFIG.FREE_USES_LIMIT 
+        };
+    }
+    
+    if (remainingUsesEl) {
+        remainingUsesEl.textContent = usage.remaining || 0;
+    }
+    
+    if (usageTracker) {
+        usageTracker.classList.remove('alert-info', 'alert-warning', 'alert-danger', 'alert-success');
+        
+        if (usage.remaining === 0) {
+            usageTracker.classList.add('alert-danger');
+            usageTracker.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <div class="flex-grow-1">
+                    <strong>Free uses exhausted!</strong>
+                    <div class="small mt-1">Get 24-hour unlimited access starting at $2</div>
+                </div>
+                <button class="btn btn-primary" onclick="showPaymentModal()">
+                    <i class="fas fa-shopping-cart me-1"></i>Get Access
+                </button>
+            `;
+        } else if (usage.remaining <= 3) {
+            usageTracker.classList.add('alert-warning');
+            usageTracker.innerHTML = `
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <div class="flex-grow-1">
+                    <strong>Low on free uses:</strong> <span id="remainingUses">${usage.remaining}</span> / ${PAYMENT_CONFIG.FREE_USES_LIMIT} remaining
+                    <div class="small mt-1">Consider getting 24-hour unlimited access</div>
+                </div>
+                <button class="btn btn-warning" onclick="showPaymentModal()">Upgrade</button>
+            `;
+        } else {
+            usageTracker.classList.add('alert-info');
+            usageTracker.innerHTML = `
+                <i class="fas fa-info-circle me-2"></i>
+                <div class="flex-grow-1">
+                    <strong>Free Uses:</strong> <span id="remainingUses">${usage.remaining}</span> / ${PAYMENT_CONFIG.FREE_USES_LIMIT} remaining this month
+                    <div class="small mt-1">Resets monthly • Upgrade for unlimited access</div>
+                </div>
+                <button class="btn btn-primary" onclick="showPaymentModal()">Get 24h Access - $2</button>
+            `;
+        }
+    }
+    
+    // Update reset date
+    const resetDateEl = document.getElementById('resetDate');
+    if (resetDateEl) {
+        if (hasValidAccess()) {
+            resetDateEl.textContent = 'Never (24h Access Active)';
+        } else {
+            const nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
+            resetDateEl.textContent = nextMonth.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        }
+    }
+}
+
+// Updated decrementUsage function to work with new system
+function decrementUsage() {
+    return decrementUsageIfNeeded();
+}
+
+function restoreUsage() {
+    // Only restore if user doesn't have 24-hour access
+    if (hasValidAccess()) {
+        return;
+    }
+    
+    const usageKey = 'writesuite_usage';
+    let usage = JSON.parse(localStorage.getItem(usageKey));
+    if (usage && usage.remaining < usage.limit && !usage.isPaid) {
+        usage.remaining++;
+        localStorage.setItem(usageKey, JSON.stringify(usage));
+        updateAccessDisplay();
+        console.log('Usage restored. Remaining:', usage.remaining);
+    }
+}
+
+// ============================================================================
+// PAYMENT UI FUNCTIONS
+// ============================================================================
+
+/**
+ * Show payment modal with multiple options
+ */
+function showPaymentModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.id = 'paymentModal';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header" style="border-bottom: 1px solid #e0e0e0;">
+                    <h5 class="modal-title">
+                        <i class="fas fa-rocket me-2" style="color: #14697D;"></i>
+                        Unlock WriteSuite
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="text-center mb-4">
+                        <h6>Choose your access level</h6>
+                        <p class="text-muted">Get unlimited access to all WriteSuite AI writing tools</p>
+                    </div>
+                    
+                    <!-- Payment Options -->
+                    <div class="row g-3">
+                        <!-- WriteSuite 24h -->
+                        <div class="col-md-4">
+                            <div class="payment-option-card" onclick="selectPaymentOption('writesuite_24h', this)">
+                                <div class="text-center p-3">
+                                    <i class="fas fa-pen-fancy mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                    <h6>WriteSuite Only</h6>
+                                    <div class="price-display mb-2">
+                                        <span class="h4 text-primary">$2</span>
+                                    </div>
+                                    <small class="text-muted">24-hour access to WriteSuite tools only</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- All Access 24h -->
+                        <div class="col-md-4">
+                            <div class="payment-option-card popular" onclick="selectPaymentOption('all_access_24h', this)">
+                                <div class="popular-badge">Most Popular</div>
+                                <div class="text-center p-3">
+                                    <i class="fas fa-star mb-2" style="color: #FFbf23; font-size: 2rem;"></i>
+                                    <h6>All Tools Access</h6>
+                                    <div class="price-display mb-2">
+                                        <span class="h4 text-primary">$5</span>
+                                    </div>
+                                    <small class="text-muted">24-hour access to ALL Elevify tools</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pro Monthly -->
+                        <div class="col-md-4">
+                            <div class="payment-option-card" onclick="selectPaymentOption('pro_monthly', this)">
+                                <div class="text-center p-3">
+                                    <i class="fas fa-crown mb-2" style="color: #14697D; font-size: 2rem;"></i>
+                                    <h6>Pro Monthly</h6>
+                                    <div class="price-display mb-2">
+                                        <span class="h4 text-primary">$15</span>
+                                        <small class="text-muted">/month</small>
+                                    </div>
+                                    <small class="text-muted">Unlimited monthly access + priority support</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Features List -->
+                    <div class="mt-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <span>Unlimited content generation</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <span>All 5 writing tools included</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <span>Export to Word, PDF, clipboard</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-shield-alt text-success me-2"></i>
+                                    <span>Secure payment via Gumroad</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-zap text-warning me-2"></i>
+                                    <span>Instant activation</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-clock text-info me-2"></i>
+                                    <span>No long-term commitment</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>You'll be redirected to Gumroad for secure payment, then back here with instant access.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary btn-lg" id="proceedToPayment" disabled>
+                        <i class="fas fa-credit-card me-2"></i>Proceed to Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+    
+    // Handle payment option selection
+    let selectedOption = null;
+    window.selectPaymentOption = function(option, element) {
+        // Remove previous selections
+        modal.querySelectorAll('.payment-option-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        // Add selection to clicked option
+        element.classList.add('selected');
+        selectedOption = option;
+        
+        // Enable proceed button
+        const proceedBtn = modal.querySelector('#proceedToPayment');
+        proceedBtn.disabled = false;
+        
+        // Update button text
+        const prices = {
+            'writesuite_24h': '$2 - WriteSuite Only',
+            'all_access_24h': '$5 - All Tools Access',
+            'pro_monthly': '$15 - Pro Monthly'
+        };
+        proceedBtn.innerHTML = `<i class="fas fa-credit-card me-2"></i>Pay ${prices[option]}`;
+    };
+    
+    // Handle proceed to payment
+    modal.querySelector('#proceedToPayment').addEventListener('click', function() {
+        if (selectedOption) {
+            bootstrapModal.hide();
+            initiatePayment(selectedOption);
+        }
+    });
+    
+    // Clean up modal after it's hidden
+    modal.addEventListener('hidden.bs.modal', function() {
+        modal.remove();
+        delete window.selectPaymentOption;
+    });
+}
+
+/**
+ * Show access details modal
+ */
+function showAccessDetails() {
+    const accessData = getAccessData();
+    if (!accessData) return;
+    
+    const hoursRemaining = Math.ceil((accessData.expiryTime - new Date().getTime()) / (1000 * 60 * 60));
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal fade';
+    modal.innerHTML = `
+        <div class="modal-dialog modal-md">
+            <div class="modal-content" style="border-radius: 15px;">
+                <div class="modal-header" style="border-bottom: 1px solid #e0e0e0;">
+                    <h5 class="modal-title">
+                        <i class="fas fa-crown me-2" style="color: #FFbf23;"></i>
+                        Your Access Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-success">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>24-Hour Access Active</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-center p-3 bg-light rounded">
+                                <div class="h4 text-primary mb-1">${hoursRemaining}</div>
+                                <small class="text-muted">Hours Remaining</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center p-3 bg-light rounded">
+                                <div class="h4 text-success mb-1">∞</div>
+                                <small class="text-muted">Uses Available</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <div class="small text-muted">
+                            <div><strong>Purchased:</strong> ${new Date(accessData.purchaseTime).toLocaleString()}</div>
+                            <div><strong>Expires:</strong> ${new Date(accessData.expiryTime).toLocaleString()}</div>
+                            <div><strong>Transaction ID:</strong> ${accessData.transactionId}</div>
+                            <div><strong>Product:</strong> ${accessData.productType}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continue Writing</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+    
+    modal.addEventListener('hidden.bs.modal', function() {
+        modal.remove();
+    });
+}
+
+/**
+ * Show payment success message
+ */
+function showPaymentSuccessMessage(productType = 'writesuite_24h') {
+    const productNames = {
+        'writesuite_24h': 'WriteSuite 24-Hour Access',
+        'all_access_24h': 'All Tools 24-Hour Access',
+        'pro_monthly': 'Pro Monthly Subscription'
+    };
+    
+    const successAlert = document.createElement('div');
+    successAlert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    successAlert.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 350px;';
+    successAlert.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas fa-check-circle me-2" style="font-size: 1.5rem;"></i>
+            <div>
+                <strong>Payment Successful!</strong>
+                <div class="small">You now have ${productNames[productType]}</div>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(successAlert);
+    
+    // Auto-remove after 10 seconds
+    setTimeout(() => {
+        if (successAlert.parentNode) {
+            successAlert.remove();
+        }
+    }, 10000);
+}
+
+/**
+ * Show payment required message when user has no access
+ */
+function showPaymentRequired() {
+    const resultsTitle = document.getElementById('resultsTitle');
+    const contentPreview = document.getElementById('contentPreview');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    if (resultsTitle) resultsTitle.textContent = 'Access Required';
+    
+    if (contentPreview) {
+        contentPreview.innerHTML = `
+            <div class="alert alert-warning">
+                <div class="text-center mb-4">
+                    <i class="fas fa-lock" style="font-size: 3rem; color: #ffc107; margin-bottom: 1rem;"></i>
+                    <h4>Unlock WriteSuite</h4>
+                    <p class="mb-0">You've used all ${PAYMENT_CONFIG.FREE_USES_LIMIT} free uses this month</p>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Unlimited content generation</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>All 5 writing tools included</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Export to Word, PDF, clipboard</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-clock text-info me-2"></i>
+                            <span>24 hours of full access</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fas fa-shield-alt text-success me-2"></i>
+                            <span>Secure payment via Gumroad</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-zap text-warning me-2"></i>
+                            <span>Instant activation</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button class="btn btn-primary btn-lg px-5" onclick="showPaymentModal()">
+                        <i class="fas fa-credit-card me-2"></i>Get Access - Starting at $2
+                    </button>
+                    <div class="mt-2">
+                        <small class="text-muted">Choose from WriteSuite only ($2) or All Tools access ($5)</small>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    if (resultsContainer) {
+        resultsContainer.style.display = 'block';
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// ============================================================================
+// INITIALIZATION FUNCTIONS
+// ============================================================================
+
+/**
+ * Initialize the payment system
+ */
+function initializePaymentSystem() {
+    console.log('💳 Initializing payment system...');
+    
+    // Check for payment return
+    const paymentProcessed = handlePaymentReturn();
+    
+    // Update access display
+    updateAccessDisplay();
+    
+    // Set up periodic access check (every 5 minutes)
+    setInterval(() => {
+        if (!hasValidAccess()) {
+            const accessData = getAccessData();
+            if (accessData && accessData.expiryTime) {
+                console.log('⏰ Access expired, updating display');
+                revokeAccess();
+            }
+        }
+    }, 5 * 60 * 1000);
+    
+    console.log('✅ Payment system initialized');
+}
 
 // Utility Functions
 function showError(message) {
@@ -1458,148 +2219,23 @@ function formatContent(content) {
         .replace(/\*(.*?)\*/g, '<em>$1</em>');
 }
 
-// Check for successful purchase redirect
+// Check for successful purchase redirect (legacy support)
 function checkForSuccessfulPurchase() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('wanted') && urlParams.get('wanted').includes('writesuite')) {
-        // Show success message
-        const successAlert = document.createElement('div');
-        successAlert.className = 'alert alert-success alert-dismissible fade show';
-        successAlert.innerHTML = `
-            <i class="fas fa-check-circle me-2"></i>
-            <strong>Purchase Successful!</strong> You now have full access to WriteSuite. Welcome to unlimited AI writing assistance!
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        document.querySelector('.container').insertBefore(successAlert, document.querySelector('.container').firstChild);
-        
-        // Reset usage tracking to unlimited
-        resetUsageAfterPurchase();
-        
-        // Clean up URL
-        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-        window.history.replaceState({}, document.title, newUrl);
+        // Handle as new payment system
+        handlePaymentReturn();
     }
 }
 
-function resetUsageAfterPurchase() {
-    const usageKey = 'writesuite_usage';
-    const usage = { remaining: 999, limit: 999, month: 'unlimited', isPaid: true };
-    localStorage.setItem(usageKey, JSON.stringify(usage));
-    updateUsageDisplay(usage);
-}
+// Make functions globally accessible
+window.showPaymentModal = showPaymentModal;
+window.showAccessDetails = showAccessDetails;
+window.hasValidAccess = hasValidAccess;
+window.canUseWriteSuite = canUseWriteSuite;
 // ============================================================================
-// SECTION 2: USAGE TRACKING AND AI SUGGESTIONS
+// WRITESUITE PART 3: AI SUGGESTIONS AND DOM SETUP
 // ============================================================================
-
-// Usage Tracking Functions
-function initializeUsageTracking() {
-    const usageKey = 'writesuite_usage';
-    const resetKey = 'writesuite_reset';
-    const now = new Date();
-    const currentMonth = now.getFullYear() + '-' + (now.getMonth() + 1);
-    
-    let usage = JSON.parse(localStorage.getItem(usageKey)) || { remaining: 20, limit: 20, month: currentMonth };
-    let lastReset = localStorage.getItem(resetKey);
-    
-    // Reset if new month (unless it's a paid account)
-    if (usage.month !== currentMonth && !usage.isPaid) {
-        usage = { remaining: 20, limit: 20, month: currentMonth };
-        localStorage.setItem(usageKey, JSON.stringify(usage));
-        localStorage.setItem(resetKey, now.toISOString());
-    }
-    
-    updateUsageDisplay(usage);
-}
-
-function updateUsageDisplay(usage) {
-    const remainingUsesEl = document.getElementById('remainingUses');
-    const usageTracker = document.getElementById('usageTracker');
-    
-    if (remainingUsesEl) {
-        remainingUsesEl.textContent = usage.isPaid ? 'Unlimited' : (usage.remaining || 0);
-    }
-    
-    if (usageTracker) {
-        usageTracker.classList.remove('alert-info', 'alert-warning', 'alert-danger', 'alert-success');
-        
-        if (usage.isPaid) {
-            usageTracker.classList.add('alert-success');
-            usageTracker.innerHTML = '<i class="fas fa-crown me-2"></i><div class="flex-grow-1"><strong>Pro Access Active!</strong><div class="small mt-1">Unlimited uses this month</div></div><button class="btn btn-outline-success" onclick="showUpgradeModal()">Manage Plan</button>';
-        } else if (usage.remaining === 0) {
-            usageTracker.classList.add('alert-danger');
-            usageTracker.innerHTML = '<i class="fas fa-exclamation-circle me-2"></i><div class="flex-grow-1"><strong>No free uses remaining this month!</strong><div class="small mt-1">Upgrade to continue using this tool</div></div><button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade</button>';
-        } else if (usage.remaining <= 2) {
-            usageTracker.classList.add('alert-warning');
-        } else {
-            usageTracker.classList.add('alert-info');
-        }
-    }
-    
-    // Update reset date
-    const resetDateEl = document.getElementById('resetDate');
-    if (resetDateEl) {
-        if (usage.isPaid) {
-            resetDateEl.textContent = 'Never (Unlimited)';
-        } else {
-            const nextMonth = new Date();
-            nextMonth.setMonth(nextMonth.getMonth() + 1, 1);
-            resetDateEl.textContent = nextMonth.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-        }
-    }
-}
-
-function decrementUsage() {
-    // TESTING MODE: Always return true to bypass usage limits
-    const TESTING_MODE = true; // Set to false to re-enable usage tracking
-    
-    if (TESTING_MODE) {
-        console.log('⚠️ Testing mode: Usage tracking disabled');
-        return true;
-    }
-    
-    // Check if user has paid access
-    const usageKey = 'writesuite_usage';
-    let usage = JSON.parse(localStorage.getItem(usageKey)) || { 
-        remaining: 20, 
-        limit: 20, 
-        month: new Date().getFullYear() + '-' + (new Date().getMonth() + 1) 
-    };
-    
-    if (usage.isPaid) {
-        console.log('✅ Paid user - unlimited access');
-        return true;
-    }
-    
-    // Original usage tracking code
-    if (usage.remaining > 0) {
-        usage.remaining--;
-        localStorage.setItem(usageKey, JSON.stringify(usage));
-        updateUsageDisplay(usage);
-        console.log('Usage decremented. Remaining:', usage.remaining);
-        return true;
-    }
-    
-    console.log('No usage remaining');
-    return false;
-}
-
-function restoreUsage() {
-    const TESTING_MODE = true; // Set to false to re-enable usage tracking
-    
-    if (TESTING_MODE) {
-        console.log('⚠️ Testing mode: Usage restore disabled');
-        return;
-    }
-    
-    const usageKey = 'writesuite_usage';
-    let usage = JSON.parse(localStorage.getItem(usageKey));
-    if (usage && usage.remaining < usage.limit && !usage.isPaid) {
-        usage.remaining++;
-        localStorage.setItem(usageKey, JSON.stringify(usage));
-        updateUsageDisplay(usage);
-        console.log('Usage restored. Remaining:', usage.remaining);
-    }
-}
 
 // AI Suggestions Functions
 async function generateAISuggestions(content, contentType = 'general') {
@@ -1791,15 +2427,19 @@ window.generateAISuggestions = generateAISuggestions;
 window.displayAISuggestions = displayAISuggestions;
 window.highlightSuggestion = highlightSuggestion;
 window.showSuggestionTooltip = showSuggestionTooltip;
+
 // ============================================================================
-// SECTION 3: DOM SETUP AND EVENT LISTENERS
+// DOM SETUP AND EVENT LISTENERS
 // ============================================================================
 
 // Main DOM Content Loaded Event Listener
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing WriteSuite...');
     
-    // Initialize immediately
+    // Initialize payment system FIRST
+    initializePaymentSystem();
+    
+    // Then initialize other systems
     initializeUsageTracking();
     setupFeatureSelection();
     setupToneSelection();
@@ -1808,7 +2448,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFormSubmissions();
     setupExportOptions();
     setupEditButtons();
-    setupPricingModal(); // Add this line
+    setupPricingModal();
     checkForSuccessfulPurchase();
     
     console.log('🚀 WriteSuite initialization complete');
@@ -2076,11 +2716,20 @@ function setupEditButtons() {
     
     console.log('✅ Edit buttons setup complete');
 }
+
+// Setup Pricing Modal (updated for new payment system)
+function setupPricingModal() {
+    // This function handles the existing upgrade modal in your HTML
+    // We'll keep it for backward compatibility but the main payment flow
+    // now uses the new showPaymentModal() function
+    
+    console.log('✅ Pricing modal setup complete (using new payment system)');
+}
 // ============================================================================
-// SECTION 4: FORM HANDLERS AND API CALLS
+// WRITESUITE PART 4: FORM HANDLERS AND API CALLS
 // ============================================================================
 
-// Write Form Handler
+// Write Form Handler (Updated with Payment Integration)
 async function handleWrite(e) {
     e.preventDefault();
     
@@ -2110,9 +2759,9 @@ async function handleWrite(e) {
         return;
     }
     
-    // Check usage (disabled for testing)
-    if (!decrementUsage()) {
-        displayUsageExhaustedError();
+    // NEW: Check if user can use the tool (24-hour access or free uses)
+    if (!canUseWriteSuite()) {
+        showPaymentRequired();
         return;
     }
     
@@ -2164,7 +2813,15 @@ async function handleWrite(e) {
         console.log('Success response from backend:', data);
         
         if (data.success) {
+            // NEW: Only decrement usage if user doesn't have 24-hour access
+            decrementUsageIfNeeded();
             displayResults('Generated Content', data.content, true);
+            
+            // Track successful generation
+            trackPaymentEvent('content_generated', {
+                contentType: selectedContentTypeInput.value,
+                hasAccess: hasValidAccess()
+            });
         } else {
             handleApiError(data, response.status);
         }
@@ -2181,13 +2838,16 @@ async function handleWrite(e) {
             displayError(`Network error: ${error.message}`);
         }
         
-        restoreUsage();
+        // Don't restore usage if user has 24-hour access
+        if (!hasValidAccess()) {
+            restoreUsage();
+        }
     } finally {
         hideLoading();
     }
 }
 
-// Proofread Form Handler
+// Proofread Form Handler (Updated with Payment Integration)
 async function handleProofread(e) {
     e.preventDefault();
     
@@ -2197,8 +2857,9 @@ async function handleProofread(e) {
         return;
     }
     
-    if (!decrementUsage()) {
-        displayUsageExhaustedError();
+    // NEW: Check access before processing
+    if (!canUseWriteSuite()) {
+        showPaymentRequired();
         return;
     }
     
@@ -2241,20 +2902,29 @@ async function handleProofread(e) {
         const data = await response.json();
         
         if (data.success) {
+            // NEW: Only decrement usage if user doesn't have 24-hour access
+            decrementUsageIfNeeded();
             displayResults('Proofread Results', data.content, true);
+            
+            // Track successful proofreading
+            trackPaymentEvent('content_proofread', {
+                hasAccess: hasValidAccess()
+            });
         } else {
             handleApiError(data, response.status);
         }
     } catch (error) {
         console.error('Proofread error:', error);
         displayError('Failed to proofread text. Please try again.');
-        restoreUsage();
+        if (!hasValidAccess()) {
+            restoreUsage();
+        }
     } finally {
         hideLoading();
     }
 }
 
-// Summarize Form Handler
+// Summarize Form Handler (Updated with Payment Integration)
 async function handleSummarize(e) {
     e.preventDefault();
     
@@ -2264,8 +2934,9 @@ async function handleSummarize(e) {
         return;
     }
     
-    if (!decrementUsage()) {
-        displayUsageExhaustedError();
+    // NEW: Check access before processing
+    if (!canUseWriteSuite()) {
+        showPaymentRequired();
         return;
     }
     
@@ -2297,20 +2968,30 @@ async function handleSummarize(e) {
         const data = await response.json();
         
         if (data.success) {
+            // NEW: Only decrement usage if user doesn't have 24-hour access
+            decrementUsageIfNeeded();
             displayResults('Summary', data.content, true);
+            
+            // Track successful summarization
+            trackPaymentEvent('content_summarized', {
+                summaryType,
+                hasAccess: hasValidAccess()
+            });
         } else {
             handleApiError(data, response.status);
         }
     } catch (error) {
         console.error('Summarize error:', error);
         displayError('Failed to summarize text. Please try again.');
-        restoreUsage();
+        if (!hasValidAccess()) {
+            restoreUsage();
+        }
     } finally {
         hideLoading();
     }
 }
 
-// Edit Form Handler
+// Edit Form Handler (Updated with Payment Integration)
 async function handleEdit(e) {
     e.preventDefault();
     
@@ -2327,8 +3008,9 @@ async function handleEdit(e) {
         return;
     }
     
-    if (!decrementUsage()) {
-        displayUsageExhaustedError();
+    // NEW: Check access before processing
+    if (!canUseWriteSuite()) {
+        showPaymentRequired();
         return;
     }
     
@@ -2368,20 +3050,29 @@ async function handleEdit(e) {
         const data = await response.json();
         
         if (data.success) {
+            // NEW: Only decrement usage if user doesn't have 24-hour access
+            decrementUsageIfNeeded();
             displayResults('Edited Text', data.content, true);
+            
+            // Track successful editing
+            trackPaymentEvent('content_edited', {
+                hasAccess: hasValidAccess()
+            });
         } else {
             handleApiError(data, response.status);
         }
     } catch (error) {
         console.error('Edit error:', error);
         displayError('Failed to edit text. Please try again.');
-        restoreUsage();
+        if (!hasValidAccess()) {
+            restoreUsage();
+        }
     } finally {
         hideLoading();
     }
 }
 
-// Rewrite Form Handler
+// Rewrite Form Handler (Updated with Payment Integration)
 async function handleRewrite(e) {
     e.preventDefault();
     
@@ -2391,8 +3082,9 @@ async function handleRewrite(e) {
         return;
     }
     
-    if (!decrementUsage()) {
-        displayUsageExhaustedError();
+    // NEW: Check access before processing
+    if (!canUseWriteSuite()) {
+        showPaymentRequired();
         return;
     }
     
@@ -2425,14 +3117,24 @@ async function handleRewrite(e) {
         const data = await response.json();
         
         if (data.success) {
+            // NEW: Only decrement usage if user doesn't have 24-hour access
+            decrementUsageIfNeeded();
             displayResults('Rewritten Text', data.content, true);
+            
+            // Track successful rewriting
+            trackPaymentEvent('content_rewritten', {
+                rewriteGoal,
+                hasAccess: hasValidAccess()
+            });
         } else {
             handleApiError(data, response.status);
         }
     } catch (error) {
         console.error('Rewrite error:', error);
         displayError('Failed to rewrite text. Please try again.');
-        restoreUsage();
+        if (!hasValidAccess()) {
+            restoreUsage();
+        }
     } finally {
         hideLoading();
     }
@@ -2445,7 +3147,7 @@ function handleApiError(data, statusCode) {
     if (statusCode === 403) {
         // Handle usage limit errors
         if (data.error === 'usage_limit_exceeded') {
-            displayUsageExhaustedError();
+            showPaymentRequired();
             return;
         }
         
@@ -2464,8 +3166,9 @@ function handleApiError(data, statusCode) {
     const errorMessage = data.message || data.error || 'An unexpected error occurred. Please try again.';
     displayError(errorMessage);
 }
+
 // ============================================================================
-// SECTION 5: DISPLAY FUNCTIONS, EXPORT, AND EDITOR
+// DISPLAY FUNCTIONS
 // ============================================================================
 
 // Display Results Function
@@ -2539,39 +3242,6 @@ function displayError(message) {
     console.error('Error displayed:', message);
 }
 
-function displayUsageExhaustedError() {
-    const resultsTitle = document.getElementById('resultsTitle');
-    const contentPreview = document.getElementById('contentPreview');
-    const resultsContainer = document.getElementById('resultsContainer');
-    
-    if (resultsTitle) resultsTitle.textContent = 'Usage Limit Reached';
-    
-    if (contentPreview) {
-        contentPreview.innerHTML = `
-            <div class="alert alert-danger">
-                <div class="d-flex align-items-center mb-3">
-                    <i class="fas fa-exclamation-triangle me-3" style="font-size: 2rem;"></i>
-                    <div>
-                        <h5 class="mb-1">Free Monthly Limit Reached</h5>
-                        <p class="mb-0">You've used all 20 free uses for this month.</p>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <button class="btn btn-primary me-2" onclick="showUpgradeModal()">
-                        <i class="fas fa-crown me-1"></i> Upgrade to Pro
-                    </button>
-                    <small class="text-muted">Unlimited uses • Priority support • Advanced features</small>
-                </div>
-            </div>
-        `;
-    }
-    
-    if (resultsContainer) {
-        resultsContainer.style.display = 'block';
-        resultsContainer.scrollIntoView({ behavior: 'smooth' });
-    }
-}
-
 function displayRateLimitError() {
     const resultsTitle = document.getElementById('resultsTitle');
     const contentPreview = document.getElementById('contentPreview');
@@ -2638,6 +3308,9 @@ function displaySuspiciousActivityError() {
         resultsContainer.scrollIntoView({ behavior: 'smooth' });
     }
 }
+// ============================================================================
+// WRITESUITE PART 5: EXPORT FUNCTIONS, EDITOR, AND FINALIZATION
+// ============================================================================
 
 // Export Functions
 function exportToWord() {
@@ -3047,117 +3720,9 @@ function showEditSuccessMessage(message = 'Content updated successfully!') {
     }
 }
 
-// Pricing Modal Functions
-function showUpgradeModal() {
-    const upgradeModal = new bootstrap.Modal(document.getElementById('upgradeModal'));
-    upgradeModal.show();
-    console.log('💳 Upgrade modal shown');
-}
-
-// Setup Pricing Modal (called from main initialization)
-function setupPricingModal() {
-    // Pricing card selection in modal
-    document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(card => {
-        card.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Remove selected class from all pricing cards with animation
-            document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(c => {
-                c.classList.remove('selected');
-                c.style.zIndex = '1';
-            });
-            
-            // Add selected class to clicked card with enhanced animation
-            this.classList.add('selected');
-            this.style.zIndex = '10';
-            
-            // Update hidden input
-            const selectedPricingTier = document.getElementById('selectedPricingTier');
-            if (selectedPricingTier) {
-                selectedPricingTier.value = this.dataset.tier;
-            }
-            
-            // Enable the Get button with animation
-            const getButton = document.getElementById('getSelectedPlan');
-            if (getButton) {
-                getButton.disabled = false;
-                
-                // Update button text based on selection
-                const tier = this.dataset.tier;
-                const tierNames = {
-                    'payasyougo': 'Get Pay-As-You-Go - $1',
-                    '24hourpass': 'Get 24-Hour Pass - $2',
-                    'pro': 'Get Pro Monthly - $15'
-                };
-                
-                // Animate button text change
-                getButton.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    getButton.innerHTML = `<i class="fas fa-shopping-cart me-2"></i>${tierNames[tier]}`;
-                    getButton.style.transform = 'scale(1)';
-                }, 100);
-            }
-            
-            console.log('💰 Selected pricing tier:', tier);
-        });
-    });
-    
-    // Handle Get Selected Plan button click
-    const getSelectedPlanBtn = document.getElementById('getSelectedPlan');
-    if (getSelectedPlanBtn) {
-        getSelectedPlanBtn.addEventListener('click', function() {
-            const selectedCard = document.querySelector('#upgradeModal .pricing-tier-card.selected');
-            
-            if (selectedCard) {
-                const url = selectedCard.dataset.url;
-                
-                // Add click animation
-                this.style.transform = 'scale(0.98)';
-                
-                setTimeout(() => {
-                    // Close the modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('upgradeModal'));
-                    if (modal) modal.hide();
-                    
-                    // Redirect to Gumroad
-                    window.open(url, '_blank');
-                    console.log('🛒 Redirecting to:', url);
-                }, 150);
-            }
-        });
-    }
-    
-    // Reset modal state when closed
-    const upgradeModal = document.getElementById('upgradeModal');
-    if (upgradeModal) {
-        upgradeModal.addEventListener('hidden.bs.modal', function() {
-            // Remove all selections with reset animation
-            document.querySelectorAll('#upgradeModal .pricing-tier-card').forEach(c => {
-                c.classList.remove('selected');
-                c.style.zIndex = '1';
-                c.style.transform = '';
-            });
-            
-            // Clear hidden input
-            const selectedPricingTier = document.getElementById('selectedPricingTier');
-            if (selectedPricingTier) {
-                selectedPricingTier.value = '';
-            }
-            
-            // Disable and reset the Get button
-            const getButton = document.getElementById('getSelectedPlan');
-            if (getButton) {
-                getButton.disabled = true;
-                getButton.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>Get Selected Plan';
-                getButton.style.transform = '';
-            }
-            
-            console.log('🔄 Pricing modal reset');
-        });
-    }
-    
-    console.log('✅ Pricing modal setup complete');
-}
+// ============================================================================
+// EVENT LISTENERS AND INITIALIZATION
+// ============================================================================
 
 // Additional Event Listeners
 window.addEventListener('scroll', function() {
@@ -3200,11 +3765,58 @@ window.addEventListener('load', async function() {
 
 // Make key functions globally accessible for debugging
 window.displayResults = displayResults;
-window.showUpgradeModal = showUpgradeModal;
 window.enableInlineEditing = enableInlineEditing;
 
-// Add CSS for enhanced styling and animations
+// ============================================================================
+// ENHANCED CSS AND STYLING
+// ============================================================================
+
+// Add enhanced CSS for payment modal and UI improvements
 const enhancedCSS = `
+/* Payment Modal Styling */
+.payment-option-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.payment-option-card:hover {
+    border-color: #14697D;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(20, 105, 125, 0.15);
+}
+
+.payment-option-card.selected {
+    border-color: #FFbf23 !important;
+    background-color: #fffbf0 !important;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 191, 35, 0.3);
+}
+
+.payment-option-card.popular {
+    border-color: #FFbf23;
+    background: linear-gradient(135deg, #fffbf0, #ffffff);
+}
+
+.popular-badge {  
+    position: absolute;
+    top: -5px;
+    right: 10px;
+    background: #FFbf23;
+    color: #000;
+    padding: 4px 12px;
+    border-radius: 0 0 10px 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    z-index: 5;
+}
+
+/* Enhanced animations */
 @keyframes fadeInOut {
     0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
     20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -3287,16 +3899,111 @@ const enhancedCSS = `
     to { opacity: 1; }
 }
 
+/* Usage tracker enhancements */
+.alert.alert-success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    border-color: #b8daff;
+}
+
+.alert.alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border-color: #ffeaa7;
+}
+
+.alert.alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    border-color: #f5c6cb;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .payment-option-card {
+        margin-bottom: 1rem;
+    }
+    
+    .modal-lg {
+        margin: 1rem;
+    }
+    
+    .suggestion-item:hover::before {
+        display: none;
+    }
+}
+
+/* Button hover effects */
+.btn-primary {
+    background: linear-gradient(135deg, #14697D, #0f5566);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0f5566, #0a4551);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(20, 105, 125, 0.3);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #FFbf23, #e6a820);
+    border: none;
+    color: #000;
+    font-weight: 600;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #e6a820, #cc9519);
+    color: #000;
+    transform: translateY(-2px);
+}
+
+/* Loading spinner improvements */
+.loading-spinner {
+    border-left-color: #FFbf23;
+    border-top-color: #14697D;
+}
+
+/* Tool tabs styling */
 .tool-tab {
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
 }
 
-.feature-card {
-    cursor: pointer;
+.tool-tab::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: #FFbf23;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
 }
 
-.tone-option {
+.tool-tab.active::before {
+    width: 100%;
+}
+
+.feature-card, .tone-option {
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::after, .tone-option::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 191, 35, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.feature-card:hover::after, .tone-option:hover::after {
+    left: 100%;
 }
 `;
 
@@ -3306,7 +4013,10 @@ style.textContent = enhancedCSS;
 document.head.appendChild(style);
 
 console.log('🎨 Enhanced CSS styles added');
-console.log('🚀 WriterSuite fully initialized and ready to use');
+
+// ============================================================================
+// TEST AND DEBUG FUNCTIONS
+// ============================================================================
 
 // Test functions for debugging
 window.testAISuggestions = async function() {
@@ -3341,6 +4051,57 @@ window.testAISuggestions = async function() {
         return null;
     }
 };
+
+// Test payment flow
+window.testPaymentFlow = function() {
+    console.log('🧪 Testing Payment Flow...');
+    
+    // Test 1: Check access functions
+    console.log('Has valid access:', hasValidAccess());
+    console.log('Can use WriteSuite:', canUseWriteSuite());
+    
+    // Test 2: Grant temporary access for testing
+    grantAccess({ 
+        transactionId: 'TEST_' + Date.now(),
+        productType: 'writesuite_24h'
+    });
+    
+    console.log('✅ Test access granted for 24 hours');
+    updateAccessDisplay();
+};
+
+// Debug function to check all systems
+window.debugWriteSuite = function() {
+    console.log('🔍 WriteSuite Debug Information:');
+    console.log('- API Base URL:', API_BASE_URL);
+    console.log('- Has Valid Access:', hasValidAccess());
+    console.log('- Can Use WriteSuite:', canUseWriteSuite());
+    console.log('- Access Data:', getAccessData());
+    console.log('- Usage Data:', JSON.parse(localStorage.getItem('writesuite_usage')));
+    console.log('- Free Uses Limit:', PAYMENT_CONFIG.FREE_USES_LIMIT);
+    console.log('- Payment Config:', PAYMENT_CONFIG);
+};
+
+// ============================================================================
+// FINAL INITIALIZATION MESSAGE
+// ============================================================================
+
+console.log('🚀 WriterSuite fully initialized and ready to use');
+console.log(`
+💳 PAYMENT SYSTEM READY:
+- Free uses: ${PAYMENT_CONFIG.FREE_USES_LIMIT} per month
+- WriteSuite 24h: $2 (${PAYMENT_CONFIG.GUMROAD_URLS.WRITESUITE_24H})
+- All Access 24h: $5 (${PAYMENT_CONFIG.GUMROAD_URLS.ALL_ACCESS_24H})
+- Pro Monthly: $15 (${PAYMENT_CONFIG.GUMROAD_URLS.PRO_MONTHLY})
+
+🛠️  DEBUG COMMANDS:
+- testPaymentFlow() - Test payment system
+- testAISuggestions() - Test AI suggestions
+- debugWriteSuite() - Show debug info
+`);
+
+// Make sure showUpgradeModal is available globally for backward compatibility
+window.showUpgradeModal = showPaymentModal;
 </script>
 
 </body>
